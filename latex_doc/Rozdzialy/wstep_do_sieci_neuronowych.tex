@@ -87,13 +87,12 @@ wejściowych
 sieci neuronowej
 \item warstwy ukryte - znajdują się pomiędzy warstwą wejściową a warstwą wyjściową
 \end{itemize*}
-\newpage
 
 \subsection{Klasyfikacja sieci neuronowych}
 Sieci neuronowe można klasyfikować na wiele sposobów, w zależności od przyjętego kryterium.
 \begin{enumerate*}
 \item Podział sieci ze względu na sprzężenia występujące pomiędzy neuronami:
-\begin{itemize}
+\begin{itemize*}
 \item Jednokierunkowe (feedforward) - sieci, w których nie występują żadne
 sprzężenia zwrotne. Dane zawsze przepływają tylko w jedną stronę (od
 wejścia do wyjścia).
@@ -102,7 +101,26 @@ W takich sieciach dopuszczone jest połączenie zwrotne, czyli sygnał z
 wyjścia może być przenoszony na wejścia neuronów z poprzednich warstw.
 \item Sieci komórkowe - sprzężenia wzajemne między elementami
 przetwarzającymi dotyczą jedynie najbliższego sąsiedztwa.
-\end{itemize}
+\end{itemize*}
+\item Podział sieci ze względu na typ uczenia się:
+\begin{itemize*}
+\item Sieci z uczeniem nadzorowanym - algorytm uczący adaptuje sieć stosownie do wymuszeń zewnętrznych, starając się możliwie wiernie zrealizować zadaną funkcję
+\item Sieci z uczeniem nienadzorowanym - sieć nie jest ograniczona żadnym zewnętrznym kryterium (funkcją błędu), zadaniem sieci jest wykrycie prawidłowości w
+zbiorze danych podawanym na jej wejście
+\end{itemize*}
 \end{enumerate*}
 
+
+\subsection{Cechy sieci neuronowych}
+\begin{enumerate*}
+\item Posiadają własność uniwersalnego aproksymatora (potrafią aproksymować dowolną funkcję, z dowolnie małym błędem)
+\item Potrafią pozyskiwać wiedzę z danych
+\item Duża odporność na zakłócenia danych
+\item Równoległa architektura (równoległe przetwarzanie danych)
+\item Adaptacyjność względem otrzymywanych danych
+\item Zdolność do samoorganizacji (samodzielnego dostrajania swoich
+parametrów, w celu lepszego dostosowania się do wykonywanych zadań)
+\end{enumerate*}
+
+\newpage
 \section{Metody uczenia sztucznych sieci neuronowych}
