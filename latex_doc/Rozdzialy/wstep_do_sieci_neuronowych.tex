@@ -1,7 +1,6 @@
 \chapter{Wstęp do sztucznych sieci neuronowych}
 \section{Pojęcia podstawowe}
-\subsection{Sztuczne sieci neuronowe}
-\subsubsection{Czym są sztuczne sieci neuronowe?}
+\subsection{Czym są sztuczne sieci neuronowe?}
 Sztuczna sieć neuronowa jest modelem obliczeniowym, którego filozofia pracy oparta jest na funkcjonowaniu biologicznego układu nerwowego.
 Sztuczna sieć neuronowa składa się z dużej liczby wzajemnie ze sobą powiązanych elementów, zwanych neuronami.
 
@@ -9,7 +8,7 @@ Sieci neuronowe są wykorzystywane w informatyce do rozwiązywania problemów, z
 
 Najważniejszą cechą sieci neuronowych jest ich zdolność uczenia się, w oparciu o dostarczany im zbiór danych treningowych.
 
-\subsubsection{Sieci neuronowe kontra tradycyjne modele obliczeniowe}
+\subsection{Sieci neuronowe kontra tradycyjne modele obliczeniowe}
 Sieci neuronowe w sposób zasadniczy różnią się od tradycyjnych modeli obliczeniowych.
  
 W tradycyjnym modelu obliczeniowym, wszystkie kroki wykonywanego algorytmu muszą być ściśle zdefiniowane przez programistę.
@@ -17,7 +16,7 @@ W tradycyjnym modelu obliczeniowym, wszystkie kroki wykonywanego algorytmu musz�
 Natomiast w przypadku sieci neuronowych, algorytm rozwiązywanego problemu może być dla programisty nieznany lub znany tylko na bardzo ogólnym poziomie.
 Sieć neuronowa jest w stanie samodzielnie odnaleźć optymalny algorytm rozwiązania.
 
-\subsubsection{Czym jest sztuczny neuron?}
+\subsection{Czym jest sztuczny neuron?}
 Sztuczny neuron jest matematyczną funkcją, posiadającą wiele wejść i tylko jedno wyjście. Danymi na wejściu i wyjściu neuronu są najczęściej liczby rzeczywiste, będące  w zadanym zakresie.
 
 Przyjęło się, aby każde wejście neuronu miało przypisaną wagę, czyli wartość liczbową określającą jak ważne jest dane wejście dla neuronu.
@@ -29,7 +28,7 @@ wejściowych generował na wyjściu określoną wartość liczbową. \newline
 W trybie odtwarzania, neuron klasyfikuje zestawy danych wejściowych, generując
 odpowiadające im wyjścia (zgodnie z tym, czego nauczył się w trybie uczenia).
 
-\subsubsection{Budowa neuronu biologicznego}
+\subsection{Budowa neuronu biologicznego}
 Ponieważ budowa sztucznego neuronu opiera się na budowie naturalnej komórki nerwowej, dlatego ważne aby zrozumieć jak neuron biologiczny jest zbudowany. \\
 Najważniejsze jego elementy to:
 \begin{itemize*}
@@ -48,7 +47,7 @@ Najważniejsze jego elementy to:
 \end{figure}
 
 \newpage
-\subsubsection{Budowa sztucznego neuronu}
+\subsection{Budowa sztucznego neuronu}
 Porównując budowę sztucznego neuronu z neuronem biologicznym, można znaleźć wiele analogii. \\
 Koncepcyjny model budowy sztucznego neuronu przedstawiono na rysunku poniżej.
 
@@ -59,6 +58,51 @@ Koncepcyjny model budowy sztucznego neuronu przedstawiono na rysunku poniżej.
 \caption{Model budowy sztucznego neuronu}
 \end{center}
 \end{figure}
+
+\subsection{Jak działa sztuczny neuron?}
+Na wejścia neuronu podawane są sygnały wejściowe. Każdy sygnał wejściowy
+jest przemnażany przez odpowiadającą mu wagę.
+Przemnożone sygnały wejściowe są następnie ze sobą sumowane.
+Sumowanie następuje w bloku sumującym.
+Uzyskaną wartość nazywamy potencjałem membranowym.
+Potencjał membranowy jest przekazywany do funkcji aktywacji, która na jego
+podstawie oblicza wartość podawaną na wyjście neuronu.
+
+Zachowanie neuronu jest silnie uzależnione od rodzaju wykorzystywanej funkcji
+aktywacji.
+
+\subsection{Funkcje aktywacji}
+\begin{large}
+!!! TODO !!!
+\end{large}
+
+\subsection{Warstwy w sieciach neuronowych}
+Sieci neuronowe posiadają zazwyczaj wiele warstw. \\
+Neurony należące do tej samej warstwy nie są zazwyczaj ze sobą połączone.
+Warstwy sieci neuronowej dzieli się na trzy rodzaje:
+\begin{itemize*}
+\item warstwa wejściowa - składa się z neuronów pobierających zestaw danych
+wejściowych
+\item warstwa wyjściowa - składa się z neuronów generujących wynik obliczeń
+sieci neuronowej
+\item warstwy ukryte - znajdują się pomiędzy warstwą wejściową a warstwą wyjściową
+\end{itemize*}
 \newpage
+
+\subsection{Klasyfikacja sieci neuronowych}
+Sieci neuronowe można klasyfikować na wiele sposobów, w zależności od przyjętego kryterium.
+\begin{enumerate*}
+\item Podział sieci ze względu na sprzężenia występujące pomiędzy neuronami:
+\begin{itemize}
+\item Jednokierunkowe (feedforward) - sieci, w których nie występują żadne
+sprzężenia zwrotne. Dane zawsze przepływają tylko w jedną stronę (od
+wejścia do wyjścia).
+\item Rekurencyjne (feedback) – sieci o połączeniach dwukierunkowych.
+W takich sieciach dopuszczone jest połączenie zwrotne, czyli sygnał z
+wyjścia może być przenoszony na wejścia neuronów z poprzednich warstw.
+\item Sieci komórkowe - sprzężenia wzajemne między elementami
+przetwarzającymi dotyczą jedynie najbliższego sąsiedztwa.
+\end{itemize}
+\end{enumerate*}
 
 \section{Metody uczenia sztucznych sieci neuronowych}
