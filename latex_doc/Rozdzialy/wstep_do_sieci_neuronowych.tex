@@ -1,4 +1,5 @@
 \chapter{Wstęp do sztucznych sieci neuronowych}
+\section{Historia rozwoju sztucznych sieci neuronowych}
 \section{Pojęcia podstawowe}
 \subsection{Czym są sztuczne sieci neuronowe?}
 Sztuczna sieć neuronowa jest modelem obliczeniowym, którego filozofia pracy oparta jest na funkcjonowaniu biologicznego układu nerwowego.
@@ -7,14 +8,6 @@ Sztuczna sieć neuronowa składa się z dużej liczby wzajemnie ze sobą powiąz
 Sieci neuronowe są wykorzystywane w informatyce do rozwiązywania problemów, z którymi nie radzą sobie tradycyjne modele obliczeniowe.
 
 Najważniejszą cechą sieci neuronowych jest ich zdolność uczenia się, w oparciu o dostarczany im zbiór danych treningowych.
-
-\subsection{Sieci neuronowe kontra tradycyjne modele obliczeniowe}
-Sieci neuronowe w sposób zasadniczy różnią się od tradycyjnych modeli obliczeniowych.
- 
-W tradycyjnym modelu obliczeniowym, wszystkie kroki wykonywanego algorytmu muszą być ściśle zdefiniowane przez programistę.
-
-Natomiast w przypadku sieci neuronowych, algorytm rozwiązywanego problemu może być dla programisty nieznany lub znany tylko na bardzo ogólnym poziomie.
-Sieć neuronowa jest w stanie samodzielnie odnaleźć optymalny algorytm rozwiązania.
 
 \subsection{Czym jest sztuczny neuron?}
 Sztuczny neuron jest matematyczną funkcją, posiadającą wiele wejść i tylko jedno wyjście. Danymi na wejściu i wyjściu neuronu są najczęściej liczby rzeczywiste, będące  w zadanym zakresie.
@@ -112,17 +105,38 @@ zbiorze danych podawanym na jej wejście
 \end{itemize*}
 \end{enumerate*}
 
-
+\newpage
 \subsection{Cechy sieci neuronowych}
+Jak wykazano w pracy \cite{dudek:wyklad:sieciAproksymacja}, najważniejszymi cechami sieci neuronowych są:
 \begin{enumerate*}
-\item Posiadają własność uniwersalnego aproksymatora (potrafią aproksymować dowolną funkcję, z dowolnie małym błędem)
-\item Potrafią pozyskiwać wiedzę z danych
+\item Własność uniwersalnego aproksymatora (sieci potrafią aproksymować dowolną funkcję, z dowolnie małym błędem)
+\item Pozyskiwanie wiedzy z danych
 \item Duża odporność na zakłócenia danych
 \item Równoległa architektura (równoległe przetwarzanie danych)
 \item Adaptacyjność względem otrzymywanych danych
-\item Zdolność do samoorganizacji (samodzielnego dostrajania swoich
-parametrów, w celu lepszego dostosowania się do wykonywanych zadań)
+\item Zdolność do samoorganizacji, czyli samodzielnego dostrajania swoich
+parametrów, w celu lepszego dostosowania się do wykonywanych zadań
 \end{enumerate*}
 
+\subsection{Zalety i wady sieci neuronowych}
+
+\subsection{Porównanie sieci neuronowych z tradycyjnymi modelami obliczeniowymi}
+Sieci neuronowe w sposób zasadniczy różnią się od tradycyjnych modeli obliczeniowych.
+ 
+W tradycyjnym modelu obliczeniowym, wszystkie kroki wykonywanego algorytmu muszą być ściśle zdefiniowane przez programistę.
+
+Natomiast w przypadku sieci neuronowych, algorytm rozwiązywanego problemu może być dla programisty nieznany lub znany tylko na bardzo ogólnym poziomie.
+Sieć neuronowa jest w stanie samodzielnie odnaleźć optymalny algorytm rozwiązania.
+
 \newpage
-\section{Metody uczenia sztucznych sieci neuronowych}
+\section{Podstawowe metody uczenia}
+\subsection{Uczenie nadzorowane}
+\subsection{Uczenie nienadzorowane}
+
+\section{Algorytmy uczące}
+\subsection{Tradycyjnie wykorzystywane algorytmy}
+\subsection{Algorytmy ewolucyjne}
+
+\section{Proces tworzenia sieci neuronowej}
+\subsection{Przygotowanie modelu}
+\subsection{Trening}
