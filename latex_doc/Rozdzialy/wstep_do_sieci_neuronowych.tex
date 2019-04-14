@@ -29,7 +29,7 @@ W trybie odtwarzania, neuron klasyfikuje zestawy danych wejściowych, generując
 odpowiadające im wyjścia (zgodnie z tym, czego nauczył się w trybie uczenia).
 
 \subsection{Budowa neuronu biologicznego}
-Ponieważ budowa sztucznego neuronu opiera się na budowie naturalnej komórki nerwowej, dlatego ważne aby zrozumieć jak neuron biologiczny jest zbudowany. \\
+Ponieważ budowa sztucznego neuronu opiera się na budowie naturalnej komórki nerwowej, dlatego ważne jest, żeby zrozumieć jak neuron biologiczny jest zbudowany. \\
 Najważniejsze jego elementy to:
 \begin{itemize*}
 \item Jądro - centrum obliczeniowe neuronu.
@@ -45,11 +45,12 @@ Najważniejsze jego elementy to:
 \caption{Model budowy neuronu biologicznego}
 \end{center}
 \end{figure}
+\label{NaturalNeuronRys}
 
 \newpage
 \subsection{Budowa sztucznego neuronu}
 Porównując budowę sztucznego neuronu z neuronem biologicznym, można znaleźć wiele analogii. \\
-Koncepcyjny model budowy sztucznego neuronu przedstawiono na rysunku poniżej.
+Koncepcyjny model budowy sztucznego neuronu przedstawiono na rysunku \ref{SztucznyNeuronRys}
 
 \vspace{1cm}
 \begin{figure}[h]
@@ -58,6 +59,7 @@ Koncepcyjny model budowy sztucznego neuronu przedstawiono na rysunku poniżej.
 \caption{Model budowy sztucznego neuronu}
 \end{center}
 \end{figure}
+\label{SztucznyNeuronRys}
 
 \subsection{Jak działa sztuczny neuron?}
 Na wejścia neuronu podawane są sygnały wejściowe. Każdy sygnał wejściowy
@@ -110,16 +112,17 @@ zbiorze danych podawanym na jej wejście
 \end{itemize*}
 \end{enumerate*}
 
-
+\newpage
 \subsection{Cechy sieci neuronowych}
+Jak wykazano w pracy \cite{dudek:wyklad:sieciAproksymacja}, najważniejszymi cechami sieci neuronowych są:
 \begin{enumerate*}
-\item Posiadają własność uniwersalnego aproksymatora (potrafią aproksymować dowolną funkcję, z dowolnie małym błędem)
-\item Potrafią pozyskiwać wiedzę z danych
+\item Własność uniwersalnego aproksymatora (sieci potrafią aproksymować dowolną funkcję, z dowolnie małym błędem)
+\item Pozyskiwanie wiedzy z danych
 \item Duża odporność na zakłócenia danych
 \item Równoległa architektura (równoległe przetwarzanie danych)
 \item Adaptacyjność względem otrzymywanych danych
-\item Zdolność do samoorganizacji (samodzielnego dostrajania swoich
-parametrów, w celu lepszego dostosowania się do wykonywanych zadań)
+\item Zdolność do samoorganizacji, czyli samodzielnego dostrajania swoich
+parametrów, w celu lepszego dostosowania się do wykonywanych zadań
 \end{enumerate*}
 
 \newpage
