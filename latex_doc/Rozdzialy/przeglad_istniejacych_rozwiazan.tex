@@ -1,4 +1,9 @@
 \chapter{Przegląd i analiza istniejących rozwiązań}
+
+Przedstawione poniżej przykłady prezentują bardzo zróżnicowane podejścia do rozwiązywanego problemu, jak również cechują się różnym stopniem zaawansowania technicznego (zarówno w warstwie logiki, jak i reprezentacji graficznej).
+Cechą wspólną, łączącą wszystkie przykłady, jest tematyka tworzenia
+samochodów autonomicznych (wirtualnych lub rzeczywistych).
+
 \section{
 	Samuel Artz - "Deep Learning Cars"
 	\cite{artz:deepLearningCars:blog}
@@ -52,5 +57,70 @@ Dwa samochody z najlepszym przystosowaniem są wyróżniane kolorem.
 \subsection{Dostępność kodu źródłowego}
 Cały kod źródłowy projektu został udostępniony przez autora. \\
 Link do repozytorium znajduje się w pozycji literaturowej:  \cite{artz:deepLearningCars:github}.
-\section{kwea123 - Autocar}
+
+\newpage
+\section{
+	kwea123 - "Autocar"
+	\cite{kwea:autocar}
+}
+
+Projekt wykonany w technologii Unity3D oraz Python.
+Autor wytrenował sieci neuronowe, stosując podejście uczenia ze wzmocnieniem.
+Autor wykorzystuje bibliotekę OpenCV do wykrywania krawędzi toru i spłaszcza obraz na wejściu, łącząc go z prędkością samochodu.
+Sieć była trenowana, wykorzystując algorytm PPO (Proximal Policy Optimization).
+
+Samochodem może sterować człowiek lub komputer (zwany agentem).
+Zadaniem agenta jest dojazd do wyznaczonego celu, lub przejechanie bezkolizyjne całego toru.
+Jazda do przodu jest wynagradzana, podczas gdy cofanie się jest karane.
+Agent jest wyposażony w kamerę umieszczoną z przodu samochodu, która dostarcza mu informacji o pokonywanym torze.
+
+Agenci są skojarzeni z obiektem Main, który odpowiada za wszystkie interakcje pomiędzy środowiskiem Unity, a skryptami napisanymi w Pythonie.
+ 
+Projekt zawiera trzy środowiska treningowe:
+\begin{itemize*}
+\item autocar \\
+\begin{figure}[H]
+\begin{center}
+\includegraphics[width=16cm]{resources/figures/autocar.png}
+\caption{autocar}
+\end{center}
+\end{figure}
+\label{Autocar}
+Tor szczątkowy, przeznaczony do eksperymentów ze środowiskiem. \\
+Sieć wytrenowana po 200 iteracjach.
+
+\newpage
+\item autocar2 \\
+\begin{figure}[H]
+\begin{center}
+\includegraphics[width=16cm]{resources/figures/autocar2.png}
+\caption{autocar2}
+\end{center}
+\end{figure}
+\label{Autocar2}
+Kompletny tor. \\
+Sieć wytrenowana po kolejnych 200 iteracjach, wykorzystując wstępnie wytrenowaną sieć z poprzedniego środowiska treningowego.
+
+\item autocar\_human\_detection \\
+\begin{figure}[H]
+\begin{center}
+\includegraphics[width=15cm]{resources/figures/autocar_human.png}
+\caption{autocar\_human\_detection}
+\end{center}
+\end{figure}
+\label{Autocar_human}
+Tor identyczny jak w środowisku autocar2, jednakże uzupełniony o pojawiającą się w losowych miejscach postać przechodzącego pieszego.\\
+Zadaniem agenta jest unikanie kolizji z pieszym. \\
+Aby to osiągnąć, obliczana jest odległość od pieszego oraz kierunek jego przemieszczenia.
+
+Autor wykorzystuje tutaj uczenie nadzorowane z dużym zbiorem danych.
+Wykrywanie pieszego jest wykonywane za pomocą frameworka 
+Tensorflow Object Detection API.
+
+Wytrenowane modele, odpowiedzialne za prognozę odległości i kierunku przemieszczania się pieszego, bazują na sieciach 
+MLP (Multilayer Perceptron - Wielowarstowy Perceptron) oraz 
+CNN (Convolutional Neural Network - Konwolucyjna Sieć Neuronowa).
+\end{itemize*}
+
+\newpage
 \section{Microsoft - AirSim}
