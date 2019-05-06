@@ -1,1 +1,56 @@
 \chapter{Przegląd i analiza istniejących rozwiązań}
+\section{
+	Samuel Artz - "Deep Learning Cars"
+	\cite{artz:deepLearningCars:blog}
+	\cite{artz:deepLearningCars:github}
+}
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=16cm]{resources/figures/samuelArtzDeepCars.png}
+\caption{Stopklatka z pracy systemu}
+\end{center}
+\end{figure}
+\label{SamuelArtzDeepLearningCars}
+
+\subsection{Opis implementacji}
+Na początku każdej generacji jest tworzonych 20 samochodów (osobników). \\
+Każdy samochód posiada własną sieć neuronową oraz zestaw 5 czujników, odmierzających odległość z przodu samochodu.
+
+Sygnały z czujników wysyłane są do neuronów warstwy wejściowej.
+Czujniki te służą do wykrywania przeszkód w otoczeniu samochodu.
+Każdy czujnik jest skierowany w inną stronę.
+Czujniki tworzą "pole widzenia" samochodu o łącznym kącie 90 stopni.
+
+Zadaniem każdego samochodu jest bezkolizyjny przejazd po wyznaczonym torze.
+Jedyne operacje jakie może wykonać samochód, to skręt w lewo lub prawo.
+Prędkość wszystkich samochódów jest stała i ustalana przed rozpoczęciem generacji.
+W chwili kolizji z przeszkodą, samochód umiera.
+Należy dodać, iż nie występują kolizje pomiędzy samochodami.
+
+Kiedy wszystkie samochody umrą, bieżąca generacja się kończy.
+Osobniki do kolejnej generacji są tworzone przy pomocy algorytmu ewolucyjnego.
+
+Do reprodukcji wybierane są 2 osobniki z najwyższym przystosowaniem.
+
+Przystosowania jest obliczane na podstawie odległości przebytej przez samochód.
+Im większa przejechana odległość, tym wyższa wartość przystosowania samochodu.
+
+Geny 2 najlepiej przystosowanych osobników są krzyżowane i mutowane, tworząc 20 nowych osobników (potomków).
+
+Genami samochodu są wagi w jego sieci neuronowej.
+Zastosowane sieci neuronowe to sieci jednokierunkowe (tzw. feedforward),
+z 5 pięcioma neuronami w warstwie wejściowej, 2 neuronami w warstwie wyjściowej i dwiema warstwami ukrytymi (odpowiednio 4 i 3 neurony).
+Uczenie sieci (dostrajanie wartości wag) odbywa się za pomocą tzw. Algorytmu Genetycznego.
+
+\subsection{Reprezentacja graficzna}
+Dwuwymiarowa symulacja środowiska (toru) została wykonana w aplikacji Unity3D.
+Krzyżyki wyświetlane na ekranie są reprezentacją czujników samochodów.
+Kamera podąża za samochodem z najlepszym przystosowaniem.
+Dwa samochody z najlepszym przystosowaniem są wyróżniane kolorem.
+
+\subsection{Dostępność kodu źródłowego}
+Cały kod źródłowy projektu został udostępniony przez autora. \\
+Link do repozytorium znajduje się w pozycji literaturowej:  \cite{artz:deepLearningCars:github}.
+\section{kwea123 - Autocar}
+\section{Microsoft - AirSim}
