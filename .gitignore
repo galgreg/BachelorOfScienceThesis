@@ -1,11 +1,2 @@
+# .gitignore content for repository root directory
 materialy_do_nauki/
-*.aux
-*.lof
-*.log
-*.lot
-*.toc
-*.gz
-*.pdf
-*.dvi
-*.bbl
-*.blg
