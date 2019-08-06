@@ -51,6 +51,12 @@
         "Obj/":true,
         "ProjectSettings/":true,
         "temp/":true,
-        "Temp/":true
+        "Temp/":true,
+        "Assets/Cameras/":true,
+        "Assets/Low*/":true,
+        "Assets/Materials/":true,
+        "Assets/Prefabs/":true,
+        "Assets/Scenes/":true,
+        "Assets/Terrains/":true
     }
 }
