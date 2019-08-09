@@ -28,27 +28,30 @@ public class SensorPropertiesComputer {
         return sensorOriginAfterRotation;
     }
     public Vector3 ComputeSensorDirection(float aCurrentSensorAngle) {
+        aCurrentSensorAngle = -aCurrentSensorAngle;
         var carPosition = CAR_TRANSFORM.position;
-        Vector3 sensorOrigin =
+        Vector3 sensorOrigin_BeforeCarRotate =
                 new Vector3(
-                        carPosition.x,
-                        carPosition.y + SENSOR_OFFSET_Y,
-                        carPosition.z + SENSOR_OFFSET_Z);
-        Vector3 sensorDirectionBeforeRotation =
+                    carPosition.x,
+                    carPosition.y + SENSOR_OFFSET_Y,
+                    carPosition.z + SENSOR_OFFSET_Z);
+        Vector3 sensorDirection_BeforeOriginRotate =
                 new Vector3(
-                        sensorOrigin.x - MAX_SENSOR_LENGTH,
-                        sensorOrigin.y,
-                        sensorOrigin.z);
-        Vector3 directionRotatedBySensorAngle = ComputePointRotation(
-                sensorDirectionBeforeRotation,
-                sensorOrigin,
-                aCurrentSensorAngle);
-        float carRotationAngle = CAR_TRANSFORM.eulerAngles.y;
-        Vector3 directionRotatedByCarAngle = ComputePointRotation(
-                directionRotatedBySensorAngle,
-                carPosition,
-                carRotationAngle);
-        return directionRotatedByCarAngle;
+                    sensorOrigin_BeforeCarRotate.x - MAX_SENSOR_LENGTH,
+                    sensorOrigin_BeforeCarRotate.y,
+                    sensorOrigin_BeforeCarRotate.z);
+        Vector3 sensorDirection_AfterOriginRotate =
+                ComputePointRotation(
+                    sensorDirection_BeforeOriginRotate,
+                    sensorOrigin_BeforeCarRotate,
+                    aCurrentSensorAngle);
+        float carRotationAngle = -(CAR_TRANSFORM.eulerAngles.y);
+        Vector3 sensorDirection_AfterCarRotate =
+                ComputePointRotation(
+                    sensorDirection_AfterOriginRotate,
+                    carPosition,
+                    carRotationAngle);
+        return sensorDirection_AfterCarRotate;
     }
     private Vector3 ComputePointRotation(
             Vector3 pointToRotate,

@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class CarSensor {
     public CarSensor(float aMaxSensorLength) {
@@ -37,7 +36,11 @@ public class CarSensor {
         Vector3 firstRendererPoint = mRayProperties.origin;
         Vector3 secondRendererPoint;
 
-        if (mRaycastHit.collider != null) {
+        if (Physics.Raycast(
+                mRayProperties,
+                out mRaycastHit,
+                MAX_SENSOR_LENGTH,
+                LAYER_MASK)) {
             secondRendererPoint = mRaycastHit.point;
         } else {
             secondRendererPoint = mRayProperties.direction;
@@ -46,12 +49,10 @@ public class CarSensor {
         renderingComponent.SetPosition(0, firstRendererPoint);
         renderingComponent.SetPosition(1, secondRendererPoint);
     }
-
     private readonly Color SENSOR_COLOR = Color.white;
 
     private readonly float MAX_SENSOR_LENGTH;
     private readonly int LAYER_MASK;
-
 
     private Ray mRayProperties;
     private RaycastHit mRaycastHit;

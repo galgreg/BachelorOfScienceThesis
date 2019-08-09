@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class SensorsKit : MonoBehaviour {
@@ -7,14 +6,14 @@ public class SensorsKit : MonoBehaviour {
         mTransformComputer =
                 new SensorPropertiesComputer(
                         mCarTransform,
-                        MAX_SENSOR_LENGTH,
+                        MAX_SENSOR_LENGTH * UNITY_ANTIBUG_FACTOR,
                         SENSORS_OFFSET_Y,
                         SENSORS_OFFSET_Z);
         InitSensorList();
     }
     private void Update() {
         for (int i = 0; i < RAYS_COUNT; ++i) {
-            float currentSensorAngle = ANGLE_BETWEEN_SENSORS * i;
+            float currentSensorAngle = ANGLE_BETWEEN_SENSORS * i + STARTING_ANGLE;
             Vector3 sensorOrigin = mTransformComputer.ComputeSensorOrigin();
             Vector3 sensorDirection =
                     mTransformComputer.ComputeSensorDirection(currentSensorAngle);
@@ -34,7 +33,7 @@ public class SensorsKit : MonoBehaviour {
         }
     }
     private CarSensor CreateNewSensor(float aCurrentSensorAngle) {
-        var newSensor = new CarSensor(MAX_SENSOR_LENGTH);
+        var newSensor = new CarSensor(MAX_SENSOR_LENGTH * UNITY_ANTIBUG_FACTOR);
         Vector3 sensorOrigin = mTransformComputer.ComputeSensorOrigin();
         Vector3 sensorDirection =
                 mTransformComputer.ComputeSensorDirection(aCurrentSensorAngle);
@@ -45,7 +44,11 @@ public class SensorsKit : MonoBehaviour {
     private List<float> GetDistanceList() {
         List<float> distanceList = new List<float>();
         foreach (var sensor in mSensorList) {
-            distanceList.Add(sensor.GetDistance());
+            float tempDistance = sensor.GetDistance();
+            if (tempDistance > MAX_SENSOR_LENGTH) {
+                tempDistance = MAX_SENSOR_LENGTH;
+            }
+            distanceList.Add(tempDistance);
         }
         return distanceList;
     }
@@ -63,9 +66,12 @@ public class SensorsKit : MonoBehaviour {
     public float SENSORS_OFFSET_Y = 0.03f;
     public float SENSORS_OFFSET_Z = 0.026f;
 
-    private const float FIELD_OF_VIEW = 180.0f;
-    private const uint RAYS_COUNT = 3;
-    private const float ANGLE_BETWEEN_SENSORS = FIELD_OF_VIEW / (RAYS_COUNT - 1);
+    private const uint UNITY_ANTIBUG_FACTOR = 100;
+    private const float MAX_POSSIBLE_FOV = 180.0f;
+    private const float CURRENT_FOV = 180.0f;
+    private const uint RAYS_COUNT = 7;
+    private const float ANGLE_BETWEEN_SENSORS = CURRENT_FOV / (RAYS_COUNT - 1);
+    private const float STARTING_ANGLE = (MAX_POSSIBLE_FOV - CURRENT_FOV) / 2;
     private List<CarSensor> mSensorList;
     private SensorPropertiesComputer mTransformComputer;
 }
