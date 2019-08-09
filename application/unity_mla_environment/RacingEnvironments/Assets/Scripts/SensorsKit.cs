@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class SensorsKit : MonoBehaviour {
     private void Start() {
+        ANGLE_BETWEEN_SENSORS = CURRENT_FOV / (RAYS_COUNT - 1);
+        STARTING_ANGLE = (MAX_POSSIBLE_FOV - CURRENT_FOV) / 2;
         mTransformComputer =
                 new SensorPropertiesComputer(
                         mCarTransform,
@@ -65,13 +67,13 @@ public class SensorsKit : MonoBehaviour {
     public float MAX_SENSOR_LENGTH = 0.5f;
     public float SENSORS_OFFSET_Y = 0.03f;
     public float SENSORS_OFFSET_Z = 0.026f;
+    public float CURRENT_FOV = 180.0f;
+    public uint RAYS_COUNT = 7;
 
     private const uint UNITY_ANTIBUG_FACTOR = 100;
     private const float MAX_POSSIBLE_FOV = 180.0f;
-    private const float CURRENT_FOV = 180.0f;
-    private const uint RAYS_COUNT = 7;
-    private const float ANGLE_BETWEEN_SENSORS = CURRENT_FOV / (RAYS_COUNT - 1);
-    private const float STARTING_ANGLE = (MAX_POSSIBLE_FOV - CURRENT_FOV) / 2;
+    private float ANGLE_BETWEEN_SENSORS;
+    private float STARTING_ANGLE;
     private List<CarSensor> mSensorList;
     private SensorPropertiesComputer mTransformComputer;
 }

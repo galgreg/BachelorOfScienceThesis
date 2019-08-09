@@ -6,27 +6,14 @@ public class CarSensor {
         LAYER_MASK = 1 << LayerMask.NameToLayer("RaceTrackLayer");
         mRayProperties = new Ray(Vector3.zero, Vector3.zero);
         mRaycastHit = new RaycastHit();
-        mSensorRenderer = new GameObject();
-        var renderingComponent = mSensorRenderer.AddComponent<LineRenderer>();
-        float LINE_WIDTH = 0.01f;
-        renderingComponent.startWidth = LINE_WIDTH;
-        renderingComponent.endWidth = LINE_WIDTH;
-        renderingComponent.material.color = SENSOR_COLOR;
-        renderingComponent.positionCount = 2;
+        InitSensorRenderer();
     }
     public void SetRayProperties(Vector3 aOrigin, Vector3 aDirection) {
         mRayProperties.origin = aOrigin;
         mRayProperties.direction = aDirection;
     }
-    
     public float GetDistance() {
-        bool wasObstacleDetected = Physics.Raycast(
-                mRayProperties,
-                out mRaycastHit,
-                MAX_SENSOR_LENGTH,
-                LAYER_MASK);
-
-        if (wasObstacleDetected) {
+        if (WasObstacleDetected()) {
             return mRaycastHit.distance;
         } else {
             return MAX_SENSOR_LENGTH;
@@ -36,11 +23,7 @@ public class CarSensor {
         Vector3 firstRendererPoint = mRayProperties.origin;
         Vector3 secondRendererPoint;
 
-        if (Physics.Raycast(
-                mRayProperties,
-                out mRaycastHit,
-                MAX_SENSOR_LENGTH,
-                LAYER_MASK)) {
+        if (WasObstacleDetected()) {
             secondRendererPoint = mRaycastHit.point;
         } else {
             secondRendererPoint = mRayProperties.direction;
@@ -49,6 +32,24 @@ public class CarSensor {
         renderingComponent.SetPosition(0, firstRendererPoint);
         renderingComponent.SetPosition(1, secondRendererPoint);
     }
+
+    private void InitSensorRenderer() {
+        mSensorRenderer = new GameObject();
+        var renderingComponent = mSensorRenderer.AddComponent<LineRenderer>();
+        float LINE_WIDTH = 0.01f;
+        renderingComponent.startWidth = LINE_WIDTH;
+        renderingComponent.endWidth = LINE_WIDTH;
+        renderingComponent.material.color = SENSOR_COLOR;
+        renderingComponent.positionCount = 2;
+    }
+    private bool WasObstacleDetected() {
+        return Physics.Raycast(
+                mRayProperties,
+                out mRaycastHit,
+                MAX_SENSOR_LENGTH,
+                LAYER_MASK);
+    }
+
     private readonly Color SENSOR_COLOR = Color.white;
 
     private readonly float MAX_SENSOR_LENGTH;
