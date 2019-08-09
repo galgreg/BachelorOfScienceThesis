@@ -2,8 +2,12 @@
 
 public class SensorPropertiesComputer {
     public SensorPropertiesComputer(
-            Transform aCarTransform, float aOffsetY, float aOffsetZ) {
+            Transform aCarTransform,
+            float aMaxSensorLength,
+            float aOffsetY,
+            float aOffsetZ) {
         CAR_TRANSFORM = aCarTransform;
+        MAX_SENSOR_LENGTH = aMaxSensorLength;
         SENSOR_OFFSET_Y = aOffsetY;
         SENSOR_OFFSET_Z = aOffsetZ;
     }
@@ -32,7 +36,7 @@ public class SensorPropertiesComputer {
                         carPosition.z + SENSOR_OFFSET_Z);
         Vector3 sensorDirectionBeforeRotation =
                 new Vector3(
-                        sensorOrigin.x - 0.5f,
+                        sensorOrigin.x - MAX_SENSOR_LENGTH,
                         sensorOrigin.y,
                         sensorOrigin.z);
         Vector3 directionRotatedBySensorAngle = ComputePointRotation(
@@ -65,6 +69,7 @@ public class SensorPropertiesComputer {
     }
 
     private readonly Transform CAR_TRANSFORM;
+    private readonly float MAX_SENSOR_LENGTH;
     private readonly float SENSOR_OFFSET_Y;
     private readonly float SENSOR_OFFSET_Z;
 }

@@ -2,11 +2,17 @@
 using UnityEngine;
 
 public class CarSensor {
-    public CarSensor() {
+    public CarSensor(float aMaxSensorLength) {
+        MAX_SENSOR_LENGTH = aMaxSensorLength;
         LAYER_MASK = 1 << LayerMask.NameToLayer("RaceTrackLayer");
         mRayProperties = new Ray(Vector3.zero, Vector3.zero);
         mRaycastHit = new RaycastHit();
-        mSensorRenderer = new LineRenderer();
+        mSensorRenderer = new GameObject();
+        var renderingComponent = mSensorRenderer.AddComponent<LineRenderer>();
+        float LINE_WIDTH = 0.01f;
+        renderingComponent.startWidth = LINE_WIDTH;
+        renderingComponent.endWidth = LINE_WIDTH;
+        renderingComponent.material.color = SENSOR_COLOR;
     }
     public void SetRayProperties(Vector3 aOrigin, Vector3 aDirection) {
         mRayProperties.origin = aOrigin;
@@ -27,16 +33,26 @@ public class CarSensor {
         }
     }
     public void Render() {
-        // TODO
-        throw new NotImplementedException();
+        Vector3 firstRendererPoint = mRayProperties.origin;
+        Vector3 secondRendererPoint;
+
+        if (mRaycastHit.collider != null) {
+            secondRendererPoint = mRaycastHit.point;
+        } else {
+            secondRendererPoint = mRayProperties.direction;
+        }
+        var renderingComponent = mSensorRenderer.GetComponent<LineRenderer>();
+        renderingComponent.SetPosition(0, firstRendererPoint);
+        renderingComponent.SetPosition(1, secondRendererPoint);
     }
 
-    private readonly Color MINIMUM_LENGTH_COLOR = Color.red;
-    private readonly Color MAXIMUM_LENGTH_COLOR = Color.green;
-    private const float MAX_SENSOR_LENGTH = 0.5f;
+    private readonly Color SENSOR_COLOR = Color.white;
+
+    private readonly float MAX_SENSOR_LENGTH;
     private readonly int LAYER_MASK;
-    
+
+
     private Ray mRayProperties;
     private RaycastHit mRaycastHit;
-    private LineRenderer mSensorRenderer;
+    private GameObject mSensorRenderer;
 }
