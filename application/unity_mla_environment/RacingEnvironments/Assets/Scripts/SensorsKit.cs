@@ -35,7 +35,9 @@ public class SensorsKit : MonoBehaviour {
         }
     }
     private CarSensor CreateNewSensor(float aCurrentSensorAngle) {
-        var newSensor = new CarSensor(MAX_SENSOR_LENGTH * UNITY_ANTIBUG_FACTOR);
+        var newSensor = new CarSensor(
+                MAX_SENSOR_LENGTH * UNITY_ANTIBUG_FACTOR,
+                UNITY_ANTIBUG_FACTOR);
         Vector3 sensorOrigin = mTransformComputer.ComputeSensorOrigin();
         Vector3 sensorDirection =
                 mTransformComputer.ComputeSensorDirection(aCurrentSensorAngle);
@@ -47,9 +49,6 @@ public class SensorsKit : MonoBehaviour {
         List<float> distanceList = new List<float>();
         foreach (var sensor in mSensorList) {
             float tempDistance = sensor.GetDistance();
-            if (tempDistance > MAX_SENSOR_LENGTH) {
-                tempDistance = MAX_SENSOR_LENGTH;
-            }
             distanceList.Add(tempDistance);
         }
         return distanceList;
