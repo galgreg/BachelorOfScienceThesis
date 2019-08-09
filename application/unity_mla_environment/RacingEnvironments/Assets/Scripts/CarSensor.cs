@@ -13,6 +13,7 @@ public class CarSensor {
         renderingComponent.startWidth = LINE_WIDTH;
         renderingComponent.endWidth = LINE_WIDTH;
         renderingComponent.material.color = SENSOR_COLOR;
+        renderingComponent.positionCount = 2;
     }
     public void SetRayProperties(Vector3 aOrigin, Vector3 aDirection) {
         mRayProperties.origin = aOrigin;

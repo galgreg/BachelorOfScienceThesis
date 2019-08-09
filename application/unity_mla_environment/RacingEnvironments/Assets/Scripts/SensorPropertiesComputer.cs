@@ -18,8 +18,8 @@ public class SensorPropertiesComputer {
                     carPosition.x,
                     carPosition.y + SENSOR_OFFSET_Y,
                     carPosition.z + SENSOR_OFFSET_Z);
-        float carRotationAngle = CAR_TRANSFORM.eulerAngles.y;
-        
+        float carRotationAngle = -(CAR_TRANSFORM.eulerAngles.y);
+
         Vector3 sensorOriginAfterRotation =
                 ComputePointRotation(
                         sensorOriginBeforeRotation,

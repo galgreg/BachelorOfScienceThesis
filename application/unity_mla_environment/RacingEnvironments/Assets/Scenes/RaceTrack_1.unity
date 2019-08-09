@@ -538,6 +538,16 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7078131988162174770, guid: f28a57ca9dfcff253b2384f394cbc2ed,
+        type: 3}
+      propertyPath: m_Mass
+      value: 1200
+      objectReference: {fileID: 0}
+    - target: {fileID: 7078131988162174770, guid: f28a57ca9dfcff253b2384f394cbc2ed,
+        type: 3}
+      propertyPath: m_CollisionDetection
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f28a57ca9dfcff253b2384f394cbc2ed, type: 3}
 --- !u!1 &7078131989084006426 stripped
@@ -567,4 +577,4 @@ MonoBehaviour:
   mCarTransform: {fileID: 7078131989084006427}
   MAX_SENSOR_LENGTH: 0.5
   SENSORS_OFFSET_Y: 0.03
-  SENSORS_OFFSET_Z: 0.026
+  SENSORS_OFFSET_Z: 0.125
