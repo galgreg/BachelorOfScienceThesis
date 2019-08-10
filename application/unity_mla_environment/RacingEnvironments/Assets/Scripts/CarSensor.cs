@@ -14,12 +14,12 @@ public class CarSensor {
         mRayProperties.origin = aOrigin;
         mRayProperties.direction = aDirection;
     }
-    public float GetDistance() {
+    public float GetNormalizedDistance() {
         float detectedDistance = MAX_ALLOWED_DISTANCE;
         if (WasObstacleDetected() && mRaycastHit.distance < MAX_ALLOWED_DISTANCE) {
             detectedDistance = mRaycastHit.distance;
         }
-        return detectedDistance;
+        return detectedDistance / MAX_ALLOWED_DISTANCE;
     }
     public void Render() {
         Vector3 firstRendererPoint = mRayProperties.origin;
@@ -47,7 +47,7 @@ public class CarSensor {
     }
 
     private Color ComputeSensorColor() {
-        float normalizedLength = GetDistance() / MAX_ALLOWED_DISTANCE;
+        float normalizedLength = GetNormalizedDistance();
         mCurrentSensorColor =
                 Color.Lerp(MIN_LENGTH_COLOR, MAX_LENGTH_COLOR, normalizedLength);
         return mCurrentSensorColor;

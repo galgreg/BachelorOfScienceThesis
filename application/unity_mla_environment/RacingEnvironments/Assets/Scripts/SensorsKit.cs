@@ -22,7 +22,7 @@ public class SensorsKit : MonoBehaviour {
             mSensorList[i].SetRayProperties(sensorOrigin, sensorDirection);
             mSensorList[i].Render();
         }
-        List<float> distanceList = GetDistanceList();
+        List<float> distanceList = GetNormalizedDistanceList();
         string distanceString = ConvertListToString(distanceList);
         print(distanceString);
     }
@@ -45,10 +45,10 @@ public class SensorsKit : MonoBehaviour {
         return newSensor;
     }
 
-    private List<float> GetDistanceList() {
+    private List<float> GetNormalizedDistanceList() {
         List<float> distanceList = new List<float>();
         foreach (var sensor in mSensorList) {
-            float tempDistance = sensor.GetDistance();
+            float tempDistance = sensor.GetNormalizedDistance();
             distanceList.Add(tempDistance);
         }
         return distanceList;

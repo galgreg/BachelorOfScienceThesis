@@ -473,11 +473,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 5325329344114586017, guid: f28a57ca9dfcff253b2384f394cbc2ed,
-        type: 3}
-      propertyPath: RAYS_COUNT
-      value: 7
-      objectReference: {fileID: 0}
     - target: {fileID: 7078131988162174769, guid: f28a57ca9dfcff253b2384f394cbc2ed,
         type: 3}
       propertyPath: m_Name
@@ -537,6 +532,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5325329344114586017, guid: f28a57ca9dfcff253b2384f394cbc2ed,
+        type: 3}
+      propertyPath: RAYS_COUNT
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5325329344114586017, guid: f28a57ca9dfcff253b2384f394cbc2ed,
+        type: 3}
+      propertyPath: MAX_SENSOR_LENGTH
+      value: 0.7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f28a57ca9dfcff253b2384f394cbc2ed, type: 3}
