@@ -43,6 +43,9 @@
         "**/*.meta":true,
         "**/*.prefab":true,
         "**/*.unity":true,
+        "*.csproj":true,
+        "*.sln":true,
+        "Logs/":true,
         "build/":true,
         "Build/":true,
         "Library/":true,
@@ -53,10 +56,15 @@
         "temp/":true,
         "Temp/":true,
         "Assets/Cameras/":true,
-        "Assets/Low*/":true,
+        "Assets/ExternalDependencies/Low*/":true,
         "Assets/Materials/":true,
         "Assets/Prefabs/":true,
         "Assets/Scenes/":true,
-        "Assets/Terrains/":true
+        "Assets/Terrains/":true,
+        "Assets/ExternalDependencies/UnityMLA/Gizmos/":true,
+        "Assets/ExternalDependencies/UnityMLA/ML-Agents/Plugins/":true,
+        "Assets/ExternalDependencies/UnityMLA/ML-Agents/Resources/":true,
+        "Assets/ExternalDependencies/UnityMLA/ML-Agents/SharedAssets/Materials/":true,
+        "Packages/":true
     }
 }
