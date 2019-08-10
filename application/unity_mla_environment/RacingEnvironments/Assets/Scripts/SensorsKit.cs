@@ -22,9 +22,9 @@ public class SensorsKit : MonoBehaviour {
             mSensorList[i].SetRayProperties(sensorOrigin, sensorDirection);
             mSensorList[i].Render();
         }
-        List<float> distanceList = GetNormalizedDistanceList();
-        string distanceString = ConvertListToString(distanceList);
-        print(distanceString);
+        // List<float> distanceList = GetNormalizedDistanceList();
+        // string distanceString = ConvertListToString(distanceList);
+        // print(distanceString);
     }
     private void InitSensorList() {
         mSensorList = new List<CarSensor>();
