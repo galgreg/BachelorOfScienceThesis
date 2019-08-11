@@ -1,15 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class CarCameraFollow : MonoBehaviour
 {
-    public GameObject agentCar;
+    public Transform mCarTransform;
     
     private void Update() {
-          Vector3 pos = agentCar.transform.position;
-          Quaternion rotation = agentCar.transform.rotation;
-          pos.y = 1.0f;
-          transform.position = pos;
+          Vector3 newCameraPosition = mCarTransform.position;
+          newCameraPosition.y = 1.0f;
+          transform.position = newCameraPosition;
     }
 }

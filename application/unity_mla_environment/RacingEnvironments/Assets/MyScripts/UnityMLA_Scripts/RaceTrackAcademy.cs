@@ -1,6 +1,6 @@
-﻿using MLAgents;
-using UnityEngine;
+﻿using System;
+using MLAgents;
 
-public class RaceTrackAcademy : MonoBehaviour {
+public class RaceTrackAcademy : Academy {
 
 }
