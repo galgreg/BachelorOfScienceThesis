@@ -37,7 +37,7 @@ public class CarSensor {
     }
 
     private void InitSensorRenderer() {
-        mSensorRenderer = new GameObject();
+        mSensorRenderer = new GameObject("CarSensor");
         var renderingComponent = mSensorRenderer.AddComponent<LineRenderer>();
         float LINE_WIDTH = 0.01f;
         renderingComponent.startWidth = LINE_WIDTH;
