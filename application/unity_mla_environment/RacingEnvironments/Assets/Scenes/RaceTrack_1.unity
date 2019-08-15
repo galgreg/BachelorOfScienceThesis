@@ -1167,6 +1167,36 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7078131988162174768, guid: f28a57ca9dfcff253b2384f394cbc2ed,
+        type: 3}
+      propertyPath: m_Size.x
+      value: 0.49770457
+      objectReference: {fileID: 0}
+    - target: {fileID: 7078131988162174768, guid: f28a57ca9dfcff253b2384f394cbc2ed,
+        type: 3}
+      propertyPath: m_Size.z
+      value: 1.1800834
+      objectReference: {fileID: 0}
+    - target: {fileID: 7078131988162174768, guid: f28a57ca9dfcff253b2384f394cbc2ed,
+        type: 3}
+      propertyPath: m_Center.x
+      value: 0.0027587449
+      objectReference: {fileID: 0}
+    - target: {fileID: 7078131988162174768, guid: f28a57ca9dfcff253b2384f394cbc2ed,
+        type: 3}
+      propertyPath: m_Center.z
+      value: 0.022603197
+      objectReference: {fileID: 0}
+    - target: {fileID: 7078131988162174768, guid: f28a57ca9dfcff253b2384f394cbc2ed,
+        type: 3}
+      propertyPath: m_Size.y
+      value: 0.29305962
+      objectReference: {fileID: 0}
+    - target: {fileID: 7078131988162174768, guid: f28a57ca9dfcff253b2384f394cbc2ed,
+        type: 3}
+      propertyPath: m_Center.y
+      value: 0.25073147
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 7078131988162174771, guid: f28a57ca9dfcff253b2384f394cbc2ed, type: 3}
     - {fileID: 5325329344114586017, guid: f28a57ca9dfcff253b2384f394cbc2ed, type: 3}

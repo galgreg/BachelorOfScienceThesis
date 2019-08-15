@@ -23,6 +23,7 @@ public class CarAgent : Agent {
     }
     public override void AgentAction(float[] vectorAction, string textAction) {
         mCarOutput.Update(vectorAction[0], vectorAction[1]);
+        AddReward(RewardPerStep);
     }
     public override void AgentOnDone() {
         EnvironmentAcademy.IncrementAgentDoneCounter();
@@ -57,7 +58,9 @@ public class CarAgent : Agent {
     public float MaxSteeringAngle = 30.0f;
     public float MotorForce = 250.0f;
 
-    
+    [Header("Others")]
+    public float RewardPerStep = -0.001f;
+
     private float mCarDistance;
     private CarAgentInput mCarInput;
     private CarAgentOutput mCarOutput;

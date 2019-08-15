@@ -28,10 +28,9 @@ public class CarAgentOutput {
         mWheelColliders[1].motorTorque = aNormalizedThrottle * MOTOR_FORCE;
     }
     private void UpdateWheelTransform() {
-        UpdateWheelTransform(mWheelColliders[0], mWheelTransforms[0]);
-        UpdateWheelTransform(mWheelColliders[1], mWheelTransforms[1]);
-        UpdateWheelTransform(mWheelColliders[2], mWheelTransforms[2]);
-        UpdateWheelTransform(mWheelColliders[3], mWheelTransforms[3]);
+        for (int i = 0; i < mWheelColliders.Count && i < mWheelTransforms.Count; ++i) {
+            UpdateWheelTransform(mWheelColliders[i], mWheelTransforms[i]);
+        }
     }
     private void UpdateWheelTransform(
             WheelCollider aCollider,
