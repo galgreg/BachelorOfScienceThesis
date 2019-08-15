@@ -14,6 +14,9 @@ public class CarSensor {
         mRayProperties.origin = aOrigin;
         mRayProperties.direction = aDirection;
     }
+    public void SetSensorParent(Transform aNewParent) {
+        mSensorRenderer.transform.parent = aNewParent;
+    }
     public float GetNormalizedDistance() {
         float detectedDistance = MAX_ALLOWED_DISTANCE;
         if (WasObstacleDetected() && mRaycastHit.distance < MAX_ALLOWED_DISTANCE) {

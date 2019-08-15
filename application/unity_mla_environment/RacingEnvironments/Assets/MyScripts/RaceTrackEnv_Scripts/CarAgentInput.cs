@@ -43,6 +43,7 @@ public class CarAgentInput {
         for (uint i = 0; i < RAYS_COUNT; ++i) {
             float currentSensorAngle = ANGLE_BETWEEN_SENSORS * i;
             var newSensor = CreateNewSensor(currentSensorAngle);
+            newSensor.SetSensorParent(mCarTransform);
             mSensorList.Add(newSensor);
         }
     }

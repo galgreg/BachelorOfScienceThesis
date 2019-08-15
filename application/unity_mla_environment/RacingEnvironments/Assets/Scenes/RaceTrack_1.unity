@@ -250,6 +250,7 @@ MonoBehaviour:
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 1
+  EnvironmentAcademy: {fileID: 863684600}
   CarObject: {fileID: 384755770}
   WheelColliders:
   - {fileID: 826600821}
