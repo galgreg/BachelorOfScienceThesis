@@ -7,6 +7,7 @@ public class RaceTrackFinishTrigger : MonoBehaviour {
         var carAgentComponent = carObject.GetComponent<CarAgent>();
         if (carAgentComponent != null) {
             carAgentComponent.AddReward(1.0f);
+            carAgentComponent.SaveEpisodeReward();
             carAgentComponent.Done();
         }
     }

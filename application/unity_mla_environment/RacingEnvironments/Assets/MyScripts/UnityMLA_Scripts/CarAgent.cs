@@ -15,7 +15,7 @@ public class CarAgent : Agent {
         mCarOutput.SetWheelTransform(WheelTransforms);
     }
     public override void AgentReset() {
-        mCarDistance = 0.0f;
+        mEpisodeReward = 0.0f;
         CarObject.SetActive(true);
     }
     public override void CollectObservations() {
@@ -30,13 +30,11 @@ public class CarAgent : Agent {
         CarObject.SetActive(false);
     }
 
-    private void Update() {
-        var carRigidbody = CarObject.GetComponent<Rigidbody>();
-        mCarDistance += carRigidbody.velocity.magnitude * Time.deltaTime;    
+    public void SaveEpisodeReward() {
+        mEpisodeReward = GetCumulativeReward();
     }
-
-    public float GetFitness() {
-        return mCarDistance;
+    public float GetEpisodeReward() {
+        return mEpisodeReward;
     }
 
     [Header("Academy Object")]
@@ -61,7 +59,7 @@ public class CarAgent : Agent {
     [Header("Others")]
     public float RewardPerStep = -0.001f;
 
-    private float mCarDistance;
     private CarAgentInput mCarInput;
     private CarAgentOutput mCarOutput;
+    private float mEpisodeReward;
 }
