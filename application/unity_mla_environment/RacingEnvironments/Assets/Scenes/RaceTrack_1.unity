@@ -121,12 +121,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!146 &49723154 stripped
-WheelCollider:
-  m_CorrespondingSourceObject: {fileID: 7078131988835062161, guid: f28a57ca9dfcff253b2384f394cbc2ed,
-    type: 3}
-  m_PrefabInstance: {fileID: 7078131989084006425}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &170076733
 GameObject:
   m_ObjectHideFlags: 0
@@ -218,67 +212,6 @@ Transform:
   m_Father: {fileID: 534669905}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 130, y: 0, z: 0}
---- !u!146 &350645496 stripped
-WheelCollider:
-  m_CorrespondingSourceObject: {fileID: 7078131987532283894, guid: f28a57ca9dfcff253b2384f394cbc2ed,
-    type: 3}
-  m_PrefabInstance: {fileID: 7078131989084006425}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &384755770 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7078131988162174769, guid: f28a57ca9dfcff253b2384f394cbc2ed,
-    type: 3}
-  m_PrefabInstance: {fileID: 7078131989084006425}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &384755771
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 384755770}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ae66c0e7bd88822bba0283846186c34e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: 01b23f94962aecd56a1647ba31649ebb, type: 2}
-  agentParameters:
-    agentCameras: []
-    agentRenderTextures: []
-    maxStep: 0
-    resetOnDone: 1
-    onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 1
-  EnvironmentAcademy: {fileID: 863684600}
-  CarObject: {fileID: 384755770}
-  WheelColliders:
-  - {fileID: 826600821}
-  - {fileID: 350645496}
-  - {fileID: 49723154}
-  - {fileID: 1324568947}
-  WheelTransforms:
-  - {fileID: 387421116}
-  - {fileID: 1413290789}
-  - {fileID: 1387202246}
-  - {fileID: 396983885}
-  MaxSensorLength: 0.5
-  FieldOfView: 180
-  RaysCount: 5
-  MaxSteeringAngle: 30
-  MotorForce: 250
---- !u!4 &387421116 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 7078131989561349969, guid: f28a57ca9dfcff253b2384f394cbc2ed,
-    type: 3}
-  m_PrefabInstance: {fileID: 7078131989084006425}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &396983885 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 7078131988717786735, guid: f28a57ca9dfcff253b2384f394cbc2ed,
-    type: 3}
-  m_PrefabInstance: {fileID: 7078131989084006425}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &534669902
 GameObject:
   m_ObjectHideFlags: 0
@@ -363,12 +296,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
---- !u!146 &826600821 stripped
-WheelCollider:
-  m_CorrespondingSourceObject: {fileID: 7078131988388962359, guid: f28a57ca9dfcff253b2384f394cbc2ed,
-    type: 3}
-  m_PrefabInstance: {fileID: 7078131989084006425}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &832843054 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7586285562849516381, guid: 6891ef4ac556a57eaac3f1bf74c764de,
@@ -436,6 +363,20 @@ MonoBehaviour:
     targetFrameRate: 60
   resetParameters:
     resetParameters: []
+  CarAgentPrefab: {fileID: 7078131988162174769, guid: f28a57ca9dfcff253b2384f394cbc2ed,
+    type: 3}
+  StartAgentPosition: {x: 0.256, y: 0.048, z: 1.668}
+  StartAgentRotation: 90
+  CarAgentScale: 0.2
+  MaxSensorLength: 0.7
+  FieldOfView: 180
+  RaysCount: 5
+  MaxSteeringAngle: 30
+  MotorForce: 250
+  RewardPerStep: -0.001
+  PopulationSize: 100
+  SelectionPercentRatio: 10
+  MaxEpisodeCount: 50
 --- !u!1 &1253848050
 GameObject:
   m_ObjectHideFlags: 0
@@ -529,24 +470,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49efdad9ee5537e4e9f92cc0f88c5c8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!146 &1324568947 stripped
-WheelCollider:
-  m_CorrespondingSourceObject: {fileID: 7078131988509568402, guid: f28a57ca9dfcff253b2384f394cbc2ed,
-    type: 3}
-  m_PrefabInstance: {fileID: 7078131989084006425}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &1387202246 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 7078131988746471401, guid: f28a57ca9dfcff253b2384f394cbc2ed,
-    type: 3}
-  m_PrefabInstance: {fileID: 7078131989084006425}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &1413290789 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 7078131988770441346, guid: f28a57ca9dfcff253b2384f394cbc2ed,
-    type: 3}
-  m_PrefabInstance: {fileID: 7078131989084006425}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1772536883
 GameObject:
   m_ObjectHideFlags: 0

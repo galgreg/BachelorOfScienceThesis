@@ -3,31 +3,66 @@ using MLAgents;
 using UnityEngine;
 
 public class CarAgent : Agent {
-    private void Start() {
+    public void Constructor(
+            RaceTrackAcademy aAcademy,
+            GameObject aCarObject,
+            float aRewardPerStep) {
+        mEnvironmentAcademy = aAcademy;
+        mCarObject = aCarObject;
+        mRewardPerStep = aRewardPerStep;
+        mWheelColliders = CreateWheelColliders(aCarObject);
+        mWheelTransforms = CreateWheelTransform(aCarObject);
         agentParameters.resetOnDone = false;
+    }
+    private List<WheelCollider> CreateWheelColliders(GameObject aCarObject) {
+        var wheelColliders = new List<WheelCollider>();
+        aCarObject.GetComponentsInChildren<WheelCollider>(wheelColliders);
+        wheelColliders.Sort((x, y) => (x.name.CompareTo(y.name)));
+        return wheelColliders;
+    }
+    private List<Transform> CreateWheelTransform(GameObject aCarObject) {
+        var wheelTransforms = new List<Transform>(4);
+        var carTransform = aCarObject.transform;
+        wheelTransforms[0] = carTransform.Find("Wheels/FrontDriver");
+        wheelTransforms[1] = carTransform.Find("Wheels/FrontPassenger");
+        wheelTransforms[2] = carTransform.Find("Wheels/RearDriver");
+        wheelTransforms[3] = carTransform.Find("Wheels/RearPassenger");
+        return wheelTransforms;
+    }
+    public void SetInputProperties(
+            float aMaxSensorLength,
+            float aFieldOfView,
+            uint aRaysCount) {
+        mMaxSensorLength = aMaxSensorLength;
+        mFieldOfView = aFieldOfView;
+        mRaysCount = aRaysCount;
         mCarInput = new CarAgentInput(
-                CarObject.transform,
-                MaxSensorLength,
-                FieldOfView,
-                RaysCount);
-        mCarOutput = new CarAgentOutput(MaxSteeringAngle, MotorForce);
-        mCarOutput.SetWheelColliders(WheelColliders);
-        mCarOutput.SetWheelTransform(WheelTransforms);
+                mCarObject.transform,
+                mMaxSensorLength,
+                mFieldOfView,
+                mRaysCount);
+    }
+    public void SetOutputProperties(float aMaxSteeringAngle, float aMotorForce) {
+        mMaxSteeringAngle = aMaxSteeringAngle;
+        mMotorForce = aMotorForce;
+        mCarOutput = new CarAgentOutput(mMaxSteeringAngle, mMotorForce);
+        mCarOutput.SetWheelColliders(mWheelColliders);
+        mCarOutput.SetWheelTransform(mWheelTransforms);
     }
     public override void AgentReset() {
         mEpisodeReward = 0.0f;
-        CarObject.SetActive(true);
+        mCarObject.SetActive(true);
     }
     public override void CollectObservations() {
         AddVectorObs(mCarInput.RenderSensorsAndGetNormalizedDistanceList());
     }
     public override void AgentAction(float[] vectorAction, string textAction) {
         mCarOutput.Update(vectorAction[0], vectorAction[1]);
-        AddReward(RewardPerStep);
+        AddReward(mRewardPerStep);
     }
     public override void AgentOnDone() {
-        EnvironmentAcademy.IncrementAgentDoneCounter();
-        CarObject.SetActive(false);
+        mEnvironmentAcademy.IncrementAgentDoneCounter();
+        mCarObject.SetActive(false);
     }
 
     public void SaveEpisodeReward() {
@@ -37,28 +72,16 @@ public class CarAgent : Agent {
         return mEpisodeReward;
     }
 
-    [Header("Academy Object")]
-    public RaceTrackAcademy EnvironmentAcademy;
-
-    [Header("CarAgent Object")]
-    public GameObject CarObject;
-
-    [Header("CarAgent Wheels")]
-    public List<WheelCollider> WheelColliders;
-    public List<Transform> WheelTransforms;
-    
-    [Header("CarAgent Input")]
-    public float MaxSensorLength = 0.5f;
-    public float FieldOfView = 180.0f;
-    public uint RaysCount = 7;
-    
-    [Header("CarAgent Output")]
-    public float MaxSteeringAngle = 30.0f;
-    public float MotorForce = 250.0f;
-
-    [Header("Others")]
-    public float RewardPerStep = -0.001f;
-
+    private RaceTrackAcademy mEnvironmentAcademy;
+    private GameObject mCarObject;
+    private float mRewardPerStep;
+    private List<WheelCollider> mWheelColliders;
+    private List<Transform> mWheelTransforms;
+    private float mMaxSensorLength = 0.5f;
+    private float mFieldOfView = 180.0f;
+    private uint mRaysCount = 7;
+    private float mMaxSteeringAngle = 30.0f;
+    private float mMotorForce = 250.0f;
     private CarAgentInput mCarInput;
     private CarAgentOutput mCarOutput;
     private float mEpisodeReward;
