@@ -12,6 +12,7 @@ public class CarAgent : Agent {
         mRewardPerStep = aRewardPerStep;
         mWheelColliders = CreateWheelColliders(aCarObject);
         mWheelTransforms = CreateWheelTransform(aCarObject);
+        agentParameters = new AgentParameters();
         agentParameters.resetOnDone = false;
     }
     private List<WheelCollider> CreateWheelColliders(GameObject aCarObject) {
@@ -23,10 +24,10 @@ public class CarAgent : Agent {
     private List<Transform> CreateWheelTransform(GameObject aCarObject) {
         var wheelTransforms = new List<Transform>(4);
         var carTransform = aCarObject.transform;
-        wheelTransforms[0] = carTransform.Find("Wheels/FrontDriver");
-        wheelTransforms[1] = carTransform.Find("Wheels/FrontPassenger");
-        wheelTransforms[2] = carTransform.Find("Wheels/RearDriver");
-        wheelTransforms[3] = carTransform.Find("Wheels/RearPassenger");
+        wheelTransforms.Add(carTransform.Find("Wheels/FrontDriver"));
+        wheelTransforms.Add(carTransform.Find("Wheels/FrontPassenger"));
+        wheelTransforms.Add(carTransform.Find("Wheels/RearDriver"));
+        wheelTransforms.Add(carTransform.Find("Wheels/RearPassenger"));
         return wheelTransforms;
     }
     public void SetInputProperties(
