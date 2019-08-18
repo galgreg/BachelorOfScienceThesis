@@ -373,7 +373,7 @@ MonoBehaviour:
   FieldOfView: 180
   RaysCount: 5
   MaxSteeringAngle: 30
-  MotorForce: 250
+  MotorForce: 500
   RewardPerStep: -0.001
   PopulationSize: 100
 --- !u!1 &1253848050
