@@ -358,9 +358,9 @@ MonoBehaviour:
   inferenceConfiguration:
     width: 1280
     height: 720
-    qualityLevel: 5
+    qualityLevel: 0
     timeScale: 1
-    targetFrameRate: 60
+    targetFrameRate: 30
   resetParameters:
     resetParameters: []
   CarAgentBrain: {fileID: 11400000, guid: 01b23f94962aecd56a1647ba31649ebb, type: 2}
@@ -375,7 +375,7 @@ MonoBehaviour:
   MaxSteeringAngle: 30
   MotorForce: 250
   RewardPerStep: -0.001
-  PopulationSize: 10
+  PopulationSize: 100
 --- !u!1 &1253848050
 GameObject:
   m_ObjectHideFlags: 0
