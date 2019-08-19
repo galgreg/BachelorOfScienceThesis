@@ -73,7 +73,7 @@ public class CarAgentInput {
     
     private const float SENSORS_OFFSET_Y = 0.03f;
     private const float SENSORS_OFFSET_Z = 0.13f;
-    private const uint UNITY_ANTIBUG_FACTOR = 100;
+    private const uint UNITY_ANTIBUG_FACTOR = 500;
     private const float MAX_POSSIBLE_FOV = 180.0f;
     private readonly float ANGLE_BETWEEN_SENSORS;
     private readonly float STARTING_ANGLE;
