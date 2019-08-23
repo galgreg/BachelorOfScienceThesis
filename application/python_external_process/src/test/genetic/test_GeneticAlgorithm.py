@@ -6,7 +6,7 @@ import unittest
 @ddt
 class TestGeneticAlgorithm(unittest.TestCase):
 	def setUp(self):
-		self._algorithm = GeneticAlgorithm()
+		self._algorithm = GeneticAlgorithm(selectionPercentRate = 10)
 	
 	def tearDown(self):
 		del self._algorithm
@@ -14,8 +14,8 @@ class TestGeneticAlgorithm(unittest.TestCase):
 	def validatePopulationContent(self, population):
 		for chromosome in population:
 			for genome in chromosome:
-				self.assertTrue(genome > 0.0)
-				self.assertTrue(genome < 1.0)
+				self.assertTrue(genome >= 0.0)
+				self.assertTrue(genome <= 1.0)
 	
 	def test_StateOfObjectAtTheBeginning_CreatedByDefaultConstructor(self):
 		expectedSelectionRate = 10
@@ -32,14 +32,19 @@ class TestGeneticAlgorithm(unittest.TestCase):
 		populationSize = 10
 		chromosomeSize = 20
 		self._algorithm.InitPopulation(populationSize, chromosomeSize)
+		
+		expectedPopulationSize = populationSize
+		actualPopulationSize = self._algorithm._populationSize
+		self.assertEqual(actualPopulationSize, expectedPopulationSize)
+		
 		expectedPopulationDimensions = \
 				torch.Size([populationSize, chromosomeSize])
-		initialPopulation = self._algorithm._population
-		actualPopulationDimensions = initialPopulation.size()
+		actualPopulationDimensions = self._algorithm._population.size()
 		self.assertEqual(
 				actualPopulationDimensions,
 				expectedPopulationDimensions)
-		self.validatePopulationContent(initialPopulation)
+				
+		self.validatePopulationContent(self._algorithm._population)
 	
 	def test_GetPopulation(self):
 		self._algorithm._population = torch.ones(10, 5)
@@ -116,3 +121,119 @@ class TestGeneticAlgorithm(unittest.TestCase):
 		actualBestChromosome = \
 				self._algorithm._getBestChromosome(chromosomesToChoose)
 		self.assertTrue(torch.equal(actualBestChromosome, expectedBestChromosome))
+
+	def test_DoOnePointCrossover(self):
+		parentPool = [
+				torch.tensor([1, 2, 3, 4, 5, 6]),
+				torch.tensor([10, 20, 30, 40, 50, 60]),
+				torch.tensor([11, 22, 33, 44, 55, 66]),
+				torch.tensor([100, 200, 300, 400, 500, 600]),
+				torch.tensor([123, 234, 345, 456, 567, 678]),
+				torch.tensor([14, 25, 36, 47, 58, 69])
+		]
+		random.sample = lambda a, b: [parentPool[i] for i in [0, 5, 3, 2, 4, 1]]
+		crossoverPoint = 3
+		random.randrange = lambda n : crossoverPoint
+		
+		selectionSize = len(parentPool)
+		cloningCount = 10
+		self._algorithm._populationSize = selectionSize * cloningCount
+		self._algorithm._chromosomeSize = 6
+		
+		childrenPrefabs = [
+				torch.tensor([1, 2, 3, 47, 58, 69]),
+				torch.tensor([14, 25, 36, 4, 5, 6]),
+				torch.tensor([100, 200, 300, 44, 55, 66]),
+				torch.tensor([11, 22, 33, 400, 500, 600]),
+				torch.tensor([123, 234, 345, 40, 50, 60]),
+				torch.tensor([10, 20, 30, 456, 567, 678])
+		]
+		expectedNewPopulation = childrenPrefabs * cloningCount
+		actualNewPopulation = self._algorithm.DoOnePointCrossover(parentPool)
+		
+		self.assertEqual(len(actualNewPopulation), len(expectedNewPopulation))
+		for actualChromosome, expectedChromosome in zip(actualNewPopulation, expectedNewPopulation):
+			self.assertTrue(torch.equal(actualChromosome, expectedChromosome))
+		
+	@data((8, [0, 5, 3, 2, 6, 1, 4, 7]), (5, [3, 2, 4, 0, 1]))
+	@unpack
+	def test_createParentPairs(self, sizeOfParentPool, sampleIndices):
+		parentPool = [torch.randn(10) ] * sizeOfParentPool
+		sampledParentPool = [ parentPool[i] for i in sampleIndices ]
+		random.sample = lambda a, b: sampledParentPool
+		from math import ceil
+		expectedParentPairs = [
+				sampledParentPool[2*i : 2*i + 2]
+				for i in range(ceil(len(sampledParentPool) / 2))
+		]
+		actualParentPairs = self._algorithm._createParentPairs(parentPool)
+		
+		self.assertEqual(len(actualParentPairs), len(expectedParentPairs))
+		for actualPair, expectedPair in zip(actualParentPairs, expectedParentPairs):
+			self.assertEqual(len(actualPair), len(expectedPair))
+			for actualParent, expectedParent in zip(actualPair, expectedPair):
+				self.assertTrue(torch.equal(actualParent, expectedParent))
+
+	def test_pickCrossoverPoint(self):
+		expectedCrossoverPoint = 13
+		random.randrange = lambda n: expectedCrossoverPoint
+		sizeOfChromosome = 20
+		actualCrossoverPoint = \
+				self._algorithm._pickCrossoverPoint(sizeOfChromosome)
+		self.assertEqual(actualCrossoverPoint, expectedCrossoverPoint)
+
+	def test_createChildrenPrefabs_ChildrenHaveTwoParents(self):
+		parentsPair = [
+				torch.tensor([1, 2, 3, 4, 5, 6]),
+				torch.tensor([100, 200, 300, 400, 500, 600])
+		]
+		crossoverPoint = 3
+		expectedPrefabs = [
+				torch.tensor([1, 2, 3, 400, 500, 600]),
+				torch.tensor([100, 200, 300, 4, 5, 6])
+		]
+		actualPrefabs = self._algorithm._createChildrenPrefabs(
+				parentsPair,
+				crossoverPoint)
+		self.assertEqual(len(actualPrefabs), len(expectedPrefabs))
+		self.assertTrue(torch.equal(actualPrefabs[0], expectedPrefabs[0]))
+		self.assertTrue(torch.equal(actualPrefabs[1], expectedPrefabs[1]))
+
+	def test_createChildrenPrefabs_ChildrenHaveOnlyOneParent(self):
+		singleParent = [ torch.tensor([1, 2, 3, 4, 5, 6]) ]
+		crossoverPoint = 3
+		expectedPrefabs = singleParent * 2
+		actualPrefabs = self._algorithm._createChildrenPrefabs(
+				singleParent,
+				crossoverPoint)
+		self.assertEqual(len(actualPrefabs), len(expectedPrefabs))
+		self.assertTrue(torch.equal(actualPrefabs[0], expectedPrefabs[0]))
+		self.assertTrue(torch.equal(actualPrefabs[1], expectedPrefabs[1]))
+
+	@data(0, 3, 10, 20)
+	def test_createChildrenPrefabs_InvalidNumberOfParents(self, numberOfParents):
+		parents = [ torch.randn(10) ] * numberOfParents
+		crossoverPoint = 3
+		self.assertRaises(
+				ValueError,
+				self._algorithm._createChildrenPrefabs,
+				parents,
+				crossoverPoint)
+	
+	@data((10, 100), (13, 100), (7, 50))
+	@unpack
+	def test_createNewPopulationFromPrefabs(self, numberOfPrefabs, populationSize):
+		childrenPrefabs = [ torch.randn(10) ] * numberOfPrefabs
+		self._algorithm._populationSize = populationSize
+		
+		from math import ceil
+		expectedPopulation = childrenPrefabs * ceil(populationSize / numberOfPrefabs)
+		expectedPopulation = expectedPopulation[0 : populationSize]
+		self.assertEqual(len(expectedPopulation), populationSize)
+		
+		actualPopulation = self._algorithm._createNewPopulationFromPrefabs(
+				childrenPrefabs)
+		self.assertEqual(len(actualPopulation), len(expectedPopulation))
+		
+		for actualChromosome, expectedChromosome in zip(actualPopulation, expectedPopulation):
+			self.assertTrue(torch.equal(actualChromosome, expectedChromosome))

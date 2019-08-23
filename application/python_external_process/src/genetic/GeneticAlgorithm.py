@@ -2,10 +2,12 @@ import random
 import torch
 
 class GeneticAlgorithm:
-	def __init__(self, selectionPercentRate=10):
+	def __init__(self, selectionPercentRate = 10):
 		self._selectionPercentRate = selectionPercentRate
 	
 	def InitPopulation(self, populationSize, chromosomeSize):
+		self._populationSize = populationSize
+		self._chromosomeSize = chromosomeSize
 		self._population = torch.FloatTensor(populationSize, chromosomeSize)
 		self._population = self._population.uniform_(0.0, 1.0)
 	
@@ -54,3 +56,50 @@ class GeneticAlgorithm:
 		chromosomeFitnesses = chromosomesToChoose.keys()
 		bestFitness = max(chromosomeFitnesses)
 		return chromosomesToChoose[bestFitness]
+
+	def DoOnePointCrossover(self, parentPool):
+		parentPairs = self._createParentPairs(parentPool)
+		childrenPrefabsPool = []
+		for i in range(len(parentPairs)):
+			crossoverPoint = self._pickCrossoverPoint(self._chromosomeSize)
+			firstChild, secondChild = \
+					self._createChildrenPrefabs(parentPairs[i], crossoverPoint)
+			childrenPrefabsPool.append(firstChild)
+			childrenPrefabsPool.append(secondChild)
+		newPopulation = self._createNewPopulationFromPrefabs(childrenPrefabsPool)
+		return newPopulation
+
+	def _createParentPairs(self, parentPool):
+		sampledParentPool = random.sample(parentPool, len(parentPool))
+		sizeOfPair = 2
+		parentPairs = [
+				sampledParentPool[i : i + sizeOfPair]
+				for i in range(0, len(sampledParentPool), sizeOfPair)
+		]
+		return parentPairs
+	
+	def _pickCrossoverPoint(self, sizeOfChromosome):
+		crossoverPoint = random.randrange(sizeOfChromosome)
+		return crossoverPoint
+
+	def _createChildrenPrefabs(self, parents, crossOverPoint):
+		if len(parents) == 2:
+			firstChild = torch.cat((
+					parents[0][ : crossOverPoint],
+					parents[1][crossOverPoint : ]))
+			secondChild = torch.cat((
+					parents[1][ : crossOverPoint],
+					parents[0][crossOverPoint : ]))
+			return [firstChild, secondChild]
+		elif len(parents) == 1:
+			return parents * 2
+		else:
+			raise ValueError("GeneticAlgorithm._createChildrenPrefabs error: "
+					"parents has invalid size! (should be 1 or 2)!")
+
+	def _createNewPopulationFromPrefabs(self, childrenPrefabs):
+		from math import ceil
+		cloneCounter = ceil(self._populationSize / len(childrenPrefabs))
+		newPopulation = childrenPrefabs * cloneCounter
+		newPopulation = newPopulation[0 : self._populationSize]
+		return newPopulation
