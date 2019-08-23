@@ -136,7 +136,7 @@ class TestGeneticAlgorithm(unittest.TestCase):
 		random.randrange = lambda n : crossoverPoint
 		
 		selectionSize = len(parentPool)
-		cloningCount = 10
+		cloningCount = 1
 		self._algorithm._populationSize = selectionSize * cloningCount
 		self._algorithm._chromosomeSize = 6
 		
@@ -148,7 +148,7 @@ class TestGeneticAlgorithm(unittest.TestCase):
 				torch.tensor([123, 234, 345, 40, 50, 60]),
 				torch.tensor([10, 20, 30, 456, 567, 678])
 		]
-		expectedNewPopulation = childrenPrefabs * cloningCount
+		expectedNewPopulation = torch.stack(childrenPrefabs * cloningCount)
 		self._algorithm.DoOnePointCrossover(parentPool)
 		actualNewPopulation = self._algorithm._population
 		

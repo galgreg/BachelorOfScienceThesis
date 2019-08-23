@@ -4,7 +4,7 @@ import torch
 class GeneticAlgorithm:
 	def __init__(self, selectionPercentRate = 10):
 		self._selectionPercentRate = selectionPercentRate
-	
+
 	def InitPopulation(self, populationSize, chromosomeSize):
 		self._populationSize = populationSize
 		self._chromosomeSize = chromosomeSize
@@ -26,6 +26,39 @@ class GeneticAlgorithm:
 			bestChromosome = self._getBestChromosome(chromosomesToCompete)
 			parentPool.append(bestChromosome)
 		return parentPool
+
+	def DoOnePointCrossover(self, parentPool):
+		parentPairs = self._createParentPairs(parentPool)
+		childrenPrefabsPool = []
+		for i in range(len(parentPairs)):
+			crossoverPoint = self._pickCrossoverPoint(self._chromosomeSize)
+			firstChild, secondChild = \
+					self._createChildrenPrefabs(parentPairs[i], crossoverPoint)
+			childrenPrefabsPool.append(firstChild)
+			childrenPrefabsPool.append(secondChild)
+		newPopulation = self._createNewPopulationFromPrefabs(childrenPrefabsPool)
+		self._population = torch.stack(newPopulation)
+
+	def DoMutation(
+			self,
+			probabilityThresholdToMutateChromosome,
+			probabilityThresholdToMutateGenome):
+		for i in range(len(self._population)):
+			tempRandom = random.random()
+			if tempRandom >= probabilityThresholdToMutateChromosome:
+				self._mutateChromosome(
+						self._population[i],
+						probabilityThresholdToMutateGenome)
+
+	
+	def _createParentPairs(self, parentPool):
+		sampledParentPool = random.sample(parentPool, len(parentPool))
+		sizeOfPair = 2
+		parentPairs = [
+				sampledParentPool[i : i + sizeOfPair]
+				for i in range(0, len(sampledParentPool), sizeOfPair)
+		]
+		return parentPairs
 	
 	def _computeSizeOfParentPool(self):
 		sizeOfParentPool = \
@@ -56,27 +89,6 @@ class GeneticAlgorithm:
 		chromosomeFitnesses = chromosomesToChoose.keys()
 		bestFitness = max(chromosomeFitnesses)
 		return chromosomesToChoose[bestFitness]
-
-	def DoOnePointCrossover(self, parentPool):
-		parentPairs = self._createParentPairs(parentPool)
-		childrenPrefabsPool = []
-		for i in range(len(parentPairs)):
-			crossoverPoint = self._pickCrossoverPoint(self._chromosomeSize)
-			firstChild, secondChild = \
-					self._createChildrenPrefabs(parentPairs[i], crossoverPoint)
-			childrenPrefabsPool.append(firstChild)
-			childrenPrefabsPool.append(secondChild)
-		newPopulation = self._createNewPopulationFromPrefabs(childrenPrefabsPool)
-		self._population = newPopulation
-
-	def _createParentPairs(self, parentPool):
-		sampledParentPool = random.sample(parentPool, len(parentPool))
-		sizeOfPair = 2
-		parentPairs = [
-				sampledParentPool[i : i + sizeOfPair]
-				for i in range(0, len(sampledParentPool), sizeOfPair)
-		]
-		return parentPairs
 	
 	def _pickCrossoverPoint(self, sizeOfChromosome):
 		crossoverPoint = random.randrange(sizeOfChromosome)
@@ -103,17 +115,6 @@ class GeneticAlgorithm:
 		newPopulation = childrenPrefabs * cloneCounter
 		newPopulation = newPopulation[0 : self._populationSize]
 		return newPopulation
-
-	def DoMutation(
-			self,
-			probabilityThresholdToMutateChromosome,
-			probabilityThresholdToMutateGenome):
-		for i in range(len(self._population)):
-			tempRandom = random.random()
-			if tempRandom >= probabilityThresholdToMutateChromosome:
-				self._mutateChromosome(
-						self._population[i],
-						probabilityThresholdToMutateGenome)
 	
 	def _mutateChromosome(self, chromosome, probabilityThresholdToMutateGenome):
 		for i in range(len(chromosome)):
