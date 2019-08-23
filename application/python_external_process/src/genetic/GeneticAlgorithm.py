@@ -67,7 +67,7 @@ class GeneticAlgorithm:
 			childrenPrefabsPool.append(firstChild)
 			childrenPrefabsPool.append(secondChild)
 		newPopulation = self._createNewPopulationFromPrefabs(childrenPrefabsPool)
-		return newPopulation
+		self._population = newPopulation
 
 	def _createParentPairs(self, parentPool):
 		sampledParentPool = random.sample(parentPool, len(parentPool))
@@ -103,3 +103,20 @@ class GeneticAlgorithm:
 		newPopulation = childrenPrefabs * cloneCounter
 		newPopulation = newPopulation[0 : self._populationSize]
 		return newPopulation
+
+	def DoMutation(
+			self,
+			probabilityThresholdToMutateChromosome,
+			probabilityThresholdToMutateGenome):
+		for i in range(len(self._population)):
+			tempRandom = random.random()
+			if tempRandom >= probabilityThresholdToMutateChromosome:
+				self._mutateChromosome(
+						self._population[i],
+						probabilityThresholdToMutateGenome)
+	
+	def _mutateChromosome(self, chromosome, probabilityThresholdToMutateGenome):
+		for i in range(len(chromosome)):
+			tempRandom = random.random()
+			if tempRandom >= probabilityThresholdToMutateGenome:
+				chromosome[i] = tempRandom

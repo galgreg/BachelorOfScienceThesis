@@ -74,16 +74,16 @@ class TestGeneticAlgorithm(unittest.TestCase):
 					torch.equal(actualParentPool[i], expectedParentPool[i])
 			)
 	
-	@data((100, 5), (2, 1), (1, 1))
 	@unpack
+	@data((100, 5), (2, 1), (1, 1))
 	def test_computeContendersCount(self, sizeOfPopulation, expectedContendersCount):
 		self._algorithm._population = list(range(sizeOfPopulation))
 		random.randrange = lambda n: int(n / 2)
 		actualContendersCount = self._algorithm._computeContendersCount()
 		self.assertEqual(actualContendersCount, expectedContendersCount)	
 	
-	@data((100, 10), (20, 2), (10, 1), (5, 1), (1, 1))
 	@unpack
+	@data((100, 10), (20, 2), (10, 1), (5, 1), (1, 1))
 	def test_computeSizeOfParentPool(self, sizeOfPopulation, expectedSizeOfParentPool):
 		self._algorithm._population = list(range(sizeOfPopulation))
 		actualSizeOfParentPool = self._algorithm._computeSizeOfParentPool()
@@ -149,14 +149,15 @@ class TestGeneticAlgorithm(unittest.TestCase):
 				torch.tensor([10, 20, 30, 456, 567, 678])
 		]
 		expectedNewPopulation = childrenPrefabs * cloningCount
-		actualNewPopulation = self._algorithm.DoOnePointCrossover(parentPool)
+		self._algorithm.DoOnePointCrossover(parentPool)
+		actualNewPopulation = self._algorithm._population
 		
 		self.assertEqual(len(actualNewPopulation), len(expectedNewPopulation))
 		for actualChromosome, expectedChromosome in zip(actualNewPopulation, expectedNewPopulation):
 			self.assertTrue(torch.equal(actualChromosome, expectedChromosome))
-		
-	@data((8, [0, 5, 3, 2, 6, 1, 4, 7]), (5, [3, 2, 4, 0, 1]))
+	
 	@unpack
+	@data((8, [0, 5, 3, 2, 6, 1, 4, 7]), (5, [3, 2, 4, 0, 1]))
 	def test_createParentPairs(self, sizeOfParentPool, sampleIndices):
 		parentPool = [torch.randn(10) ] * sizeOfParentPool
 		sampledParentPool = [ parentPool[i] for i in sampleIndices ]
@@ -219,9 +220,8 @@ class TestGeneticAlgorithm(unittest.TestCase):
 				self._algorithm._createChildrenPrefabs,
 				parents,
 				crossoverPoint)
-	
-	@data((10, 100), (13, 100), (7, 50))
 	@unpack
+	@data((10, 100), (13, 100), (7, 50))
 	def test_createNewPopulationFromPrefabs(self, numberOfPrefabs, populationSize):
 		childrenPrefabs = [ torch.randn(10) ] * numberOfPrefabs
 		self._algorithm._populationSize = populationSize
@@ -237,3 +237,39 @@ class TestGeneticAlgorithm(unittest.TestCase):
 		
 		for actualChromosome, expectedChromosome in zip(actualPopulation, expectedPopulation):
 			self.assertTrue(torch.equal(actualChromosome, expectedChromosome))
+
+	@unpack
+	@data((-1.0, -1.0, False), (-1.0, 2.0, True), (2.0, 2.0, True))
+	def test_DoMutation(
+			self,
+			probabilityThresholdToMutateChromosome,
+			probabilityThresholdToMutateGenome,
+			expectedArePopulationsEqual):
+		self._algorithm._population = torch.randn(10, 10)
+		populationBeforeMutation = self._algorithm._population.clone().detach()
+		
+		self._algorithm.DoMutation(
+				probabilityThresholdToMutateChromosome,
+				probabilityThresholdToMutateGenome)
+		
+		populationAfterMutation = self._algorithm._population.clone().detach()
+		actualArePopulationsEqual = \
+				torch.equal(populationAfterMutation, populationBeforeMutation)
+
+	@unpack
+	@data((-1.0, False), (2.0, True))
+	def test_mutateChromosome(
+			self,
+			probabilityThresholdToMutateGenome,
+			expectedAreChromosomesEqual):
+		chromosomeToMutate = torch.randn(10)
+		chromosomeBeforeMutation = chromosomeToMutate.clone().detach()
+		
+		self._algorithm._mutateChromosome(
+				chromosomeToMutate,
+				probabilityThresholdToMutateGenome)
+		chromosomeAfterMutation = chromosomeToMutate.clone().detach()
+
+		actualAreChromosomesEqual = \
+				torch.equal(chromosomeAfterMutation, chromosomeBeforeMutation)
+		self.assertEqual(actualAreChromosomesEqual, expectedAreChromosomesEqual)
