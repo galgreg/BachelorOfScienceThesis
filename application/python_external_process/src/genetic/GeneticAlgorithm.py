@@ -2,81 +2,84 @@ import random
 import torch
 
 class GeneticAlgorithm:
-	def __init__(self, selectionPercentRate = 10):
+	def __init__(
+			self,
+			selectionPercentRate,
+			probabilityThresholdToMutateChromosome,
+			probabilityThresholdToMutateGenome):
 		self._selectionPercentRate = selectionPercentRate
-
-	def InitPopulation(self, populationSize, chromosomeSize):
-		self._populationSize = populationSize
-		self._chromosomeSize = chromosomeSize
-		self._population = torch.FloatTensor(populationSize, chromosomeSize)
-		self._population = self._population.uniform_(0.0, 1.0)
+		self._probabilityThresholdToMutateChromosome = \
+				probabilityThresholdToMutateChromosome
+		self._probabilityThresholdToMutateGenome = \
+				probabilityThresholdToMutateGenome
 	
-	def GetPopulation(self):
-		return self._population
-		
-	def DoTournamentSelection(self, fitnessScoreList):
+	def ComputeNewPopulation(self, oldPopulation, fitnessList):
+		parentPool = self._doSelection(oldPopulation, fitnessList)
+		sizeOfPopulation = len(oldPopulation)
+		sizeOfChromosome = len(oldPopulation[0])
+		newPopulation = \
+				self._doCrossover(parentPool, sizeOfPopulation, sizeOfChromosome)
+		mutatedNewPopulation = self._doMutation(newPopulation)
+		return torch.stack(mutatedNewPopulation)
+
+	def _doSelection(self, oldPopulation, fitnessList):
 		parentPool = []
-		sizeOfParentPool = self._computeSizeOfParentPool()
-		contendersCount = self._computeContendersCount()
+		sizeOfPopulation = len(oldPopulation)
+		sizeOfParentPool = self._computeSizeOfParentPool(sizeOfPopulation)
+		contendersCount = self._computeContendersCount(sizeOfPopulation)
 		for i in range(sizeOfParentPool):
 			chromosomesToCompete = \
 					self._getChromosomesToCompete(
-							fitnessScoreList,
+							oldPopulation,
+							fitnessList,
 							contendersCount)
 			bestChromosome = self._getBestChromosome(chromosomesToCompete)
 			parentPool.append(bestChromosome)
 		return parentPool
 
-	def DoOnePointCrossover(self, parentPool):
+	def _doCrossover(self, parentPool, sizeOfNewPopulation, sizeOfChromosome):
 		parentPairs = self._createParentPairs(parentPool)
 		childrenPrefabsPool = []
 		for i in range(len(parentPairs)):
-			crossoverPoint = self._pickCrossoverPoint(self._chromosomeSize)
+			crossoverPoint = self._pickCrossoverPoint(sizeOfChromosome)
 			firstChild, secondChild = \
 					self._createChildrenPrefabs(parentPairs[i], crossoverPoint)
 			childrenPrefabsPool.append(firstChild)
 			childrenPrefabsPool.append(secondChild)
-		newPopulation = self._createNewPopulationFromPrefabs(childrenPrefabsPool)
-		self._population = torch.stack(newPopulation)
+		newPopulation = \
+				self._createNewPopulationFromPrefabs(
+						childrenPrefabsPool,
+						sizeOfNewPopulation)
+		return newPopulation
 
-	def DoMutation(
-			self,
-			probabilityThresholdToMutateChromosome,
-			probabilityThresholdToMutateGenome):
-		for i in range(len(self._population)):
+	def _doMutation(self, populationToMutate):
+		for i in range(len(populationToMutate)):
 			tempRandom = random.random()
-			if tempRandom >= probabilityThresholdToMutateChromosome:
-				self._mutateChromosome(
-						self._population[i],
-						probabilityThresholdToMutateGenome)
-
+			if tempRandom >= self._probabilityThresholdToMutateChromosome:
+				self._mutateChromosome(populationToMutate[i])
+		return populationToMutate
 	
-	def _createParentPairs(self, parentPool):
-		sampledParentPool = random.sample(parentPool, len(parentPool))
-		sizeOfPair = 2
-		parentPairs = [
-				sampledParentPool[i : i + sizeOfPair]
-				for i in range(0, len(sampledParentPool), sizeOfPair)
-		]
-		return parentPairs
-	
-	def _computeSizeOfParentPool(self):
+	def _computeSizeOfParentPool(self, sizeOfPopulation):
 		sizeOfParentPool = \
-				int(len(self._population) * self._selectionPercentRate / 100)
+				int(sizeOfPopulation * self._selectionPercentRate / 100)
 		if sizeOfParentPool < 1:
 			sizeOfParentPool = 1
 		return sizeOfParentPool
 		
-	def _computeContendersCount(self):
+	def _computeContendersCount(self, sizeOfPopulation):
 		from math import sqrt
-		maxContendersCount = int(sqrt(len(self._population)))
+		maxContendersCount = int(sqrt(sizeOfPopulation))
 		contendersCount = random.randrange(maxContendersCount)
 		if contendersCount < 1:
 			contendersCount = 1
 		return contendersCount
 
-	def _getChromosomesToCompete(self, fitnessScoreList, contendersCount):
-		fitnessToChromosomesDict = dict(zip(fitnessScoreList, self._population))
+	def _getChromosomesToCompete(
+			self,
+			oldPopulation,
+			fitnessScoreList,
+			contendersCount):
+		fitnessToChromosomesDict = dict(zip(fitnessScoreList, oldPopulation))
 		chromosomesToChoose = {}
 		for i in range(0, contendersCount):
 			fitnessIndex = random.randrange(len(fitnessScoreList))
@@ -89,6 +92,15 @@ class GeneticAlgorithm:
 		chromosomeFitnesses = chromosomesToChoose.keys()
 		bestFitness = max(chromosomeFitnesses)
 		return chromosomesToChoose[bestFitness]
+	
+	def _createParentPairs(self, parentPool):
+		sampledParentPool = random.sample(parentPool, len(parentPool))
+		sizeOfPair = 2
+		parentPairs = [
+				sampledParentPool[i : i + sizeOfPair]
+				for i in range(0, len(sampledParentPool), sizeOfPair)
+		]
+		return parentPairs
 	
 	def _pickCrossoverPoint(self, sizeOfChromosome):
 		crossoverPoint = random.randrange(sizeOfChromosome)
@@ -109,15 +121,18 @@ class GeneticAlgorithm:
 			raise ValueError("GeneticAlgorithm._createChildrenPrefabs error: "
 					"parents has invalid size! (should be 1 or 2)!")
 
-	def _createNewPopulationFromPrefabs(self, childrenPrefabs):
+	def _createNewPopulationFromPrefabs(
+			self,
+			childrenPrefabs,
+			sizeOfNewPopulation):
 		from math import ceil
-		cloneCounter = ceil(self._populationSize / len(childrenPrefabs))
+		cloneCounter = ceil(sizeOfNewPopulation / len(childrenPrefabs))
 		newPopulation = childrenPrefabs * cloneCounter
-		newPopulation = newPopulation[0 : self._populationSize]
+		newPopulation = newPopulation[0 : sizeOfNewPopulation]
 		return newPopulation
 	
-	def _mutateChromosome(self, chromosome, probabilityThresholdToMutateGenome):
+	def _mutateChromosome(self, chromosome):
 		for i in range(len(chromosome)):
 			tempRandom = random.random()
-			if tempRandom >= probabilityThresholdToMutateGenome:
+			if tempRandom >= self._probabilityThresholdToMutateGenome:
 				chromosome[i] = tempRandom
