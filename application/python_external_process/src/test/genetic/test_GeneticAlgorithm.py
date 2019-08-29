@@ -42,6 +42,42 @@ class TestGeneticAlgorithm(unittest.TestCase):
 		self.assertEqual(
 				actualProbabilityThresholdToMutateGenome,
 				expectedProbabilityThresholdToMutateGenome)
+	@unpack
+	@data((1, 1), (1, 100), (10, 20), (100, 200), (100, 1000))
+	def test_ComputeNewPopulation(self, populationSize, chromosomeSize):
+		oldPopulation = torch.randn(populationSize, chromosomeSize)
+		fitnessList = [random.uniform(-1, 1) for i in range(populationSize)]
+		
+		expectedTypeOfOldPopulation = torch.Tensor
+		actualTypeOfOldPopulation = type(oldPopulation)
+		self.assertEqual(actualTypeOfOldPopulation, expectedTypeOfOldPopulation)
+		
+		expectedSizeOfOldPopulation = [populationSize, chromosomeSize]
+		actualSizeOfOldPopulation = list(oldPopulation.size())
+		self.assertEqual(actualSizeOfOldPopulation, expectedSizeOfOldPopulation)
+		
+		expectedTypeOfFitnessList = list
+		actualTypeOfFitnessList = type(fitnessList)
+		self.assertEqual(actualTypeOfFitnessList, expectedTypeOfFitnessList)
+			
+		expectedSizeOfFitnessList = populationSize
+		actualSizeOfFitnessList = len(fitnessList)
+		self.assertEqual(actualSizeOfFitnessList, expectedSizeOfFitnessList)
+		
+		newPopulation = \
+				self._algorithm.ComputeNewPopulation(
+						oldPopulation,
+						fitnessList)
+		
+		expectedTypeOfNewPopulation = torch.Tensor
+		actualTypeOfNewPopulation = type(newPopulation)
+		self.assertEqual(actualTypeOfNewPopulation, expectedTypeOfNewPopulation)
+		self.assertEqual(actualTypeOfNewPopulation, actualTypeOfOldPopulation)
+		
+		expectedSizeOfNewPopulation = [populationSize, chromosomeSize]
+		actualSizeOfNewPopulation = list(newPopulation.size())
+		self.assertEqual(actualSizeOfNewPopulation, expectedSizeOfNewPopulation)
+		self.assertEqual(actualSizeOfNewPopulation, actualSizeOfOldPopulation)
 	
 	def test_doSelection(self):
 		randRangeContent = [3, 0, 1, 4, 3, 2, 3, 5]

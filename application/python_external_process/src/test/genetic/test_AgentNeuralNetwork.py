@@ -1,5 +1,5 @@
 from ddt import ddt, data, unpack
-from src.AgentNeuralNetwork import *
+from src.genetic.AgentNeuralNetwork import *
 import torch
 import unittest
 
@@ -24,11 +24,17 @@ class TestAgentNeuralNetwork(unittest.TestCase):
 			self.assertEqual(actualRequiresGrad_Bias, expectedRequiresGrad)
 			
 			expectedWeightDimensions = \
-					torch.Size(networkDimensions[i+1 : i-1 : -1])
+					[ networkDimensions[i+1], networkDimensions[i] ]
 			actualWeightDimensions = actualLayer.weight.size()
+			self.assertEqual(
+					list(actualWeightDimensions),
+					expectedWeightDimensions)
 			
-			expectedBiasDimensions = torch.Size([ networkDimensions[i+1] ])
+			expectedBiasDimensions = [ networkDimensions[i+1] ]
 			actualBiasDimensions = actualLayer.bias.size()
+			self.assertEqual(
+					list(actualBiasDimensions),
+					expectedBiasDimensions)
 			
 			expectedLayerDimensions = networkDimensions[i : i + 2]
 			actualLayerDimensions = \
