@@ -18,12 +18,14 @@ class AgentNeuralNetwork(nn.Module):
 					requires_grad = requires_grad)
 
 	# Define how output is computed
+	# 	-> dataToProcess has 'list' type
 	def forward(self, dataToProcess):
+		dataToProcess = torch.tensor(dataToProcess)
 		for networkLayer in self._layers:
 			dataToProcess = torch.sigmoid(networkLayer(dataToProcess))
 		# Map network output from <0:1> range to <-1:1> range
 		networkOutput = 2*dataToProcess - 1
-		return networkOutput
+		return networkOutput.tolist()
 
 	def IsDone(self):
 		return self._done

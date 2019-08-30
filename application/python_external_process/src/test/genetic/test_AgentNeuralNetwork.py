@@ -1,5 +1,6 @@
 from ddt import ddt, data, unpack
 from src.genetic.AgentNeuralNetwork import *
+import random
 import torch
 import unittest
 
@@ -46,20 +47,34 @@ class TestAgentNeuralNetwork(unittest.TestCase):
 	def test_forward(self, networkDimensions, doesRequireGrad):
 		network = AgentNeuralNetwork(networkDimensions, doesRequireGrad)
 		networkLayers = network._layers
-		networkInput = torch.empty(1, 5).uniform_()
-		dataToForward = networkInput.clone().detach()
+		networkInput = [random.uniform(0.0, 1.0) for i in range(5)]
+		
+		expectedTypeOfInput = list
+		actualTypeOfInput = type(networkInput)
+		self.assertEqual(actualTypeOfInput, expectedTypeOfInput)
+		
+		dataToForward = torch.tensor(networkInput)
 		
 		for layer in networkLayers:
 			dataToForward = torch.sigmoid(layer(dataToForward))
 		
-		expectedNetworkOutput = 2*dataToForward - 1
-		actualNetworkOutput = network.forward(networkInput[0].unsqueeze(0))
-		self.assertTrue(torch.equal(actualNetworkOutput, expectedNetworkOutput))
+		dataToForward = 2*dataToForward - 1
+		expectedNetworkOutput = dataToForward.tolist()
+		actualNetworkOutput = network.forward(networkInput)
 		
-		for outputBatch in actualNetworkOutput:
-			for outputValue in outputBatch:
-				self.assertTrue(outputValue >= -1.0)
-				self.assertTrue(outputValue <= 1.0)
+		expectedTypeOfOutput = list
+		actualTypeOfOutput = type(actualNetworkOutput)
+		self.assertEqual(actualTypeOfOutput, expectedTypeOfOutput)
+		
+		self.assertEqual(actualNetworkOutput, expectedNetworkOutput)
+		
+		for outputValue in actualNetworkOutput:
+			expectedTypeOfValue = float
+			actualTypeOfValue = type(outputValue)
+			self.assertEqual(actualTypeOfValue, expectedTypeOfValue)
+			
+			self.assertTrue(outputValue >= -1.0)
+			self.assertTrue(outputValue <= 1.0)
 
 	@data(True, False)
 	def test_IsDone(self, expectedDoneValue):
