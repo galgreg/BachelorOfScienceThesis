@@ -1,5 +1,5 @@
 from ddt import ddt, data, unpack
-from src.genetic.AgentNeuralNetwork import *
+from src.AgentNeuralNetwork import *
 import random
 import torch
 import unittest
@@ -12,7 +12,6 @@ class TestAgentNeuralNetwork(unittest.TestCase):
 		network = AgentNeuralNetwork(
 				dimensions = networkDimensions,
 				requires_grad = doesRequireGrad)
-		self.assertFalse(network._done)
 		networkLayers = network._layers
 		expectedNumberOfLayers = len(networkDimensions) - 1
 		actualNumberOfLayers = len(networkLayers)
@@ -75,33 +74,3 @@ class TestAgentNeuralNetwork(unittest.TestCase):
 			
 			self.assertTrue(outputValue >= -1.0)
 			self.assertTrue(outputValue <= 1.0)
-
-	@data(True, False)
-	def test_IsDone(self, expectedDoneValue):
-		network = AgentNeuralNetwork([2, 1])
-		network._done = expectedDoneValue
-		actualDoneValue = network.IsDone()
-		self.assertEqual(actualDoneValue, expectedDoneValue)
-
-	def test_Done(self):
-		network = AgentNeuralNetwork([2, 1])
-		expectedDoneValueBeforeCall = False
-		actualDoneValueBeforeCall = network._done
-		self.assertEqual(actualDoneValueBeforeCall, expectedDoneValueBeforeCall)
-		
-		network.Done()
-		
-		expectedDoneValueAfterCall = True
-		actualDoneValueAfterCall = network._done
-		self.assertEqual(actualDoneValueAfterCall, expectedDoneValueAfterCall)
-		self.assertNotEqual(actualDoneValueAfterCall, actualDoneValueBeforeCall)
-		
-	def test_Reset(self):
-		network = AgentNeuralNetwork([2, 1])
-		network._done = True
-		
-		network.Reset()
-		
-		expectedDoneValueAfterCall = False
-		actualDoneValueAfterCall = network._done
-		self.assertEqual(actualDoneValueAfterCall, expectedDoneValueAfterCall)

@@ -1,4 +1,4 @@
-from src.genetic.GeneticAlgorithm import *
+from src.learning_algorithms.GeneticAlgorithm import *
 from ddt import ddt, data, unpack
 import torch
 import unittest
