@@ -13,14 +13,35 @@ class GeneticAlgorithm:
 		self._probabilityThresholdToMutateGenome = \
 				probabilityThresholdToMutateGenome
 	
-	def ComputeNewPopulation(self, oldPopulation, fitnessList):
-		parentPool = self._doSelection(oldPopulation, fitnessList)
-		sizeOfPopulation = len(oldPopulation)
-		sizeOfChromosome = len(oldPopulation[0])
-		newPopulation = \
+	def ComputeNewPopulation(self, agentList, fitnessList):
+		agentsParameters = \
+				self._retrieveParametersFromAgents(agentList)
+		parentPool = self._doSelection(agentsParameters, fitnessList)
+		sizeOfPopulation = len(agentsParameters)
+		sizeOfChromosome = len(agentsParameters[0])
+		newPopulationParameters = \
 				self._doCrossover(parentPool, sizeOfPopulation, sizeOfChromosome)
-		mutatedNewPopulation = self._doMutation(newPopulation)
-		return torch.stack(mutatedNewPopulation)
+		mutatedParameters = self._doMutation(newPopulationParameters)
+		self._setNewParametersOnAgentList(agentList, mutatedParameters)
+		return agentList
+		
+	def _retrieveParametersFromAgents(self, agentList):
+		populationParameters = []
+		for agent in agentList:
+			agentParameters = []
+			for layer in agent._layers:
+				layerWeights = layer.weight
+				numberOfWeights = layerWeights.numel()
+				weightParameters = \
+						torch.reshape(layerWeights, (numberOfWeights,))
+				agentParameters = \
+						agentParameters + weightParameters.tolist()
+				agentParameters = \
+						agentParameters + layer.bias.tolist()
+			
+			populationParameters.append(agentParameters)
+		
+		return torch.tensor(populationParameters)
 
 	def _doSelection(self, oldPopulation, fitnessList):
 		parentPool = []
@@ -58,6 +79,28 @@ class GeneticAlgorithm:
 			if tempRandom >= self._probabilityThresholdToMutateChromosome:
 				self._mutateChromosome(populationToMutate[i])
 		return populationToMutate
+	
+	def _setNewParametersOnAgentList(self, agentList, newParameters):
+		for agent, agentParameters in zip(agentList, newParameters):
+			agentParameters = agentParameters.tolist()
+			for layer in agent._layers:
+				numberOfWeights = layer.weight.numel()
+				numberOfBiases = layer.bias.numel()
+				
+				weightParameters = \
+						torch.tensor( agentParameters[ : numberOfWeights] )
+				weightDimensions = tuple(layer.weight.size())
+				reshapedWeightParameters = \
+						torch.reshape(weightParameters, weightDimensions)
+				layer.weight.data = reshapedWeightParameters
+				del agentParameters[ : numberOfWeights ]
+				
+				biasParameters = \
+						torch.tensor( agentParameters[ : numberOfBiases] )
+				layer.bias.data = biasParameters
+				del agentParameters[ : numberOfBiases ]
+		
+		return agentList
 	
 	def _computeSizeOfParentPool(self, sizeOfPopulation):
 		sizeOfParentPool = \

@@ -1,4 +1,5 @@
 from src.learning_algorithms.GeneticAlgorithm import *
+from src.AgentNeuralNetwork import *
 from ddt import ddt, data, unpack
 import torch
 import unittest
@@ -10,9 +11,12 @@ class TestGeneticAlgorithm(unittest.TestCase):
 				selectionPercentRate = 10,
 				probabilityThresholdToMutateChromosome = 0.8,
 				probabilityThresholdToMutateGenome = 0.7)
-		random.seed(1)
+		self._REAL_RANDRANGE = random.randrange
+		self._REAL_SAMPLE = random.sample
 	
 	def tearDown(self):
+		random.randrange = self._REAL_RANDRANGE
+		random.sample = self._REAL_SAMPLE
 		del self._algorithm
 	
 	@unpack
@@ -43,41 +47,144 @@ class TestGeneticAlgorithm(unittest.TestCase):
 				actualProbabilityThresholdToMutateGenome,
 				expectedProbabilityThresholdToMutateGenome)
 	@unpack
-	@data((1, 1), (1, 100), (10, 20), (100, 200), (100, 1000))
-	def test_ComputeNewPopulation(self, populationSize, chromosomeSize):
-		oldPopulation = torch.randn(populationSize, chromosomeSize)
-		fitnessList = [random.uniform(-1, 1) for i in range(populationSize)]
-		
-		expectedTypeOfOldPopulation = torch.Tensor
-		actualTypeOfOldPopulation = type(oldPopulation)
-		self.assertEqual(actualTypeOfOldPopulation, expectedTypeOfOldPopulation)
-		
-		expectedSizeOfOldPopulation = [populationSize, chromosomeSize]
-		actualSizeOfOldPopulation = list(oldPopulation.size())
-		self.assertEqual(actualSizeOfOldPopulation, expectedSizeOfOldPopulation)
-		
-		expectedTypeOfFitnessList = list
-		actualTypeOfFitnessList = type(fitnessList)
-		self.assertEqual(actualTypeOfFitnessList, expectedTypeOfFitnessList)
-			
-		expectedSizeOfFitnessList = populationSize
-		actualSizeOfFitnessList = len(fitnessList)
-		self.assertEqual(actualSizeOfFitnessList, expectedSizeOfFitnessList)
+	@data((1, [5, 2]), (10, [5, 3, 2]), (100, [5, 7, 4, 2]))
+	def test_ComputeNewPopulation(self, numberOfAgents, agentsDimensions):
+		agentList = [
+				AgentNeuralNetwork(agentsDimensions, False)
+				for i in range(numberOfAgents)
+		]
+		fitnessList = [random.uniform(-1, 1) for i in range(numberOfAgents)]
 		
 		newPopulation = \
-				self._algorithm.ComputeNewPopulation(
-						oldPopulation,
-						fitnessList)
+				self._algorithm.ComputeNewPopulation(agentList, fitnessList)
 		
-		expectedTypeOfNewPopulation = torch.Tensor
+		expectedTypeOfNewPopulation = list
 		actualTypeOfNewPopulation = type(newPopulation)
 		self.assertEqual(actualTypeOfNewPopulation, expectedTypeOfNewPopulation)
-		self.assertEqual(actualTypeOfNewPopulation, actualTypeOfOldPopulation)
 		
-		expectedSizeOfNewPopulation = [populationSize, chromosomeSize]
-		actualSizeOfNewPopulation = list(newPopulation.size())
+		expectedSizeOfNewPopulation = numberOfAgents
+		actualSizeOfNewPopulation = len(newPopulation)
 		self.assertEqual(actualSizeOfNewPopulation, expectedSizeOfNewPopulation)
-		self.assertEqual(actualSizeOfNewPopulation, actualSizeOfOldPopulation)
+		
+		for agent in agentList:
+			expectedTypeOfAgent = AgentNeuralNetwork
+			actualTypeOfAgent = type(agent)
+			self.assertEqual(actualTypeOfAgent, expectedTypeOfAgent)
+			
+			for i in range(len(agentsDimensions) - 1):
+				expectedInFeatureCount = agentsDimensions[i]
+				actualInFeatureCount = agent._layers[i].in_features
+				self.assertTrue(actualInFeatureCount, expectedInFeatureCount)
+				
+				expectedOutFeatureCount = agentsDimensions[i+1]
+				actualOutFeatureCount = agent._layers[i].out_features
+				self.assertTrue(actualOutFeatureCount, expectedOutFeatureCount)
+	
+	@unpack
+	@data((1, [5, 2]), (10, [5, 3, 2]), (100, [5, 20, 30, 7]))
+	def test_retrieveParametersFromAgents(self, numberOfAgents, agentsDimensions):
+		agentList = [
+				AgentNeuralNetwork(agentsDimensions, False)
+				for i in range(numberOfAgents)
+		]
+		actualParameters = \
+				self._algorithm._retrieveParametersFromAgents(agentList)
+				
+		expectedParametersType = torch.Tensor
+		actualParametersType = type(actualParameters)
+		self.assertEqual(actualParametersType, expectedParametersType)
+		
+		numberOfParameters = self._computeNumberOfParameters(agentsDimensions)
+		
+		expectedParametersDimensions = [numberOfAgents, numberOfParameters]
+		actualParametersDimensions = actualParameters.size()
+		self.assertEqual(
+				list(actualParametersDimensions),
+				expectedParametersDimensions)
+		
+		expectedParameters = []
+		for agent in agentList:
+			expectedAgentParameters = []
+			for layer in agent._layers:
+				layerWeights = layer.weight
+				numberOfWeights = layerWeights.numel()
+				weightParameters = \
+						torch.reshape(layerWeights, (numberOfWeights,))
+				expectedAgentParameters = \
+						expectedAgentParameters + weightParameters.tolist()
+				expectedAgentParameters = \
+						expectedAgentParameters + layer.bias.tolist()
+			
+			expectedParameters.append(expectedAgentParameters)
+		
+		expectedParameters = torch.tensor(expectedParameters)
+		self.assertTrue(torch.equal(actualParameters, expectedParameters))
+	
+	@unpack
+	@data((1, [5, 2]), (10, [5, 3, 2]), (100, [5, 7, 4, 2]))
+	def test_setNewParametersOnAgentList(self, numberOfAgents, agentsDimensions):
+		agentList = [
+				AgentNeuralNetwork(agentsDimensions, False)
+				for i in range(numberOfAgents)
+		]
+		numberOfParameters = self._computeNumberOfParameters(agentsDimensions)
+		newParameters = torch.randn(numberOfAgents, numberOfParameters)
+		
+		parametersBeforeSet = self._retrieveParameters(agentList)
+		newAgentList = \
+				self._algorithm._setNewParametersOnAgentList(
+						agentList,
+						newParameters)
+		parametersAfterSet = self._retrieveParameters(newAgentList)
+		
+		for oldAgentParameters, newAgentParameters \
+				in zip(parametersBeforeSet, parametersAfterSet):
+			for oldLayerParameters, newLayerParameters \
+					in zip(oldAgentParameters, newAgentParameters):
+				# Assert weight and bias parameters
+				for oldParameters, newParameters \
+						in zip(oldLayerParameters, newLayerParameters):
+					expectedTypeOfParameters = torch.Tensor
+					self.assertEqual(
+							type(oldParameters),
+							expectedTypeOfParameters)
+					self.assertEqual(
+							type(newParameters),
+							expectedTypeOfParameters)
+					expectedDimensionsOfParameters = \
+							list(oldParameters.size())
+					actualDimensionsOfParameters = \
+							list(newParameters.size())
+					self.assertEqual(
+							actualDimensionsOfParameters,
+							expectedDimensionsOfParameters)				
+					self.assertFalse(
+							torch.equal(newParameters, oldParameters))
+	
+	def _retrieveParameters(self, agentList):
+		populationParameters = []
+		for agent in agentList:
+			agentParameters = []
+			for layer in agent._layers:
+				layerParameters = []
+				copyOfWeights = layer.weight.data.clone().detach()
+				layerParameters.append(copyOfWeights)
+				copyOfBiases = layer.bias.data.clone().detach()
+				layerParameters.append(copyOfBiases)
+				agentParameters.append(layerParameters)
+			populationParameters.append(agentParameters)
+		
+		return populationParameters
+	
+	def _computeNumberOfParameters(self, agentsDimensions):
+		numberOfParameters = 0
+		numberOfLayers = len(agentsDimensions) - 1
+		for i in range(numberOfLayers):
+			numberOfWeights = agentsDimensions[i] * agentsDimensions[i+1]
+			numberOfBiases = agentsDimensions[i+1]
+			parametersPerLayer = numberOfWeights + numberOfBiases
+			numberOfParameters = numberOfParameters + parametersPerLayer
+		return numberOfParameters
 	
 	def test_doSelection(self):
 		randRangeContent = [3, 0, 1, 4, 3, 2, 3, 5]

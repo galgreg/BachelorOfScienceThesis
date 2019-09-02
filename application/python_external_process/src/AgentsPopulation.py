@@ -2,59 +2,27 @@ from src.AgentNeuralNetwork import *
 import torch
 
 class AgentsPopulation:
-	def __init__(self, numberOfAgents, agentDimensions):
-		self._agentDimensions = agentDimensions
+	def __init__(self, numberOfAgents, agentDimensions, learningAlgorithm):
+		self._learningAlgorithm = learningAlgorithm
 		self._agents = [
 				AgentNeuralNetwork(agentDimensions)
 				for i in range(numberOfAgents)
 		]
 
-	def DoForward(self, inputData):
-		pass
-		# outputData = []				
-		# for agent in self._agents:
-			# agentOutput = None
-			# if not agent.IsDone():
-				# agentOutput = agent.forward(inputData)			
-			
-			# outputData.append(agentOutput)
+	def DoForward(self, listOfInputData, agentDones):
+		listOfOutputData = []				
+		for agent, inputData, isDone \
+				in zip(self._agents, listOfInputData, agentDones):
+			agentOutput = None
+			if not isDone:
+				agentOutput = agent.forward(inputData)			
+			listOfOutputData.append(agentOutput)
 		
-		# return outputData
+		return listOfOutputData
 
-	# def GetPopulationParameters(self):
-		# populationParameters = []
-		# for agent in self._agents:
-			# agentParameters = []
-			# for layer in agent._layers:
-				# layerWeights = layer.weight
-				# numberOfWeights = layerWeights.numel()
-				# weightParameters = \
-						# torch.reshape(layerWeights, (numberOfWeights,))
-				# agentParameters = \
-						# agentParameters + weightParameters.tolist()
-				# agentParameters = \
-						# agentParameters + layer.bias.tolist()
-			
-			# populationParameters.append(agentParameters)
-		
-		# return torch.tensor(populationParameters)
-	
-	# def SetPopulationParameters(self, newParameters):
-		# for agent, agentParameters in zip(self._agents, newParameters):
-			# agentParameters = agentParameters.tolist()
-			# for layer in agent._layers:
-				# numberOfWeights = layer.weight.numel()
-				# numberOfBiases = layer.bias.numel()
-				
-				# weightParameters = \
-						# torch.tensor( agentParameters[ : numberOfWeights] )
-				# weightDimensions = tuple(layer.weight.size())
-				# reshapedWeightParameters = \
-						# torch.reshape(weightParameters, weightDimensions)
-				# layer.weight.data = reshapedWeightParameters
-				# del agentParameters[ : numberOfWeights ]
-				
-				# biasParameters = \
-						# torch.tensor( agentParameters[ : numberOfBiases] )
-				# layer.bias.data = biasParameters
-				# del agentParameters[ : numberOfBiases ]
+	def Learn(self, rewardList):
+		newAgents = \
+				self._learningAlgorithm.ComputeNewPopulation(
+						self._agents,
+						rewardList)
+		self._agents = newAgents
