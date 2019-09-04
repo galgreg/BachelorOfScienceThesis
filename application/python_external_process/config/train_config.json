@@ -1,23 +1,23 @@
 {
-	"EnvConfig" : ["batchmode", "nographics"],
-	"LearningAlgorithms" : {
-		"ppo" : { },
-		"neat" : { },
-		"genetic" : {
-			"selectionPercentRate" : 10,
-			"minimalProbabilityToMutateChromosome" : ???, // float
-			"minimalProbabilityToMutateGenome" : ???, // float
-		},
-	},
-	"TrainingParameters" : {
-		"maxNumberOfEpisodes" : 100000,
-		"minimalAcceptableFitness": {
-			"track_1" : ???, // float
-			"track_2" : ???, // float
-			"track_3" : ???, // float
-		},
-		"networkHiddenDimensions" : ???, // lista intów
-		"maxNumberOfEpisodesWithoutImprovement" : ???, // int
-		"maxNumberOfStepsPerEpisode" : ???, // int
-	}
+    "UnityEnvironment" : {
+        "no_graphics" : true,
+        "timeout_wait" : 30,
+        "args" : [],
+    },
+    "LearningAlgorithms" : {
+        "ppo" : { },
+        "neat" : { },
+        "genetic" : {
+            "selectionPercentRate" : 10,
+            "minimalProbabilityToMutateChromosome" : ???, // float
+            "minimalProbabilityToMutateGenome" : ???, // float
+        },
+    },
+    "TrainingParameters" : {
+        "maxNumberOfEpisodes" : ???, // int
+        "minimalAcceptableFitness": ???, // float
+        "networkHiddenDimensions" : ???, // lista intów
+        "maxNumberOfEpisodesWithoutImprovement" : ???, // int
+        "maxNumberOfStepsPerEpisode" : ???, // int
+    }
 }
