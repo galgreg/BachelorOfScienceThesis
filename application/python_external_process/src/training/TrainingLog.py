@@ -1,7 +1,7 @@
 import os.path
 
 class TrainingLog:
-    def __init__(self, isVerbose, fileName = "training_log"):
+    def __init__(self, isVerbose, fileName = "training"):
         self._isVerbose = isVerbose
         self._fileName = fileName
         self._content = ""
@@ -21,6 +21,6 @@ class TrainingLog:
                 or not os.path.isdir(location):
             return
         
-        filePath = os.path.join(location, "{0}.txt".format(self._fileName))
+        filePath = os.path.join(location, "{0}.log".format(self._fileName))
         with open(filePath, "w") as logFile:
             logFile.write(self._content)

@@ -27,7 +27,7 @@ class TestTrainingLog(unittest.TestCase):
         
         expectedFileName = None
         if shouldContructWithDefaultFileName:
-            expectedFileName = "training_log"
+            expectedFileName = "training"
         else:
             expectedFileName = logFileName
         
@@ -91,7 +91,7 @@ class TestTrainingLog(unittest.TestCase):
         
         pathToLogFile = os.path.join(
                 testLocation,
-                "{0}.txt".format(trainingLog._fileName))
+                "{0}.log".format(trainingLog._fileName))
         self.assertTrue(os.path.isfile(pathToLogFile))
         
         with open(pathToLogFile, "r") as logFile:
@@ -103,7 +103,7 @@ class TestTrainingLog(unittest.TestCase):
         self.assertFalse(os.path.isdir(testLocation))
     
     def test_Save_LocationIsNotDir(self):
-        nonDirectoryLocation = "TEST_NON_DIRECTORY_LOCATION.txt"
+        nonDirectoryLocation = "TEST_NON_DIRECTORY_LOCATION.log"
         with open(nonDirectoryLocation, "w") as tempFile:
             tempFile.write("kanapka")
         self.assertTrue(os.path.exists(nonDirectoryLocation))
@@ -115,7 +115,7 @@ class TestTrainingLog(unittest.TestCase):
         
         pathToLogFile = os.path.os.path.join(
                 nonDirectoryLocation,
-                "%s.txt" % trainingLog._fileName)
+                "%s.log" % trainingLog._fileName)
         doesLogFileExist = os.path.exists(pathToLogFile)
         self.assertFalse(doesLogFileExist)
         os.remove(nonDirectoryLocation)
@@ -130,7 +130,7 @@ class TestTrainingLog(unittest.TestCase):
         
         pathToLogFile = os.path.join(
                 nonExistentLocation,
-                "%s.txt" % trainingLog._fileName)
+                "%s.log" % trainingLog._fileName)
         doesLogFileExist = os.path.exists(pathToLogFile)
         self.assertFalse(doesLogFileExist)
     
@@ -142,7 +142,7 @@ class TestTrainingLog(unittest.TestCase):
         
         pathToLogFile = os.path.join(
                 str(notStringLocation),
-                "%s.txt" % trainingLog._fileName)
+                "%s.log" % trainingLog._fileName)
         doesLogFileExist = os.path.exists(pathToLogFile)
         self.assertFalse(doesLogFileExist)
     
@@ -161,7 +161,7 @@ class TestTrainingLog(unittest.TestCase):
         
         pathToLogFile = os.path.join(
                 testLocation,
-                "{0}.txt".format(trainingLog._fileName))
+                "{0}.log".format(trainingLog._fileName))
         self.assertFalse(os.path.exists(pathToLogFile))
         
         rmtree(testLocation)
