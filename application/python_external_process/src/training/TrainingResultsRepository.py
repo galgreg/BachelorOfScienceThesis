@@ -63,6 +63,19 @@ class TrainingResultsRepository:
         
         self._trainingLog.Save(locationForTrainingResults)
     
+    def LoadBestModel(self, dirNameWithModelToLoad):
+        bestModel = None
+        basePathToModel = self._createBasePathForResults()
+        fullPathToModel = \
+                os.path.join(
+                        basePathToModel,
+                        dirNameWithModelToLoad,
+                        "best_model.pth")
+        if os.path.isfile(fullPathToModel):
+            bestModel = torch.load(fullPathToModel)
+
+        return bestModel
+    
     def _doParametersHaveValidTypes(
             self,
             population,
@@ -118,6 +131,3 @@ class TrainingResultsRepository:
             fullPathForModel = \
                     os.path.join(locationForPopulationFiles, fileNameForModel)
             torch.save(population._agents[i], fullPathForModel)
-            
-        
-        

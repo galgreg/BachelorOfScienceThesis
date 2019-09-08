@@ -265,6 +265,54 @@ class TestTrainingResultsRepository(unittest.TestCase):
         
         rmtree(locationForResults)
     
+    @patch('src.training.TrainingResultsRepository.datetime')
+    def test_LoadBestModel_OK(self, mock_datetime):
+        mock_datetime.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
+        locationForModel = self._createExpectedLocationForResults(mock_datetime)
+        if os.path.isdir(locationForModel):
+            rmtree(locationForModel)
+        
+        os.mkdir(locationForModel)
+        doesLocationForModelExist = os.path.isdir(locationForModel)
+        self.assertTrue(doesLocationForModelExist)
+        
+        pathToBestModelFile = os.path.join(locationForModel, "best_model.pth")
+        tempBestModel = AgentNeuralNetwork([5, 3, 2])
+        torch.save(tempBestModel, pathToBestModelFile)
+        doesBestModelExist = os.path.isfile(pathToBestModelFile)
+        self.assertTrue(doesBestModelExist)
+
+        dirNameForModel = "1995_07_04_17_15_00"
+        expectedModel = tempBestModel
+        actualModel = self._repository.LoadBestModel(dirNameForModel)
+        self._compareModels(actualModel, expectedModel)
+        rmtree(locationForModel)
+    
+    def test_LoadBestModel_DirNameDoesNotExist(self):
+        nonExistentDirName = "TEST_NON_EXISTENT_DIR_NAME"
+        bestModel = self._repository.LoadBestModel(nonExistentDirName)
+        self.assertTrue(bestModel is None)
+    
+    @patch('src.training.TrainingResultsRepository.datetime')
+    def test_LoadBestModel_FileForBestModelDoesNotExist(self, mock_datetime):
+        mock_datetime.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
+        locationForModel = self._createExpectedLocationForResults(mock_datetime)
+        if os.path.isdir(locationForModel):
+            rmtree(locationForModel)
+        
+        os.mkdir(locationForModel)
+        doesLocationForModelExist = os.path.isdir(locationForModel)
+        self.assertTrue(doesLocationForModelExist)
+        
+        pathToBestModelFile = os.path.join(locationForModel, "best_model.pth")
+        doesBestModelExist = os.path.isfile(pathToBestModelFile)
+        self.assertFalse(doesBestModelExist)
+
+        dirNameForModel = "1995_07_04_17_15_00"
+        bestModel = self._repository.LoadBestModel(dirNameForModel)
+        self.assertTrue(bestModel is None)
+        rmtree(locationForModel)
+    
     @unpack
     @data((None, None, None), (None, None, True), (None, 5, None), \
             (AgentsPopulation(2, [2, 2], None), None, None), \
