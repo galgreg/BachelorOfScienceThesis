@@ -1,3 +1,5 @@
+from src.AgentsPopulation import *
+from src.training.TrainingLog import *
 from datetime import datetime
 import torch
 import os
@@ -10,17 +12,65 @@ class TrainingResultsRepository:
     def __init__(self, trainingLog = None):
         self._trainingLog = trainingLog
 
-    # TODO - dorobić zabezpieczenia + odpowiednie testy które to weryfikują
     def Save(self, population, whichModelIsTheBest, shouldSavePopulation):
+        if self._trainingLog is None:
+            self._trainingLog = TrainingLog(isVerbose = False)
+            self._trainingLog.Append(
+                    "TrainingResultsRepository.Save() warning: " \
+                    "trainingLog was None! Potentially important details about " \
+                    "training (or run) could haven't been saved!")
+        
         locationForTrainingResults = self._createLocationForTrainingResults()
         os.mkdir(locationForTrainingResults)
-        self._saveBestModel(
-                locationForTrainingResults,
+        if self._doParametersHaveValidTypes(
                 population,
-                whichModelIsTheBest)
-        if shouldSavePopulation:
-            self._saveWholePopulation(locationForTrainingResults, population)
+                whichModelIsTheBest,
+                shouldSavePopulation):
+            if len(population._agents) == 0:
+                self._trainingLog.Append(
+                        "TrainingResultsRepository.Save() error: " \
+                        "population is empty!")
+            elif whichModelIsTheBest < 0 \
+                    or whichModelIsTheBest >= len(population._agents):
+                self._trainingLog.Append(
+                        "TrainingResultsRepository.Save() error: " \
+                        "whichModelIsBest is out of allowed range!\n" \
+                        "Allowed range is from 0 to {0} (inclusive)!".format(
+                                len(population._agents) - 1))
+            else:
+                self._saveBestModel(
+                        locationForTrainingResults,
+                        population,
+                        whichModelIsTheBest)
+                if shouldSavePopulation:
+                    self._saveWholePopulation(
+                            locationForTrainingResults,
+                            population)
+                self._trainingLog.Append(
+                        "TrainingResultsRepository.Save() info: " \
+                        "training results were saved to the location " \
+                        "'{0}'!".format(locationForTrainingResults))
+        else:
+            self._trainingLog.Append(
+                    "TrainingResultsRepository.Save() error: " \
+                    "some of parameters have wrong type!\n" \
+                    "type(population) == {0}, " \
+                    "type(whichModelIsTheBest) == {1}, " \
+                    "type(shouldSavePopulation) == {2}".format(
+                            type(population),
+                            type(whichModelIsTheBest),
+                            type(shouldSavePopulation)))
+        
         self._trainingLog.Save(locationForTrainingResults)
+    
+    def _doParametersHaveValidTypes(
+            self,
+            population,
+            whichModelIsTheBest,
+            shouldSavePopulation):
+        return type(population) == AgentsPopulation \
+                and type(whichModelIsTheBest) == int \
+                and type(shouldSavePopulation) == bool
     
     def _createLocationForTrainingResults(self):
         basePath = self._createBasePathForResults()
