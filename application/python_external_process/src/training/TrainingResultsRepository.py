@@ -1,6 +1,7 @@
 from src.AgentsPopulation import *
 from src.training.TrainingLog import *
 from datetime import datetime
+from fnmatch import fnmatch
 import torch
 import os
 import os.path
@@ -64,17 +65,93 @@ class TrainingResultsRepository:
         self._trainingLog.Save(locationForTrainingResults)
     
     def LoadBestModel(self, dirNameWithModelToLoad):
+        if self._trainingLog is None:
+            self._trainingLog = TrainingLog(isVerbose = False)
+            self._trainingLog.Append(
+                    "TrainingResultsRepository.LoadBestModel() warning: " \
+                    "trainingLog was None! Potentially important details about" \
+                    " training (or run) could haven't been saved!")
+        
         bestModel = None
-        basePathToModel = self._createBasePathForResults()
-        fullPathToModel = \
-                os.path.join(
-                        basePathToModel,
-                        dirNameWithModelToLoad,
-                        "best_model.pth")
-        if os.path.isfile(fullPathToModel):
-            bestModel = torch.load(fullPathToModel)
-
+        if type(dirNameWithModelToLoad) == str:
+            basePathToModel = self._createBasePathForResults()
+            fullPathToModel = \
+                    os.path.join(
+                            basePathToModel,
+                            dirNameWithModelToLoad,
+                            "best_model.pth")
+            if os.path.isfile(fullPathToModel):
+                bestModel = torch.load(fullPathToModel)
+                self._trainingLog.Append(
+                        "TrainingResultsRepository.LoadBestModel() info: " \
+                        "training_results/{0}/best_model.pth file has been "
+                        "loaded!".format(dirNameWithModelToLoad))
+            else:
+                self._trainingLog.Append(
+                        "TrainingResultsRepository.LoadBestModel() error: " \
+                        "cannot load 'best_model.pth' file - path does not" \
+                        " exist! (dirname = '{0}')".format(dirNameWithModelToLoad))
+        else:
+            self._trainingLog.Append(
+                    "TrainingResultsRepository.LoadBestModel() error: " \
+                    "dirNameWithModelToLoad has wrong type! " \
+                    "(expected: str, actual: {0})".format(
+                            type(dirNameWithModelToLoad)))
         return bestModel
+    
+    def LoadPopulation(self, dirNameWithPopulationToLoad):
+        if self._trainingLog is None:
+            self._trainingLog = TrainingLog(isVerbose = False)
+            self._trainingLog.Append(
+                    "TrainingResultsRepository.LoadPopulation() warning: " \
+                    "trainingLog was None! Potentially important details about" \
+                    " training (or run) could haven't been saved!")
+        
+        population = None
+        if type(dirNameWithPopulationToLoad) == str:
+            basePathToPopulation = self._createBasePathForResults()
+            fullPathToPopulation = \
+                    os.path.join(
+                            basePathToPopulation,
+                            dirNameWithPopulationToLoad,
+                            "population")
+            if os.path.isdir(fullPathToPopulation):
+                models = []
+                for fileName in os.listdir(fullPathToPopulation):
+                    if fnmatch(fileName, "model_*.pth"):
+                        fullPathToModelFile = \
+                                os.path.join(fullPathToPopulation, fileName)
+                        tempModel = torch.load(fullPathToModelFile)
+                        models.append(tempModel)
+                
+                if len(models) == 0:
+                    self._trainingLog.Append(
+                            "TrainingResultsRepository.LoadPopulation() error: " \
+                            "training_results/{0}/population is empty - " \
+                            "has no 'model_<n>.pth' files! " \
+                            "(examples: 'model_1.pth', 'model_2.pth' " \
+                            "etc.)".format(dirNameWithPopulationToLoad))
+                else:
+                    population = AgentsPopulation(0, [2, 2], None)
+                    population._agents = models
+                    self._trainingLog.Append(
+                            "TrainingResultsRepository.LoadPopulation() info: " \
+                            "training_results/{0}/population has been " \
+                            "loaded!".format(dirNameWithPopulationToLoad))
+            else:
+                self._trainingLog.Append(
+                        "TrainingResultsRepository.LoadPopulation() error: " \
+                        "cannot load population from " \
+                        "training_results/{0}/population - path " \
+                        "does not exist!".format(dirNameWithPopulationToLoad))
+        else:
+            self._trainingLog.Append(
+                    "TrainingResultsRepository.LoadPopulation() error: " \
+                    "dirNameWithPopulationToLoad has wrong type! " \
+                    "(expected: str, actual: {0})".format(
+                            type(dirNameWithPopulationToLoad)))
+        
+        return population
     
     def _doParametersHaveValidTypes(
             self,

@@ -10,7 +10,6 @@ import torch
 import unittest
 from unittest.mock import patch
 
-# TODO -> dorobić testy dla metody self._repository.Save() + posprawdzać zabezpieczenia dla pozostałych metod
 @ddt
 class TestTrainingResultsRepository(unittest.TestCase):
     def setUp(self):
@@ -265,8 +264,13 @@ class TestTrainingResultsRepository(unittest.TestCase):
         
         rmtree(locationForResults)
     
+    @unpack
+    @data((TrainingLog(isVerbose = False), ""), \
+        (None, "TrainingResultsRepository.LoadBestModel() warning: " \
+                "trainingLog was None! Potentially important details about " \
+                "training (or run) could haven't been saved!\n"))
     @patch('src.training.TrainingResultsRepository.datetime')
-    def test_LoadBestModel_OK(self, mock_datetime):
+    def test_LoadBestModel_OK(self, trainingLog, logWarning, mock_datetime):
         mock_datetime.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
         locationForModel = self._createExpectedLocationForResults(mock_datetime)
         if os.path.isdir(locationForModel):
@@ -284,17 +288,80 @@ class TestTrainingResultsRepository(unittest.TestCase):
 
         dirNameForModel = "1995_07_04_17_15_00"
         expectedModel = tempBestModel
+        self._repository._trainingLog = trainingLog
         actualModel = self._repository.LoadBestModel(dirNameForModel)
+        
+        expectedLogContent = \
+                logWarning + "TrainingResultsRepository.LoadBestModel() info:" \
+                " training_results/{0}/best_model.pth file has been loaded!" \
+                "\n".format(dirNameForModel)
+        actualLogContent = self._repository._trainingLog._content
+        self.assertEqual(actualLogContent, expectedLogContent)
+        
         self._compareModels(actualModel, expectedModel)
         rmtree(locationForModel)
     
-    def test_LoadBestModel_DirNameDoesNotExist(self):
+    @unpack
+    @data((None, TrainingLog(isVerbose = False), ""), \
+        ([1, 2, 3, 4], TrainingLog(isVerbose = False), ""),
+        (1.1, TrainingLog(isVerbose = False), ""),
+        ({"wrong" : "type"}, TrainingLog(isVerbose = False), ""),
+        (None, None, "TrainingResultsRepository.LoadBestModel() warning: " \
+                "trainingLog was None! Potentially important details about " \
+                "training (or run) could haven't been saved!\n"),
+        ([1, 2, 3, 4], None, "TrainingResultsRepository.LoadBestModel() warning: " \
+                "trainingLog was None! Potentially important details about " \
+                "training (or run) could haven't been saved!\n"),
+        (1.1, None, "TrainingResultsRepository.LoadBestModel() warning: " \
+                "trainingLog was None! Potentially important details about " \
+                "training (or run) could haven't been saved!\n"),
+        ({"wrong" : "type"}, None, "TrainingResultsRepository.LoadBestModel() " \
+                "warning: trainingLog was None! Potentially important details " \
+                "about training (or run) could haven't been saved!\n"))
+    def test_LoadBestModel_DirNameHasWrongType(
+            self,
+            dirName,
+            trainingLog,
+            logWarning):
+        self._repository._trainingLog = trainingLog
+        bestModel = self._repository.LoadBestModel(dirName)
+        self.assertTrue(bestModel is None)
+        
+        expectedLog = \
+                logWarning + "TrainingResultsRepository.LoadBestModel() error: " \
+                "dirNameWithModelToLoad has wrong type! " \
+                "(expected: str, actual: {0})\n".format(type(dirName))
+        actualLog = self._repository._trainingLog._content
+        self.assertEqual(actualLog, expectedLog)
+    
+    @unpack
+    @data((TrainingLog(isVerbose = False), ""), \
+        (None, "TrainingResultsRepository.LoadBestModel() warning: " \
+                "trainingLog was None! Potentially important details about " \
+                "training (or run) could haven't been saved!\n"))
+    def test_LoadBestModel_DirNameDoesNotExist(self, trainingLog, logWarning):
         nonExistentDirName = "TEST_NON_EXISTENT_DIR_NAME"
+        self._repository._trainingLog = trainingLog
         bestModel = self._repository.LoadBestModel(nonExistentDirName)
         self.assertTrue(bestModel is None)
+        expectedLogContent = \
+                logWarning + "TrainingResultsRepository.LoadBestModel() error: " \
+                "cannot load 'best_model.pth' file - path does not exist! " \
+                "(dirname = '{0}')\n".format(nonExistentDirName)
+        actualLogContent = self._repository._trainingLog._content
+        self.assertEqual(actualLogContent, expectedLogContent)
     
+    @unpack
+    @data((TrainingLog(isVerbose = False), ""), \
+        (None, "TrainingResultsRepository.LoadBestModel() warning: " \
+                "trainingLog was None! Potentially important details about " \
+                "training (or run) could haven't been saved!\n"))
     @patch('src.training.TrainingResultsRepository.datetime')
-    def test_LoadBestModel_FileForBestModelDoesNotExist(self, mock_datetime):
+    def test_LoadBestModel_FileForBestModelDoesNotExist(
+            self,
+            trainingLog,
+            logWarning,
+            mock_datetime):
         mock_datetime.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
         locationForModel = self._createExpectedLocationForResults(mock_datetime)
         if os.path.isdir(locationForModel):
@@ -309,9 +376,200 @@ class TestTrainingResultsRepository(unittest.TestCase):
         self.assertFalse(doesBestModelExist)
 
         dirNameForModel = "1995_07_04_17_15_00"
+        self._repository._trainingLog = trainingLog
         bestModel = self._repository.LoadBestModel(dirNameForModel)
         self.assertTrue(bestModel is None)
+        
+        expectedLogContent = \
+                logWarning + "TrainingResultsRepository.LoadBestModel() error: " \
+                "cannot load 'best_model.pth' file - path does not exist! " \
+                "(dirname = '{0}')\n".format(dirNameForModel)
+        actualLogContent = self._repository._trainingLog._content
+        self.assertEqual(actualLogContent, expectedLogContent)
+        
         rmtree(locationForModel)
+    
+    @unpack
+    @data((TrainingLog(isVerbose = False), ""), \
+        (None, "TrainingResultsRepository.LoadPopulation() warning: " \
+                "trainingLog was None! Potentially important details about " \
+                "training (or run) could haven't been saved!\n"))
+    @patch('src.training.TrainingResultsRepository.datetime')
+    def test_LoadPopulation_OK(
+            self,
+            trainingLog,
+            logWarning,
+            mock_datetime):
+        mock_datetime.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
+        locationForPopulation = \
+                self._createExpectedLocationForResults(mock_datetime)
+        if os.path.isdir(locationForPopulation):
+            rmtree(locationForPopulation)
+        
+        os.mkdir(locationForPopulation)
+        doesLocationForPopulationExist = os.path.isdir(locationForPopulation)
+        self.assertTrue(doesLocationForPopulationExist)
+        
+        pathToPopulationFiles = os.path.join(locationForPopulation, "population")        
+        os.mkdir(pathToPopulationFiles)
+        doesPathToPopulationFilesExist = os.path.isdir(pathToPopulationFiles)
+        self.assertTrue(doesPathToPopulationFilesExist)
+        
+        numberOfAgents = 5
+        agentDimensions = [5, 3, 2]
+        expectedPopulation = \
+                AgentsPopulation(numberOfAgents, agentDimensions, None)
+        
+        for i in range(numberOfAgents):
+            modelFileName = "model_{0}.pth".format(i + 1)
+            fullPathToModelFile = \
+                    os.path.join(pathToPopulationFiles, modelFileName)
+            torch.save(expectedPopulation._agents[i], fullPathToModelFile)
+            doesModelExist = os.path.isfile(fullPathToModelFile)
+            self.assertTrue(doesModelExist)
+        
+        self._repository._trainingLog = trainingLog
+        dirNameForPopulation = "1995_07_04_17_15_00"
+        actualPopulation = self._repository.LoadPopulation(dirNameForPopulation)
+        
+        expectedLogContent = \
+                logWarning + "TrainingResultsRepository.LoadPopulation() info: " \
+                "training_results/{0}/population has been loaded!\n".format(
+                        dirNameForPopulation)
+        actualLogContent = self._repository._trainingLog._content
+        self.assertEqual(actualLogContent, expectedLogContent)
+        
+        rmtree(locationForPopulation)
+    
+    @unpack
+    @data((None, TrainingLog(isVerbose = False), ""), \
+        ([1, 2, 3, 4], TrainingLog(isVerbose = False), ""),
+        (1.1, TrainingLog(isVerbose = False), ""),
+        ({"wrong" : "type"}, TrainingLog(isVerbose = False), ""),
+        (None, None, "TrainingResultsRepository.LoadPopulation() warning: " \
+                "trainingLog was None! Potentially important details about " \
+                "training (or run) could haven't been saved!\n"),
+        ([1, 2, 3, 4], None, "TrainingResultsRepository.LoadPopulation() warning: " \
+                "trainingLog was None! Potentially important details about " \
+                "training (or run) could haven't been saved!\n"),
+        (1.1, None, "TrainingResultsRepository.LoadPopulation() warning: " \
+                "trainingLog was None! Potentially important details about " \
+                "training (or run) could haven't been saved!\n"),
+        ({"wrong" : "type"}, None, "TrainingResultsRepository.LoadPopulation() " \
+                "warning: trainingLog was None! Potentially important details " \
+                "about training (or run) could haven't been saved!\n"))
+    def test_LoadPopulation_DirNameHasWrongType(
+            self,
+            dirName,
+            trainingLog,
+            logWarning):
+        self._repository._trainingLog = trainingLog
+        population = self._repository.LoadPopulation(dirName)
+        self.assertTrue(population is None)
+        
+        expectedLog = \
+                logWarning + "TrainingResultsRepository.LoadPopulation() error: " \
+                "dirNameWithPopulationToLoad has wrong type! " \
+                "(expected: str, actual: {0})\n".format(type(dirName))
+        actualLog = self._repository._trainingLog._content
+        self.assertEqual(actualLog, expectedLog)
+    
+    
+    @unpack
+    @data((TrainingLog(isVerbose = False), ""), \
+        (None, "TrainingResultsRepository.LoadPopulation() warning: " \
+                "trainingLog was None! Potentially important details about " \
+                "training (or run) could haven't been saved!\n"))
+    def test_LoadPopulation_DirNameDoesNotExist(self, trainingLog, logWarning):
+        nonExistentDirName = "TEST_NON_EXISTENT_DIR_NAME"
+        self._repository._trainingLog = trainingLog
+        population = self._repository.LoadPopulation(nonExistentDirName)
+        self.assertTrue(population is None)
+        expectedLogContent = \
+                logWarning + "TrainingResultsRepository.LoadPopulation() error: " \
+                "cannot load population from training_results/{0}/population -" \
+                " path does not exist!\n".format(nonExistentDirName)
+        actualLogContent = self._repository._trainingLog._content
+        self.assertEqual(actualLogContent, expectedLogContent)
+    
+    @unpack
+    @data((TrainingLog(isVerbose = False), ""), \
+        (None, "TrainingResultsRepository.LoadPopulation() warning: " \
+                "trainingLog was None! Potentially important details about " \
+                "training (or run) could haven't been saved!\n"))
+    @patch('src.training.TrainingResultsRepository.datetime')
+    def test_LoadPopulation_PopulationDirDoesNotExist(
+            self,
+            trainingLog,
+            logWarning,
+            mock_datetime):
+        mock_datetime.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
+        locationForPopulation = \
+                self._createExpectedLocationForResults(mock_datetime)
+        if os.path.isdir(locationForPopulation):
+            rmtree(locationForPopulation)
+        
+        os.mkdir(locationForPopulation)
+        doesLocationForPopulationExist = os.path.isdir(locationForPopulation)
+        self.assertTrue(doesLocationForPopulationExist)
+        
+        pathToPopulationFiles = \
+                os.path.join(locationForPopulation, "population")
+        doesPathToPopulationFilesExist = os.path.isdir(pathToPopulationFiles)
+        self.assertFalse(doesPathToPopulationFilesExist)
+        
+        self._repository._trainingLog = trainingLog
+        dirName = "1995_07_04_17_15_00"
+        population = self._repository.LoadPopulation(dirName)
+        self.assertTrue(population is None)
+        
+        expectedLogContent = \
+                logWarning + "TrainingResultsRepository.LoadPopulation() " \
+                "error: cannot load population from " \
+                "training_results/{0}/population - path does not " \
+                "exist!\n".format(dirName)
+        actualLogContent = self._repository._trainingLog._content
+        self.assertEqual(actualLogContent, expectedLogContent)
+    
+    @unpack
+    @data((TrainingLog(isVerbose = False), ""), \
+        (None, "TrainingResultsRepository.LoadPopulation() warning: " \
+                "trainingLog was None! Potentially important details about " \
+                "training (or run) could haven't been saved!\n"))
+    @patch('src.training.TrainingResultsRepository.datetime')
+    def test_LoadPopulation_PopulationDirIsEmpty(
+            self,
+            trainingLog,
+            logWarning,
+            mock_datetime):
+        mock_datetime.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
+        locationForPopulation = \
+                self._createExpectedLocationForResults(mock_datetime)
+        if os.path.isdir(locationForPopulation):
+            rmtree(locationForPopulation)
+        
+        os.mkdir(locationForPopulation)
+        doesLocationForPopulationExist = os.path.isdir(locationForPopulation)
+        self.assertTrue(doesLocationForPopulationExist)
+        
+        pathToPopulationFiles = \
+                os.path.join(locationForPopulation, "population")
+        os.mkdir(pathToPopulationFiles)
+        doesPathToPopulationFilesExist = os.path.isdir(pathToPopulationFiles)
+        self.assertTrue(doesPathToPopulationFilesExist)
+        
+        self._repository._trainingLog = trainingLog
+        dirName = "1995_07_04_17_15_00"
+        population = self._repository.LoadPopulation(dirName)
+        self.assertTrue(population is None)
+        
+        expectedLogContent = \
+                logWarning + "TrainingResultsRepository.LoadPopulation() " \
+                "error: training_results/{0}/population is empty - " \
+                "has no 'model_<n>.pth' files! " \
+                "(examples: 'model_1.pth', 'model_2.pth' etc.)\n".format(dirName)
+        actualLogContent = self._repository._trainingLog._content
+        self.assertEqual(actualLogContent, expectedLogContent)
     
     @unpack
     @data((None, None, None), (None, None, True), (None, 5, None), \
