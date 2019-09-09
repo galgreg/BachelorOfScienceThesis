@@ -7,8 +7,6 @@ import os
 import os.path
 from shutil import rmtree
 
-# TODO -> implementacja metod LoadBestModel, LoadPopulation
-# TODO -> przejrzeć gdzie brakuje zapisywania do loga
 class TrainingResultsRepository:
     def __init__(self, trainingLog = None):
         self._trainingLog = trainingLog
@@ -204,7 +202,7 @@ class TrainingResultsRepository:
         os.mkdir(locationForPopulationFiles)
         
         for i in range(len(population._agents)):
-            fileNameForModel = "model_{0}.pth".format(i+1)
+            fileNameForModel = "model_{0}.pth".format(str(i+1).zfill(3))
             fullPathForModel = \
                     os.path.join(locationForPopulationFiles, fileNameForModel)
             torch.save(population._agents[i], fullPathForModel)

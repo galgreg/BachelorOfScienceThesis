@@ -106,7 +106,9 @@ class TestTrainingResultsRepository(unittest.TestCase):
         
         for i in range(len(population._agents)):
             pathToModelFile = \
-                    os.path.join(pathToPopulation, "model_{0}.pth".format(i+1))
+                    os.path.join(
+                            pathToPopulation,
+                            "model_{0}.pth".format(str(i+1).zfill(3)))
             doesModelFileExist = os.path.exists(pathToModelFile)
             self.assertTrue(doesModelFileExist)
             
@@ -421,7 +423,7 @@ class TestTrainingResultsRepository(unittest.TestCase):
                 AgentsPopulation(numberOfAgents, agentDimensions, None)
         
         for i in range(numberOfAgents):
-            modelFileName = "model_{0}.pth".format(i + 1)
+            modelFileName = "model_{0}.pth".format(str(i+1).zfill(3))
             fullPathToModelFile = \
                     os.path.join(pathToPopulationFiles, modelFileName)
             torch.save(expectedPopulation._agents[i], fullPathToModelFile)
@@ -695,7 +697,7 @@ class TestTrainingResultsRepository(unittest.TestCase):
         self.assertTrue(os.path.isdir(pathToPopulationDir))
         
         for i in range(len(population._agents)):
-            fileNameForModel = "model_{0}.pth".format(i+1)
+            fileNameForModel = "model_{0}.pth".format(str(i+1).zfill(3))
             fullPathToModelFile = \
                     os.path.join(pathToPopulationDir, fileNameForModel)
             self.assertTrue(os.path.isfile(fullPathToModelFile))
