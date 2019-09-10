@@ -1,8 +1,9 @@
 import json
 from os import remove
-from train import loadConfigData, computeAgentDimensions
+from train import *
 from ddt import ddt, data, unpack
 import unittest
+from unittest.mock import patch
 
 @ddt
 class TestTrain(unittest.TestCase):
@@ -41,7 +42,8 @@ class TestTrain(unittest.TestCase):
         actualConfigData = loadConfigData(tempTestFilePath)
         self.assertEqual(actualConfigData, expectedConfigData)
         remove(tempTestFilePath)
-    
+
+
     @unpack
     @data((5, 3, None), (None, 3, None), (5, None, None), (None, None, None), \
             (None, 3, {}), (5, None, {}), (None, None, {}))
@@ -71,3 +73,10 @@ class TestTrain(unittest.TestCase):
         actualAgentDimensions = \
                 computeAgentDimensions(observationSize, actionSize, configData)
         self.assertEqual(actualAgentDimensions, expectedAgentDimensions)
+
+    @unpack
+    @data(([0.3, 1.1, 5.9, 3.6], 2), ([-100.13, -2.3, -5.7, -0.9], 3),
+            ([-100.13, 0.5, -5.7, -0.9], 1))
+    def test_findIndexOfBestModel(self, fitnessList, expectedIndex):
+        actualIndex = findIndexOfBestModel(fitnessList)
+        self.assertEqual(actualIndex, expectedIndex)
