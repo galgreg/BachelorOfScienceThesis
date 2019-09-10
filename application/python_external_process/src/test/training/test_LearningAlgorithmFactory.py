@@ -1,6 +1,7 @@
 from src.training.LearningAlgorithmFactory import *
 from src.training.TrainingLog import *
 import unittest
+from unittest.mock import patch
 
 class TestLearningAlgorithmFactory(unittest.TestCase):
     def setUp(self):
@@ -54,7 +55,9 @@ class TestLearningAlgorithmFactory(unittest.TestCase):
         actualTrainingLogType = type(factory._trainingLog)
         self.assertEqual(actualTrainingLogType, expectedTrainingLogType)
 
-    def test_Create_GeneticAlgorithm(self):
+    @patch('src.training.TrainingLog.datetime')
+    def test_Create_GeneticAlgorithm(self, mock_datetime):
+        mock_datetime.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
         factory = LearningAlgorithmFactory(
                 self._options,
                 self.CONFIG_DATA,
@@ -90,6 +93,7 @@ class TestLearningAlgorithmFactory(unittest.TestCase):
                 expectedProbabilityThresholdToMutateGenome)
         
         expectedLogMessage = \
+                "[ 1995-07-04 17:15:00 ] " \
                 "Created GeneticAlgorithm with parameters: " \
                 "selectionPercentRate = {0}, " \
                 "probabilityThresholdToMutateChromosome = {1}, " \
@@ -111,7 +115,9 @@ class TestLearningAlgorithmFactory(unittest.TestCase):
         factory = LearningAlgorithmFactory(self._options, self.CONFIG_DATA)
         self.assertRaises(NotImplementedError, factory.Create)
 
-    def test_createGeneticAlgorithm(self):
+    @patch('src.training.TrainingLog.datetime')
+    def test_createGeneticAlgorithm(self, mock_datetime):
+        mock_datetime.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
         factory = LearningAlgorithmFactory(
                 self._options,
                 self.CONFIG_DATA,
@@ -147,6 +153,7 @@ class TestLearningAlgorithmFactory(unittest.TestCase):
                 expectedProbabilityThresholdToMutateGenome)
         
         expectedLogMessage = \
+                "[ 1995-07-04 17:15:00 ] " \
                 "Created GeneticAlgorithm with parameters: " \
                 "selectionPercentRate = {0}, " \
                 "probabilityThresholdToMutateChromosome = {1}, " \

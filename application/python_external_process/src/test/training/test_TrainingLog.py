@@ -3,9 +3,9 @@ from ddt import ddt, data, unpack
 from io import StringIO
 import os
 import os.path
+from shutil import rmtree
 import unittest
 from unittest.mock import patch
-from shutil import rmtree
 
 @ddt
 class TestTrainingLog(unittest.TestCase):
@@ -41,11 +41,14 @@ class TestTrainingLog(unittest.TestCase):
     @unpack
     @data((True, "Peugeot 106 Rallye 1.4 75KM", "Peugeot 106 Rallye 1.4 75KM\n"),
             (False, "Peugeot 106 Rallye 1.4 75KM", ""))
-    def test_Append_IsVerbose(
+    @patch('src.training.TrainingLog.datetime')
+    def test_Append(
             self,
             isLogVerbose,
             infoToAppend,
-            expectedPrintMessage):
+            expectedPrintMessage,
+            mock_datetime):
+        mock_datetime.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
         trainingLog = TrainingLog(isLogVerbose)
         logContentBeforeCall = "Ford Sierra II 2.0 DOHC 125KM\n"
         trainingLog._content = logContentBeforeCall
@@ -55,7 +58,9 @@ class TestTrainingLog(unittest.TestCase):
             actualPrintMessage = fakeOutput.getvalue()
             self.assertEqual(actualPrintMessage, expectedPrintMessage)
         
-        expectedLogContentAfterCall = logContentBeforeCall + infoToAppend + "\n"
+        expectedLogContentAfterCall = \
+                logContentBeforeCall + "[ 1995-07-04 17:15:00 ] " + \
+                infoToAppend + "\n"
         actualLogContentAfterCall = trainingLog._content
         self.assertEqual(actualLogContentAfterCall, expectedLogContentAfterCall)
 
@@ -76,6 +81,14 @@ class TestTrainingLog(unittest.TestCase):
         
         logContentAfterCall = trainingLog._content
         self.assertEqual(logContentAfterCall, logContentBeforeCall)
+
+    @patch('src.training.TrainingLog.datetime')
+    def test_createEntryHeader(self, mock_datetime):
+        mock_datetime.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
+        trainingLog = TrainingLog(False)
+        expectedEntryHeader = "[ 1995-07-04 17:15:00 ]"
+        actualEntryHeader = trainingLog._createEntryHeader()
+        self.assertEqual(actualEntryHeader, expectedEntryHeader)
 
     def test_Save_OK(self):
         testLocation = "TEST_LOCATION_FOR_LOG_FILE"

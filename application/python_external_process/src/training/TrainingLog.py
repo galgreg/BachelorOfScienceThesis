@@ -1,4 +1,5 @@
 import os.path
+from datetime import datetime
 
 class TrainingLog:
     def __init__(self, isVerbose, fileName = "training"):
@@ -6,12 +7,19 @@ class TrainingLog:
         self._fileName = fileName
         self._content = ""
 
-    def Append(self, info):
-        if type(info) != str or info == "":
+    def Append(self, entryContent):
+        if type(entryContent) != str or entryContent == "":
             return
-        self._content = self._content + info + "\n"
+        entryHeader = self._createEntryHeader()
+        fullEntry = "{0} {1}".format(entryHeader, entryContent)
+        self._content = self._content + fullEntry + "\n"
         if self._isVerbose:
-            print(info)
+            print(entryContent)
+
+    def _createEntryHeader(self):
+        currentDatetime = datetime.now()
+        entryHeader = "[ {0} ]".format(currentDatetime)
+        return entryHeader
 
     def Save(self, location):
         if self._content.strip() == "":
