@@ -346,13 +346,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   broadcastHub:
-    broadcastingBrains: []
-    _brainsToControl: []
+    broadcastingBrains:
+    - {fileID: 11400000, guid: 254dc2d7932cab8e196737a41cc166cb, type: 2}
+    _brainsToControl:
+    - {fileID: 11400000, guid: 254dc2d7932cab8e196737a41cc166cb, type: 2}
   maxSteps: 0
   trainingConfiguration:
     width: 80
     height: 80
-    qualityLevel: 1
+    qualityLevel: 0
     timeScale: 100
     targetFrameRate: -1
   inferenceConfiguration:
@@ -360,10 +362,10 @@ MonoBehaviour:
     height: 720
     qualityLevel: 0
     timeScale: 1
-    targetFrameRate: 30
+    targetFrameRate: 60
   resetParameters:
     resetParameters: []
-  CarAgentBrain: {fileID: 11400000, guid: 01b23f94962aecd56a1647ba31649ebb, type: 2}
+  CarAgentBrain: {fileID: 11400000, guid: 254dc2d7932cab8e196737a41cc166cb, type: 2}
   CarAgentPrefab: {fileID: 7078131988162174769, guid: f28a57ca9dfcff253b2384f394cbc2ed,
     type: 3}
   StartAgentPosition: {x: 0.256, y: 0.048, z: 1.668}

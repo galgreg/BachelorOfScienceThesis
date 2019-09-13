@@ -1,23 +1,23 @@
 {
     "UnityEnvironment" : {
-        "no_graphics" : true,
+        "no_graphics" : false,
         "timeout_wait" : 30,
-        "args" : [],
+        "args" : []
     },
     "LearningAlgorithms" : {
         "ppo" : { },
         "neat" : { },
         "genetic" : {
             "selectionPercentRate" : 10,
-            "minimalProbabilityToMutateChromosome" : ???, // float
-            "minimalProbabilityToMutateGenome" : ???, // float
-        },
+            "minimalProbabilityToMutateChromosome" : 0.4,
+            "minimalProbabilityToMutateGenome" : 0.7
+        }
     },
     "TrainingParameters" : {
-        "maxNumberOfEpisodes" : ???, // int
-        "minimalAcceptableFitness": ???, // float
-        "networkHiddenDimensions" : ???, // lista intów
-        "maxNumberOfEpisodesWithoutImprovement" : ???, // int
-        "maxNumberOfStepsPerEpisode" : ???, // int
+        "maxNumberOfEpisodes" : 100,
+        "minimalAcceptableFitness": 0.7,
+        "networkHiddenDimensions" : [3 ],
+        "maxNumberOfEpisodesWithoutImprovement" : 10,
+        "maxNumberOfStepsPerEpisode" : 1800
     }
 }

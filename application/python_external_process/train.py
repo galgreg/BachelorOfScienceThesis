@@ -115,6 +115,7 @@ Options:
     options = docopt(APP_USAGE_DESCRIPTION)
     # --- 2 --- #
     trainingLog = TrainingLog(isVerbose = options["--verbose"])
+    trainingLog.Append("Training log has been created!")
     # --- 3 --- #
     pathToConfigFile = options["<config-file-path>"]
     CONFIG_DATA = loadConfigData(pathToConfigFile)
@@ -235,13 +236,20 @@ Options:
                 break
         
         population.Learn(fitnessList)
-        currentBestFitness = getBestFitness(fitnessList) # TODO
+        currentBestFitness = getBestFitness(fitnessList)
         
         if currentBestFitness > totalBestFitness:
             totalBestFitness = currentBestFitness
             numOfEpisodesWithoutImprovement = 0
         else:
             numOfEpisodesWithoutImprovement += 1
+        
+        trainingLog.Append(
+                "Best fitness for episode {0} -> {1}, best fitness for whole " \
+                "training -> {3}".format(
+                        episodeCounter,
+                        currentBestFitness,
+                        totalBestFitness))
         
         if totalBestFitness >= TRAINING_PARAMS["minimalAcceptableFitness"]:
             trainingLog.Append(
@@ -267,9 +275,11 @@ Options:
                             TRAINING_PARAMS["minimalAcceptableFitness"]))
             break
     
+    trainingLog.Append("End of training!")
+    
     # --- 11 --- #
     env.close()
-    trainingLog.Append("Closed Unity environment")
+    trainingLog.Append("Closed Unity environment.")
     # --- 12 --- #
     whichModelIsBest = findIndexOfBestModel(fitnessList)
     shouldSavePopulation = options["--save-population"]
