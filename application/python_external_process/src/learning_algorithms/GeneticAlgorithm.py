@@ -178,4 +178,4 @@ class GeneticAlgorithm:
 		for i in range(len(chromosome)):
 			tempRandom = random.random()
 			if tempRandom >= self._probabilityThresholdToMutateGenome:
-				chromosome[i] = tempRandom
+				chromosome[i] = float(torch.randn(1))
