@@ -39,6 +39,7 @@ public class RaceTrackAcademy : Academy {
     }
     
     public override void AcademyReset() {
+        ResetAllCheckpoints();
         mDoneAgentsCounter = 0;
         for(int i = 0; i < PopulationSize; ++i) {
             SetAgentTransform(mAgentList[i]);
@@ -46,6 +47,13 @@ public class RaceTrackAcademy : Academy {
             carAgentComponent.AgentReset();
         }
     }
+    private void ResetAllCheckpoints() {
+        var checkpointList = FindObjectsOfType<RaceTrackCheckpointTrigger>();
+        for (int i = 0; i < checkpointList.Length; ++i) {
+            checkpointList[i].ResetKeySet();
+        }
+    }
+
     public override void AcademyStep() {
         if (mDoneAgentsCounter >= PopulationSize) {
             Done();

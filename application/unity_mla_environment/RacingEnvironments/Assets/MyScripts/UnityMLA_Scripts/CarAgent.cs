@@ -62,6 +62,8 @@ public class CarAgent : Agent {
         AddReward(mRewardPerStep);
     }
     public override void AgentOnDone() {
+        // Display episode reward (optional line, for debug purpose!)
+        // Debug.Log("Episode reward: " + GetEpisodeReward());
         mEnvironmentAcademy.IncrementAgentDoneCounter();
         mCarObject.SetActive(false);
     }
