@@ -9,15 +9,16 @@
         "neat" : { },
         "genetic" : {
             "selectionPercentRate" : 10,
-            "minimalProbabilityToMutateChromosome" : 0.4,
-            "minimalProbabilityToMutateGenome" : 0.7
+            "minimalProbabilityToMutateChromosome" : 0.0,
+            "minimalProbabilityToMutateGenome" : 0.9
         }
     },
     "TrainingParameters" : {
         "maxNumberOfEpisodes" : 100,
-        "minimalAcceptableFitness": 0.7,
-        "networkHiddenDimensions" : [3 ],
-        "maxNumberOfEpisodesWithoutImprovement" : 10,
-        "maxNumberOfStepsPerEpisode" : 1800
+        "minimalAcceptableFitness": 105.0,
+        "networkHiddenDimensions" : [3, 3 ],
+        "maxNumberOfEpisodesWithoutImprovement" : 50,
+        "maxNumberOfStepsPerEpisode" : 600,
+        "penaltyForTooLongEpisode" : -100.0
     }
 }

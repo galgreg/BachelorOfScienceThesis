@@ -1,4 +1,3 @@
-""" STEP 0: Import Required Packages """
 from mlagents.envs import UnityEnvironment
 from docopt import docopt
 from src.AgentsPopulation import *
@@ -135,11 +134,11 @@ Options:
             args = UNITY_ENV_CONFIG["args"])
     
     unityEnvMessage = "Established connection to the Unity environment. "
-    if options["--env-path"].strip() == "":
-        typeOfEnvInfo = "Training will execute in Unity editor.\n"
+    if options["--env-path"] is None:
+        typeOfEnvInfo = "Training will execute in Unity editor. "
         unityEnvMessage = unityEnvMessage + typeOfEnvInfo
     else:
-        typeOfEnvInfo = "Training will execute in Unity build: {0}\n".format(
+        typeOfEnvInfo = "Training will execute in Unity build: {0}. ".format(
                 options["--env-path"])
         unityEnvMessage = unityEnvMessage + typeOfEnvInfo
     
@@ -157,10 +156,10 @@ Options:
     brainName = env.brain_names[0]
     trainingLog.Append("Brain name: {0}".format(brainName))
     brain = env.brains[brainName]
-    brainInfo = env.reset(train_mode=True)[brain_name]
+    brainInfo = env.reset(train_mode=True)[brainName]
     numberOfAgents = len(brainInfo.agents)
     observationSize = brainInfo.vector_observations.shape[1]
-    actionSize = brain.vector_action_space_size
+    actionSize = brain.vector_action_space_size[0]
     trainingLog.Append(
             "Loaded from Unity environment: numberOfAgents = {0}, " \
             "observationSize = {1}, actionSize = {2}" \
@@ -191,8 +190,10 @@ Options:
     else:
         population = \
                 resultsRepository.LoadPopulation(locationForPretrainedPopulation)
+        population._sizeOfOutput = agentDimensions[-1]
+        population._learningAlgorithm = learningAlgorithm
     
-    # --- 10 - Training loop (TODO) --- #
+    # --- 10 - Training sequence --- #
     TRAINING_PARAMS = CONFIG_DATA["TrainingParameters"]
     MAX_EPISODES_NUMBER = TRAINING_PARAMS["maxNumberOfEpisodes"]
     MAX_STEPS_NUMBER_FOR_EPISODE = TRAINING_PARAMS["maxNumberOfStepsPerEpisode"]
@@ -234,6 +235,18 @@ Options:
                         "Episode {0}: all agents are done after {1} steps!" \
                         .format(episodeCounter, stepCounter + 1))
                 break
+            
+            if stepCounter >= MAX_STEPS_NUMBER_FOR_EPISODE-1:
+                for i in range(len(agentDones)):
+                    if not agentDones[i]:
+                        fitnessList[i] += \
+                                TRAINING_PARAMS["penaltyForTooLongEpisode"]
+                trainingLog.Append(
+                        "Interrupted {0} episode, reason: "
+                        "reached max allowed steps for episode! "
+                        "(maxNumberOfStepsPerEpisode = {1})".format(
+                                episodeCounter,
+                                MAX_STEPS_NUMBER_FOR_EPISODE))
         
         population.Learn(fitnessList)
         currentBestFitness = getBestFitness(fitnessList)
@@ -246,7 +259,7 @@ Options:
         
         trainingLog.Append(
                 "Best fitness for episode {0} -> {1}, best fitness for whole " \
-                "training -> {3}".format(
+                "training -> {2}".format(
                         episodeCounter,
                         currentBestFitness,
                         totalBestFitness))
