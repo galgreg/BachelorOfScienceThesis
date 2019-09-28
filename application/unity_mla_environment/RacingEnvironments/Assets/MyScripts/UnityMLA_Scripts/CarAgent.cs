@@ -14,6 +14,7 @@ public class CarAgent : Agent {
         mWheelTransforms = CreateWheelTransform(aCarObject);
         agentParameters = new AgentParameters();
         agentParameters.resetOnDone = false;
+        mPreviousFrameTime = -1;
     }
     private List<WheelCollider> CreateWheelColliders(GameObject aCarObject) {
         var wheelColliders = new List<WheelCollider>();
@@ -59,7 +60,7 @@ public class CarAgent : Agent {
     }
     public override void AgentAction(float[] vectorAction, string textAction) {
         mCarOutput.Update(vectorAction[0], vectorAction[1]);
-        AddReward(mRewardPerStep);
+        
     }
     public override void AgentOnDone() {
         // Display episode reward (optional line, for debug purpose!)
@@ -88,4 +89,5 @@ public class CarAgent : Agent {
     private CarAgentInput mCarInput;
     private CarAgentOutput mCarOutput;
     private float mEpisodeReward;
+    private float mPreviousFrameTime;
 }

@@ -39,18 +39,11 @@ public class RaceTrackAcademy : Academy {
     }
     
     public override void AcademyReset() {
-        ResetAllCheckpoints();
         mDoneAgentsCounter = 0;
         for(int i = 0; i < PopulationSize; ++i) {
             SetAgentTransform(mAgentList[i]);
             var carAgentComponent = mAgentList[i].GetComponent<CarAgent>();
             carAgentComponent.AgentReset();
-        }
-    }
-    private void ResetAllCheckpoints() {
-        var checkpointList = FindObjectsOfType<RaceTrackCheckpointTrigger>();
-        for (int i = 0; i < checkpointList.Length; ++i) {
-            checkpointList[i].ResetKeySet();
         }
     }
 

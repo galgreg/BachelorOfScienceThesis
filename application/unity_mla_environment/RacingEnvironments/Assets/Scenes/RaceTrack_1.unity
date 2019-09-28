@@ -261,9 +261,9 @@ Light:
   m_RenderMode: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 1537
   m_RenderingLayerMask: 1
-  m_Lightmapping: 1
+  m_Lightmapping: 2
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
@@ -303,7 +303,6 @@ GameObject:
   m_Component:
   - component: {fileID: 534669905}
   - component: {fileID: 534669904}
-  - component: {fileID: 534669903}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -311,14 +310,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!81 &534669903
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 534669902}
-  m_Enabled: 1
 --- !u!20 &534669904
 Camera:
   m_ObjectHideFlags: 0
@@ -350,7 +341,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 1541
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -429,6 +420,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: RaceTrackCheckpoint_2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8614477547159491574, guid: 13624b632132cdab7b21f41b403d0954,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8614477547159491569, guid: 13624b632132cdab7b21f41b403d0954,
         type: 3}
@@ -543,8 +539,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   broadcastHub:
-    broadcastingBrains:
-    - {fileID: 11400000, guid: 254dc2d7932cab8e196737a41cc166cb, type: 2}
+    broadcastingBrains: []
     _brainsToControl:
     - {fileID: 11400000, guid: 254dc2d7932cab8e196737a41cc166cb, type: 2}
   maxSteps: 0
@@ -552,7 +547,7 @@ MonoBehaviour:
     width: 80
     height: 80
     qualityLevel: 0
-    timeScale: 5
+    timeScale: 10
     targetFrameRate: -1
   inferenceConfiguration:
     width: 1280
@@ -562,7 +557,7 @@ MonoBehaviour:
     targetFrameRate: 60
   resetParameters:
     resetParameters: []
-  CarAgentBrain: {fileID: 11400000, guid: 254dc2d7932cab8e196737a41cc166cb, type: 2}
+  CarAgentBrain: {fileID: 11400000, guid: 01b23f94962aecd56a1647ba31649ebb, type: 2}
   CarAgentPrefab: {fileID: 7078131988162174769, guid: f28a57ca9dfcff253b2384f394cbc2ed,
     type: 3}
   StartAgentPosition: {x: 0.256, y: 0.048, z: 1.668}
@@ -570,10 +565,10 @@ MonoBehaviour:
   CarAgentScale: 0.2
   MaxSensorLength: 0.7
   FieldOfView: 180
-  RaysCount: 5
+  RaysCount: 3
   MaxSteeringAngle: 30
   MotorForce: 500
-  RewardPerStep: -0.01
+  RewardPerStep: 0
   PopulationSize: 100
 --- !u!1001 &1196615833
 PrefabInstance:
@@ -590,7 +585,7 @@ PrefabInstance:
     - target: {fileID: 8614477547159491569, guid: 13624b632132cdab7b21f41b403d0954,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.194
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 8614477547159491569, guid: 13624b632132cdab7b21f41b403d0954,
         type: 3}
@@ -600,7 +595,7 @@ PrefabInstance:
     - target: {fileID: 8614477547159491569, guid: 13624b632132cdab7b21f41b403d0954,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.264
+      value: 0.27
       objectReference: {fileID: 0}
     - target: {fileID: 8614477547159491569, guid: 13624b632132cdab7b21f41b403d0954,
         type: 3}
@@ -675,7 +670,7 @@ PrefabInstance:
     - target: {fileID: 8614477547159491569, guid: 13624b632132cdab7b21f41b403d0954,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.892
+      value: -0.764
       objectReference: {fileID: 0}
     - target: {fileID: 8614477547159491569, guid: 13624b632132cdab7b21f41b403d0954,
         type: 3}
@@ -908,7 +903,7 @@ PrefabInstance:
     - target: {fileID: 8614477547159491569, guid: 13624b632132cdab7b21f41b403d0954,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.033
+      value: -0.107
       objectReference: {fileID: 0}
     - target: {fileID: 8614477547159491569, guid: 13624b632132cdab7b21f41b403d0954,
         type: 3}
@@ -993,7 +988,7 @@ PrefabInstance:
     - target: {fileID: 8614477547159491569, guid: 13624b632132cdab7b21f41b403d0954,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.562
+      value: -0.501
       objectReference: {fileID: 0}
     - target: {fileID: 8614477547159491569, guid: 13624b632132cdab7b21f41b403d0954,
         type: 3}
@@ -1658,6 +1653,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: RaceTrackCheckpoint_1
       objectReference: {fileID: 0}
+    - target: {fileID: 8614477547159491574, guid: 13624b632132cdab7b21f41b403d0954,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8614477547159491569, guid: 13624b632132cdab7b21f41b403d0954,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1712,6 +1712,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8614477547159491568, guid: 13624b632132cdab7b21f41b403d0954,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 13624b632132cdab7b21f41b403d0954, type: 3}

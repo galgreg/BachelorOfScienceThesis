@@ -25,18 +25,15 @@ public class CarSensor {
         return detectedDistance / MAX_ALLOWED_DISTANCE;
     }
     public void Render() {
-        Vector3 firstRendererPoint = mRayProperties.origin;
-        Vector3 secondRendererPoint;
-
-        if (WasObstacleDetected()) {
-            secondRendererPoint = mRaycastHit.point;
-        } else {
-            secondRendererPoint = mRayProperties.direction;
-        }
         var renderingComponent = mSensorRenderer.GetComponent<LineRenderer>();
         renderingComponent.material.color = ComputeSensorColor();
-        renderingComponent.SetPosition(0, firstRendererPoint);
-        renderingComponent.SetPosition(1, secondRendererPoint);
+        renderingComponent.SetPosition(0, mRayProperties.origin);
+
+        if (WasObstacleDetected()) {
+            renderingComponent.SetPosition(1, mRaycastHit.point);
+        } else {
+            renderingComponent.SetPosition(1, mRayProperties.direction);
+        }
     }
 
     private void InitSensorRenderer() {
