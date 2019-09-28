@@ -6,6 +6,9 @@ using MLAgents;
 public class RaceTrackAcademy : Academy {
     public override void InitializeAcademy() {
         mDoneAgentsCounter = 0;
+        mStartAgentRotationVector = new Vector3(0.0f, StartAgentRotation, 0.0f);
+        mAgentScaleVector =
+                new Vector3(CarAgentScale, CarAgentScale, CarAgentScale);
         mAgentList = CreateNewAgentList();
     }
     private List<GameObject> CreateNewAgentList() {
@@ -24,10 +27,8 @@ public class RaceTrackAcademy : Academy {
     }
     private void SetAgentTransform(GameObject aAgentObject) {
         aAgentObject.transform.position = StartAgentPosition;
-        aAgentObject.transform.eulerAngles =
-                new Vector3(0.0f, StartAgentRotation, 0.0f);
-        aAgentObject.transform.localScale =
-                new Vector3(CarAgentScale, CarAgentScale, CarAgentScale);
+        aAgentObject.transform.eulerAngles = mStartAgentRotationVector;
+        aAgentObject.transform.localScale = mAgentScaleVector;
     }
     private void PrepareCarAgentComponent(GameObject aAgentObject) {
         var carAgentComponent = aAgentObject.AddComponent<CarAgent>();
@@ -82,4 +83,7 @@ public class RaceTrackAcademy : Academy {
     
     private List<GameObject> mAgentList;
     private uint mDoneAgentsCounter;
+
+    private Vector3 mStartAgentRotationVector;
+    private Vector3 mAgentScaleVector;
 }

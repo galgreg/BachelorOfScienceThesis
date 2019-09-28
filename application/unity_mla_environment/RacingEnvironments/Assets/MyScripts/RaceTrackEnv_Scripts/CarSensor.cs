@@ -8,6 +8,7 @@ public class CarSensor {
         LAYER_MASK = 1 << LayerMask.NameToLayer("RaceTrackLayer");
         mRayProperties = new Ray(Vector3.zero, Vector3.zero);
         mRaycastHit = new RaycastHit();
+        mWasObstacleDetected = false;
         InitSensorRenderer();
     }
     public void SetRayProperties(Vector3 aOrigin, Vector3 aDirection) {
@@ -17,9 +18,16 @@ public class CarSensor {
     public void SetSensorParent(Transform aNewParent) {
         mSensorRenderer.transform.parent = aNewParent;
     }
+    public void UpdateDetectionFlag() {
+        mWasObstacleDetected = Physics.Raycast(
+                mRayProperties,
+                out mRaycastHit,
+                MAX_SENSOR_LENGTH,
+                LAYER_MASK);
+    }
     public float GetNormalizedDistance() {
         float detectedDistance = MAX_ALLOWED_DISTANCE;
-        if (WasObstacleDetected() && mRaycastHit.distance < MAX_ALLOWED_DISTANCE) {
+        if (mWasObstacleDetected && mRaycastHit.distance < MAX_ALLOWED_DISTANCE) {
             detectedDistance = mRaycastHit.distance;
         }
         return detectedDistance / MAX_ALLOWED_DISTANCE;
@@ -29,7 +37,7 @@ public class CarSensor {
         renderingComponent.material.color = ComputeSensorColor();
         renderingComponent.SetPosition(0, mRayProperties.origin);
 
-        if (WasObstacleDetected()) {
+        if (mWasObstacleDetected) {
             renderingComponent.SetPosition(1, mRaycastHit.point);
         } else {
             renderingComponent.SetPosition(1, mRayProperties.direction);
@@ -53,14 +61,6 @@ public class CarSensor {
         return mCurrentSensorColor;
     }
 
-    private bool WasObstacleDetected() {
-        return Physics.Raycast(
-                mRayProperties,
-                out mRaycastHit,
-                MAX_SENSOR_LENGTH,
-                LAYER_MASK);
-    }
-
     private readonly Color MIN_LENGTH_COLOR = Color.red;
     private readonly Color MAX_LENGTH_COLOR = Color.green;
     private Color mCurrentSensorColor;
@@ -73,4 +73,6 @@ public class CarSensor {
     private Ray mRayProperties;
     private RaycastHit mRaycastHit;
     private GameObject mSensorRenderer;
+
+    private bool mWasObstacleDetected;
 }

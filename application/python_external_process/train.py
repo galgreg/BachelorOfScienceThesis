@@ -44,54 +44,12 @@ def computeAgentDimensions(observationSize, actionSize, configData):
     hiddenDimensions = configData["TrainingParameters"]["networkHiddenDimensions"]
     return [ observationSize ] + hiddenDimensions + [ actionSize ]
 
-def findIndexOfBestModel(fitnessList):
-    typeOfFitnessList = type(fitnessList)
-    if typeOfFitnessList != list:
-        raise ValueError(
-                "findIndexOfBestModel() error -> fitnessList has wrong type! " \
-                "type(fitnessList) = {0}".format(typeOfFitnessList))
-    
-    bestFitness = float("-inf")
-    indexOfBestModel = 0
-    
-    for i in range(len(fitnessList)):
-        if fitnessList[i] > bestFitness:
-            bestFitness = fitnessList[i]
-            indexOfBestModel = i
-    
-    return indexOfBestModel
-
 def areAllAgentsDone(agentDones):
-    typeOfDones = type(agentDones)
-    if typeOfDones != list:
-        raise ValueError(
-                "areAllAgentsDone() error -> agentDones has wrong type! " \
-                "type(agentDones) = {0}".format(typeOfDones))
-    
     for done in agentDones:
-        if type(done) != bool:
-            raise ValueError("areAllAgentsDone() error -> "
-                    "some agentDones elements are not bool!")
         if not done:
             return False
     
     return True
-
-def getBestFitness(fitnessList):
-    typeOfFitnessList = type(fitnessList)
-    if typeOfFitnessList != list:
-        raise ValueError(
-                "getBestFitness() error -> fitnessList has wrong type! " \
-                 "type(fitnessList) = {0}".format(typeOfFitnessList))
-    
-    if len(fitnessList) > 0:
-        bestFitness = float("-inf")
-        for currentFitness in fitnessList:
-            if currentFitness > bestFitness:
-                bestFitness = currentFitness
-        return bestFitness
-    else:
-        raise ValueError("getBestFitness() error -> fitnessList is empty!")
 
 def main():
     # --- 1 --- #
@@ -167,7 +125,7 @@ Options:
     # --- 8 --- #
     agentDimensions = \
             computeAgentDimensions(
-                    observationSize,
+                    observationSize - 1,
                     actionSize,
                     CONFIG_DATA)
     trainingLog.Append("Computed agentDimensions: {0}".format(agentDimensions))
@@ -212,10 +170,12 @@ Options:
                     TRAINING_PARAMS["maxNumberOfEpisodesWithoutImprovement"]))
     # --- Episode loop --- #
     for episodeCounter in range(MAX_EPISODES_NUMBER):
-        fitnessList = [0 for i in range(numberOfAgents)]
+        fitnessList = [0] * numberOfAgents
         
         envInfo = env.reset(train_mode = True)[brainName]
         listOfInputData = envInfo.vector_observations.tolist()
+        listOfInputData = \
+                [listOfInputData[i][:-1] for i in range(len(listOfInputData))]
         agentDones = envInfo.local_done
         
         # --- Step loop --- #
@@ -224,11 +184,16 @@ Options:
             envInfo = env.step(listOfOutputData)[brainName]
             
             listOfInputData = envInfo.vector_observations.tolist()
-            agentDones = envInfo.local_done
-            currentRewards = envInfo.rewards
+            episodeRewards = \
+                    [listOfInputData[i][-1] for i in range(len(listOfInputData))]
+            listOfInputData = \
+                    [listOfInputData[i][:-1] for i in range(len(listOfInputData))]
             
-            for i in range(len(currentRewards)):
-                fitnessList[i] += currentRewards[i]
+            agentDones = envInfo.local_done
+            
+            for i in range(len(episodeRewards)):
+                if episodeRewards[i] > fitnessList[i]:
+                    fitnessList[i] = episodeRewards[i]
             
             if areAllAgentsDone(agentDones):
                 trainingLog.Append(
@@ -248,8 +213,8 @@ Options:
                                 episodeCounter,
                                 MAX_STEPS_NUMBER_FOR_EPISODE))
         
+        currentBestFitness = max(fitnessList)
         population.Learn(fitnessList)
-        currentBestFitness = getBestFitness(fitnessList)
         
         if currentBestFitness > totalBestFitness:
             totalBestFitness = currentBestFitness
@@ -294,7 +259,7 @@ Options:
     env.close()
     trainingLog.Append("Closed Unity environment.")
     # --- 12 --- #
-    whichModelIsBest = findIndexOfBestModel(fitnessList)
+    whichModelIsBest = fitnessList.index(max(fitnessList))
     shouldSavePopulation = options["--save-population"]
     resultsRepository.Save(population, whichModelIsBest, shouldSavePopulation)
     

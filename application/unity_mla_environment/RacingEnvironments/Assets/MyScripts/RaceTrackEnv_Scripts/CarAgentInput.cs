@@ -27,19 +27,24 @@ public class CarAgentInput {
     }
     
     public List<float> RenderSensorsAndGetNormalizedDistanceList() {
+        List<float> distanceList = new List<float>((int)(RAYS_COUNT));
         for (int i = 0; i < RAYS_COUNT; ++i) {
             float currentSensorAngle = ANGLE_BETWEEN_SENSORS * i + STARTING_ANGLE;
-            Vector3 sensorOrigin = mTransformComputer.ComputeSensorOrigin();
-            Vector3 sensorDirection =
-                    mTransformComputer.ComputeSensorDirection(currentSensorAngle);
-            mSensorList[i].SetRayProperties(sensorOrigin, sensorDirection);
+            var sensorProperties =
+                    mTransformComputer.ComputeSensorProperties(
+                            currentSensorAngle);
+            mSensorList[i].SetRayProperties(
+                    sensorProperties[0],
+                    sensorProperties[1]);
+            mSensorList[i].UpdateDetectionFlag();
             mSensorList[i].Render();
+            distanceList.Add(mSensorList[i].GetNormalizedDistance());
         }
-        return GetNormalizedDistanceList();
+        return distanceList;
     }
     
     private void InitSensorList() {
-        mSensorList = new List<CarSensor>();
+        mSensorList = new List<CarSensor>((int)(RAYS_COUNT));
         for (uint i = 0; i < RAYS_COUNT; ++i) {
             float currentSensorAngle = ANGLE_BETWEEN_SENSORS * i;
             var newSensor = CreateNewSensor(currentSensorAngle);
@@ -51,19 +56,11 @@ public class CarAgentInput {
         var newSensor = new CarSensor(
                 MAX_SENSOR_LENGTH * UNITY_ANTIBUG_FACTOR,
                 UNITY_ANTIBUG_FACTOR);
-        Vector3 sensorOrigin = mTransformComputer.ComputeSensorOrigin();
-        Vector3 sensorDirection =
-                mTransformComputer.ComputeSensorDirection(aCurrentSensorAngle);
-        newSensor.SetRayProperties(sensorOrigin, sensorDirection);
+         var sensorProperties =
+                    mTransformComputer.ComputeSensorProperties(
+                            aCurrentSensorAngle);
+        newSensor.SetRayProperties(sensorProperties[0], sensorProperties[1]);
         return newSensor;
-    }
-    private List<float> GetNormalizedDistanceList() {
-        List<float> distanceList = new List<float>();
-        foreach (var sensor in mSensorList) {
-            float tempDistance = sensor.GetNormalizedDistance();
-            distanceList.Add(tempDistance);
-        }
-        return distanceList;
     }
 
     private readonly Transform mCarTransform;

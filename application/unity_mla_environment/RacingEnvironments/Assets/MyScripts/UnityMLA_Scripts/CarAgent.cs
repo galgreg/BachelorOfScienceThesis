@@ -57,6 +57,7 @@ public class CarAgent : Agent {
     }
     public override void CollectObservations() {
         AddVectorObs(mCarInput.RenderSensorsAndGetNormalizedDistanceList());
+        AddVectorObs(GetCumulativeReward());
     }
     public override void AgentAction(float[] vectorAction, string textAction) {
         mCarOutput.Update(vectorAction[0], vectorAction[1]);

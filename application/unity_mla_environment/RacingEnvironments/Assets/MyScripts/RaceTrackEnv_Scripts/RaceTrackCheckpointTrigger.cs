@@ -8,7 +8,7 @@ public class RaceTrackCheckpointTrigger : MonoBehaviour {
         var carObject = aCarCollider.gameObject;
         var carAgentComponent = carObject.GetComponent<CarAgent>();
         if (carAgentComponent != null) {
-            carAgentComponent.SetReward(REWARD_FOR_CHECKPOINT);
+            carAgentComponent.AddReward(REWARD_FOR_CHECKPOINT);
         }
     }
 }
