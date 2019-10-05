@@ -32,7 +32,7 @@ public class RaceTrackAcademy : Academy {
     }
     private void PrepareCarAgentComponent(GameObject aAgentObject) {
         var carAgentComponent = aAgentObject.AddComponent<CarAgent>();
-        carAgentComponent.Constructor(this, aAgentObject, RewardPerStep);
+        carAgentComponent.Constructor(this, aAgentObject, StartAgentPosition, RewardPerStep);
         carAgentComponent.SetInputProperties(MaxSensorLength, FieldOfView, RaysCount);
         carAgentComponent.SetOutputProperties(MaxSteeringAngle, MotorForce);
         carAgentComponent.AgentReset();

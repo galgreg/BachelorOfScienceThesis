@@ -680,7 +680,7 @@ PrefabInstance:
     - target: {fileID: 5779282648281358520, guid: 308dda8ec2369f12287ce9af486b6266,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 5.25
+      value: 1.89
       objectReference: {fileID: 0}
     - target: {fileID: 5779282648281358520, guid: 308dda8ec2369f12287ce9af486b6266,
         type: 3}
@@ -740,7 +740,7 @@ PrefabInstance:
     - target: {fileID: 5779282648281358521, guid: 308dda8ec2369f12287ce9af486b6266,
         type: 3}
       propertyPath: orthographic size
-      value: 1
+      value: 4.2
       objectReference: {fileID: 0}
     - target: {fileID: 5779282648281358502, guid: 308dda8ec2369f12287ce9af486b6266,
         type: 3}
@@ -786,14 +786,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   broadcastHub:
-    broadcastingBrains: []
-    _brainsToControl: []
+    broadcastingBrains:
+    - {fileID: 11400000, guid: 254dc2d7932cab8e196737a41cc166cb, type: 2}
+    _brainsToControl:
+    - {fileID: 11400000, guid: 254dc2d7932cab8e196737a41cc166cb, type: 2}
   maxSteps: 0
   trainingConfiguration:
     width: 80
     height: 80
     qualityLevel: 1
-    timeScale: 100
+    timeScale: 5
     targetFrameRate: -1
   inferenceConfiguration:
     width: 1280
@@ -803,7 +805,7 @@ MonoBehaviour:
     targetFrameRate: 60
   resetParameters:
     resetParameters: []
-  CarAgentBrain: {fileID: 11400000, guid: 01b23f94962aecd56a1647ba31649ebb, type: 2}
+  CarAgentBrain: {fileID: 11400000, guid: 254dc2d7932cab8e196737a41cc166cb, type: 2}
   CarAgentPrefab: {fileID: 7078131988162174769, guid: f28a57ca9dfcff253b2384f394cbc2ed,
     type: 3}
   StartAgentPosition: {x: -1.197, y: 0.018, z: 5.493}
@@ -814,8 +816,8 @@ MonoBehaviour:
   RaysCount: 5
   MaxSteeringAngle: 45
   MotorForce: 250
-  RewardPerStep: -0.001
-  PopulationSize: 1
+  RewardPerStep: 0
+  PopulationSize: 100
 --- !u!4 &2045977089
 Transform:
   m_ObjectHideFlags: 0

@@ -6,6 +6,7 @@ public class CarAgent : Agent {
     public void Constructor(
             RaceTrackAcademy aAcademy,
             GameObject aCarObject,
+            Vector3 aInitialPosition,
             float aRewardPerStep) {
         mEnvironmentAcademy = aAcademy;
         mCarObject = aCarObject;
@@ -14,7 +15,9 @@ public class CarAgent : Agent {
         mWheelTransforms = CreateWheelTransform(aCarObject);
         agentParameters = new AgentParameters();
         agentParameters.resetOnDone = false;
-        mPreviousFrameTime = -1;
+
+        mInitialPosition = aInitialPosition;
+        mLastPosition = mInitialPosition;
     }
     private List<WheelCollider> CreateWheelColliders(GameObject aCarObject) {
         var wheelColliders = new List<WheelCollider>();
@@ -57,21 +60,27 @@ public class CarAgent : Agent {
     }
     public override void CollectObservations() {
         AddVectorObs(mCarInput.RenderSensorsAndGetNormalizedDistanceList());
-        AddVectorObs(GetCumulativeReward());
+        AddVectorObs(GetEpisodeReward());
+
+        mDrivenDistance += Vector3.Distance(transform.position, mLastPosition);
+        mLastPosition = transform.position;
     }
     public override void AgentAction(float[] vectorAction, string textAction) {
         mCarOutput.Update(vectorAction[0], vectorAction[1]);
         
     }
     public override void AgentOnDone() {
-        // Display episode reward (optional line, for debug purpose!)
+        // Display episode reward (optional line, only for debug purpose!)
         // Debug.Log("Episode reward: " + GetEpisodeReward());
         mEnvironmentAcademy.IncrementAgentDoneCounter();
         mCarObject.SetActive(false);
+
+        mDrivenDistance = 0.0f;
+        mLastPosition = mInitialPosition;
     }
 
     public void SaveEpisodeReward() {
-        mEpisodeReward = GetCumulativeReward();
+        mEpisodeReward = mDrivenDistance + GetCumulativeReward();
     }
     public float GetEpisodeReward() {
         return mEpisodeReward;
@@ -90,5 +99,7 @@ public class CarAgent : Agent {
     private CarAgentInput mCarInput;
     private CarAgentOutput mCarOutput;
     private float mEpisodeReward;
-    private float mPreviousFrameTime;
+    private Vector3 mLastPosition;
+    private float mDrivenDistance = 0.0f;
+    private Vector3 mInitialPosition;
 }
