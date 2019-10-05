@@ -205,63 +205,6 @@ class TestGeneticAlgorithm(unittest.TestCase):
 			self.assertTrue(
 					torch.equal(actualParentPool[i], expectedParentPool[i])
 			)
-	
-	@unpack
-	@data((100, 5), (2, 1), (1, 1))
-	def test_computeContendersCount(
-			self,
-			sizeOfPopulation,
-			expectedContendersCount):
-		random.randrange = lambda n: int(n / 2)
-		actualContendersCount = \
-				self._algorithm._computeContendersCount(sizeOfPopulation)
-		self.assertEqual(actualContendersCount, expectedContendersCount)	
-	
-	@unpack
-	@data((100, 10, 10), (20, 10, 2), (10, 10, 1), (5, 10, 1), (1, 10, 1))
-	def test_computeSizeOfParentPool(
-			self,
-			sizeOfPopulation,
-			selectionPercentRate,
-			expectedSizeOfParentPool):
-		self._algorithm._population = list(range(sizeOfPopulation))
-		actualSizeOfParentPool = \
-				self._algorithm._computeSizeOfParentPool(sizeOfPopulation)
-		self.assertEqual(actualSizeOfParentPool, expectedSizeOfParentPool)
-	
-	def test_getChromosomesToCompete(self):
-		oldPopulation = torch.randn(5, 10)
-		fitnessList = [10.51, -20.3, -30.99, 40.11, 50.0]
-		indicesToChoose = [0, 1, 3]
-		random.randrange = lambda n : indicesToChoose.pop(0)
-		expectedChromosomes = { \
-				fitnessList[0] : oldPopulation[0], \
-				fitnessList[1] : oldPopulation[1], \
-				fitnessList[3] : oldPopulation[3] \
-		}
-		actualChromosomes = \
-				self._algorithm._getChromosomesToCompete(
-						oldPopulation,
-						fitnessList,
-						len(indicesToChoose))
-						
-		self.assertEqual(actualChromosomes.keys(), expectedChromosomes.keys())
-		for actualKey in actualChromosomes.keys():
-			self.assertTrue(
-					torch.equal(
-							actualChromosomes[actualKey],
-							expectedChromosomes[actualKey]))
-	
-	def test_getBestChromosome(self):
-		expectedBestChromosome = torch.randn(10)
-		chromosomesToChoose = {\
-				10.51 : torch.randn(10), \
-				-20.3 : torch.randn(10), \
-				40.11 : expectedBestChromosome \
-		}
-		actualBestChromosome = \
-				self._algorithm._getBestChromosome(chromosomesToChoose)
-		self.assertTrue(torch.equal(actualBestChromosome, expectedBestChromosome))
 
 	def test_doCrossover(self):
 		parentPool = [

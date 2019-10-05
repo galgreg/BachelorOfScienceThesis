@@ -11,7 +11,7 @@ class TrainingResultsRepository:
     def __init__(self, trainingLog = None):
         self._trainingLog = trainingLog
 
-    def Save(self, population, whichModelIsTheBest, shouldSavePopulation):
+    def Save(self, population, bestIndividual, shouldSavePopulation):
         if self._trainingLog is None:
             self._trainingLog = TrainingLog(isVerbose = False)
             self._trainingLog.Append(
@@ -23,24 +23,16 @@ class TrainingResultsRepository:
         os.mkdir(locationForTrainingResults)
         if self._doParametersHaveValidTypes(
                 population,
-                whichModelIsTheBest,
+                bestIndividual,
                 shouldSavePopulation):
             if len(population._agents) == 0:
                 self._trainingLog.Append(
                         "TrainingResultsRepository.Save() error: " \
                         "population is empty!")
-            elif whichModelIsTheBest < 0 \
-                    or whichModelIsTheBest >= len(population._agents):
-                self._trainingLog.Append(
-                        "TrainingResultsRepository.Save() error: " \
-                        "whichModelIsBest is out of allowed range!\n" \
-                        "Allowed range is from 0 to {0} (inclusive)!".format(
-                                len(population._agents) - 1))
             else:
                 self._saveBestModel(
                         locationForTrainingResults,
-                        population,
-                        whichModelIsTheBest)
+                        bestIndividual)
                 if shouldSavePopulation:
                     self._saveWholePopulation(
                             locationForTrainingResults,
@@ -54,10 +46,10 @@ class TrainingResultsRepository:
                     "TrainingResultsRepository.Save() error: " \
                     "some of parameters have wrong type!\n" \
                     "type(population) == {0}, " \
-                    "type(whichModelIsTheBest) == {1}, " \
+                    "type(bestIndividual) == {1}, " \
                     "type(shouldSavePopulation) == {2}".format(
                             type(population),
-                            type(whichModelIsTheBest),
+                            type(bestIndividual),
                             type(shouldSavePopulation)))
         
         self._trainingLog.Save(locationForTrainingResults)
@@ -154,10 +146,10 @@ class TrainingResultsRepository:
     def _doParametersHaveValidTypes(
             self,
             population,
-            whichModelIsTheBest,
+            bestIndividual,
             shouldSavePopulation):
         return type(population) == AgentsPopulation \
-                and type(whichModelIsTheBest) == int \
+                and type(bestIndividual) == AgentNeuralNetwork \
                 and type(shouldSavePopulation) == bool
     
     def _createLocationForTrainingResults(self):
@@ -187,8 +179,7 @@ class TrainingResultsRepository:
         )
         return dirName
 
-    def _saveBestModel(self, location, population, whichModelIsTheBest):
-        bestModel = population._agents[whichModelIsTheBest]
+    def _saveBestModel(self, location, bestModel):
         bestModelFileName = "best_model.pth"
         fullPathForModelFile = os.path.join(location, bestModelFileName)
         torch.save(bestModel, fullPathForModelFile)

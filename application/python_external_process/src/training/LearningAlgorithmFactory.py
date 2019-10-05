@@ -24,11 +24,13 @@ class LearningAlgorithmFactory:
                 algorithmParameters["minimalProbabilityToMutateChromosome"]
         probabilityThresholdToMutateGenome = \
                 algorithmParameters["minimalProbabilityToMutateGenome"]
+        scaleOfMutateDeviation = algorithmParameters["scaleOfMutateDeviation"]
         
         learningAlgorithm = GeneticAlgorithm(
                 selectionRate,
                 probabilityThresholdToMutateChromosome,
-                probabilityThresholdToMutateGenome)
+                probabilityThresholdToMutateGenome,
+                scaleOfMutateDeviation)
                 
         if self._trainingLog is not None:
             logMessage = \

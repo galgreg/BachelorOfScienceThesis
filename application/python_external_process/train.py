@@ -4,6 +4,9 @@ from src.AgentsPopulation import *
 from src.training.LearningAlgorithmFactory import *
 from src.training.TrainingLog import *
 from src.training.TrainingResultsRepository import *
+from copy import deepcopy
+import statistics
+
 
 def loadConfigData(configFilePath):
     if type(configFilePath) != str:
@@ -79,6 +82,12 @@ Options:
     trainingLog.Append("Config data has been loaded from file: {0}".format(
             pathToConfigFile))
     del pathToConfigFile
+    # --- 4 --- #
+    TRAINING_PARAMS = CONFIG_DATA["TrainingParameters"]
+    RANDOM_SEED = TRAINING_PARAMS["randomSeed"]
+    random.seed(RANDOM_SEED)
+    torch.manual_seed(RANDOM_SEED)
+    trainingLog.Append("Random seed set to value: {0}".format(RANDOM_SEED))
     # --- 5 --- #
     factory = LearningAlgorithmFactory(options, CONFIG_DATA, trainingLog)
     learningAlgorithm = factory.Create()
@@ -152,11 +161,19 @@ Options:
         population._learningAlgorithm = learningAlgorithm
     
     # --- 10 - Training sequence --- #
-    TRAINING_PARAMS = CONFIG_DATA["TrainingParameters"]
     MAX_EPISODES_NUMBER = TRAINING_PARAMS["maxNumberOfEpisodes"]
     MAX_STEPS_NUMBER_FOR_EPISODE = TRAINING_PARAMS["maxNumberOfStepsPerEpisode"]
     currentBestFitness = float("-inf")
+    currentMeanFitness = float("-inf")
+    currentStdDevFitness = float("-inf")
+    
     totalBestFitness = float("-inf")
+    meanOfBestPopulation = float("-inf")
+    stdDevOfBestPopulation = float("-inf")
+    
+    bestIndividual = None
+    bestPopulation = None
+    
     numOfEpisodesWithoutImprovement = 0
     
     trainingLog.Append(
@@ -214,20 +231,32 @@ Options:
                                 MAX_STEPS_NUMBER_FOR_EPISODE))
         
         currentBestFitness = max(fitnessList)
-        population.Learn(fitnessList)
+        currentMeanFitness = statistics.mean(fitnessList)
+        currentStdDevFitness = statistics.stdev(fitnessList)
         
         if currentBestFitness > totalBestFitness:
             totalBestFitness = currentBestFitness
+            indexOfBestIndividual = fitnessList.index(currentBestFitness)
+            bestIndividual = deepcopy(population._agents[indexOfBestIndividual])
             numOfEpisodesWithoutImprovement = 0
         else:
             numOfEpisodesWithoutImprovement += 1
         
+        if currentMeanFitness > meanOfBestPopulation:
+            meanOfBestPopulation = currentMeanFitness
+            stdDevOfBestPopulation = currentStdDevFitness
+            bestPopulation = deepcopy(population._agents)
+        
         trainingLog.Append(
-                "Best fitness for episode {0} -> {1}, best fitness for whole " \
-                "training -> {2}".format(
+                "Episode {0}: currentBest = {1}, currentMean = {2}, currentStdDev = {3} \n" \
+                        "\t totalBestFitness = {4}, meanOfBestPopulation = {5}, stdDevOfBestPopulation = {6}".format(
                         episodeCounter,
                         currentBestFitness,
-                        totalBestFitness))
+                        currentMeanFitness,
+                        currentStdDevFitness,
+                        totalBestFitness,
+                        meanOfBestPopulation,
+                        stdDevOfBestPopulation))
         
         if totalBestFitness >= TRAINING_PARAMS["minimalAcceptableFitness"]:
             trainingLog.Append(
@@ -252,6 +281,8 @@ Options:
                             totalBestFitness,
                             TRAINING_PARAMS["minimalAcceptableFitness"]))
             break
+        
+        population.Learn(fitnessList)
     
     trainingLog.Append("End of training!")
     
@@ -261,7 +292,8 @@ Options:
     # --- 12 --- #
     whichModelIsBest = fitnessList.index(max(fitnessList))
     shouldSavePopulation = options["--save-population"]
-    resultsRepository.Save(population, whichModelIsBest, shouldSavePopulation)
+    population._agents = bestPopulation
+    resultsRepository.Save(population, bestIndividual, shouldSavePopulation)
     
 if __name__ == "__main__":
     main()
