@@ -552,7 +552,7 @@ MonoBehaviour:
     width: 80
     height: 80
     qualityLevel: 1
-    timeScale: 5
+    timeScale: 100
     targetFrameRate: -1
   inferenceConfiguration:
     width: 1280
@@ -573,8 +573,8 @@ MonoBehaviour:
   RaysCount: 3
   MaxSteeringAngle: 30
   MotorForce: 500
-  RewardPerStep: -0.001
-  PopulationSize: 100
+  RewardPerStep: 0
+  PopulationSize: 1
 --- !u!1 &1471889553
 GameObject:
   m_ObjectHideFlags: 0
