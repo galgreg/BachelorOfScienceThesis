@@ -15,6 +15,9 @@ class TestTrainingResultsRepository(unittest.TestCase):
     def setUp(self):
         self._trainingLog = TrainingLog(isVerbose = False)
         self._repository = TrainingResultsRepository(self._trainingLog)
+        ###############################
+        self.maxDiff = None
+        ###############################
     
     def tearDown(self):
         del self._repository
@@ -29,11 +32,11 @@ class TestTrainingResultsRepository(unittest.TestCase):
             rmtree(locationForResults)
         
         population = AgentsPopulation(2, [2, 2], None)
-        whichModelIsTheBest = 1
+        bestModel = population._agents[1]
         
         with patch('src.training.TrainingLog.datetime') as datetime_log:
             datetime_log.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
-            self._repository.Save(population, whichModelIsTheBest, False)
+            self._repository.Save(population, bestModel, False)
         
         doesLocationExist = os.path.isdir(locationForResults)
         self.assertTrue(doesLocationExist)
@@ -56,7 +59,7 @@ class TestTrainingResultsRepository(unittest.TestCase):
         doesBestModelExist = os.path.isfile(pathToBestModel)
         self.assertTrue(doesBestModelExist)
         
-        expectedBestModel = population._agents[whichModelIsTheBest]
+        expectedBestModel = bestModel
         actualBestModel = torch.load(pathToBestModel)
         self._compareModels(actualBestModel, expectedBestModel)
         
@@ -75,11 +78,11 @@ class TestTrainingResultsRepository(unittest.TestCase):
             rmtree(locationForResults)
         
         population = AgentsPopulation(2, [2, 2], None)
-        whichModelIsTheBest = 1
+        bestModel = population._agents[1]
         
         with patch('src.training.TrainingLog.datetime') as datetime_log:
             datetime_log.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
-            self._repository.Save(population, whichModelIsTheBest, True)
+            self._repository.Save(population, bestModel, True)
         
         doesLocationExist = os.path.isdir(locationForResults)
         self.assertTrue(doesLocationExist)
@@ -102,7 +105,7 @@ class TestTrainingResultsRepository(unittest.TestCase):
         doesBestModelExist = os.path.isfile(pathToBestModel)
         self.assertTrue(doesBestModelExist)
         
-        expectedBestModel = population._agents[whichModelIsTheBest]
+        expectedBestModel = bestModel
         actualBestModel = torch.load(pathToBestModel)
         self._compareModels(actualBestModel, expectedBestModel)
         
@@ -136,7 +139,7 @@ class TestTrainingResultsRepository(unittest.TestCase):
     def test_Save_SomeParametersHaveWrongType(
             self,
             population,
-            whichModelIsTheBest,
+            bestModel,
             shouldSavePopulation,
             mock_datetime):
         mock_datetime.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
@@ -145,15 +148,15 @@ class TestTrainingResultsRepository(unittest.TestCase):
                 "TrainingResultsRepository.Save() error: " \
                 "some of parameters have wrong type!\n" \
                 "type(population) == {0}, " \
-                "type(whichModelIsTheBest) == {1}, " \
+                "type(bestIndividual) == {1}, " \
                 "type(shouldSavePopulation) == {2}\n".format(
                         type(population),
-                        type(whichModelIsTheBest),
+                        type(bestModel),
                         type(shouldSavePopulation)
                 )
         self._assertSaveTestForInvalidParameters(
                 population,
-                whichModelIsTheBest,
+                bestModel,
                 shouldSavePopulation,
                 mock_datetime,
                 expectedLogContent)
@@ -166,26 +169,7 @@ class TestTrainingResultsRepository(unittest.TestCase):
                 "TrainingResultsRepository.Save() error: population is empty!\n"
         self._assertSaveTestForInvalidParameters(
                 population = AgentsPopulation(0, [2, 2], None),
-                whichModelIsTheBest = 0,
-                shouldSavePopulation = True,
-                mock_datetime = mock_datetime,
-                expectedLogContent = expectedLogContent)
-    
-    @data(-1, 11, 100)
-    @patch('src.training.TrainingResultsRepository.datetime')
-    def test_Save_BestModelIsOutOfAllowedRange(
-            self,
-            whichModelIsBest,
-            mock_datetime):
-        mock_datetime.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
-        expectedLogContent = \
-                "[ 1995-07-04 17:15:00 ] " \
-                "TrainingResultsRepository.Save() error: " \
-                "whichModelIsBest is out of allowed range!\n" \
-                "Allowed range is from 0 to 9 (inclusive)!\n"
-        self._assertSaveTestForInvalidParameters(
-                population = AgentsPopulation(10, [2, 2], None),
-                whichModelIsTheBest = whichModelIsBest,
+                bestModel = AgentNeuralNetwork([2, 2]),
                 shouldSavePopulation = True,
                 mock_datetime = mock_datetime,
                 expectedLogContent = expectedLogContent)
@@ -199,13 +183,13 @@ class TestTrainingResultsRepository(unittest.TestCase):
             rmtree(locationForResults)
         
         population = AgentsPopulation(2, [2, 2], None)
-        whichModelIsTheBest = 1
+        bestModel = population._agents[1]
         
         self._repository = TrainingResultsRepository(trainingLog = None)
         
         with patch('src.training.TrainingLog.datetime') as datetime_log:
             datetime_log.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
-            self._repository.Save(population, whichModelIsTheBest, False)
+            self._repository.Save(population, bestModel, False)
         
         doesLocationExist = os.path.isdir(locationForResults)
         self.assertTrue(doesLocationExist)
@@ -232,7 +216,7 @@ class TestTrainingResultsRepository(unittest.TestCase):
         doesBestModelExist = os.path.isfile(pathToBestModel)
         self.assertTrue(doesBestModelExist)
         
-        expectedBestModel = population._agents[whichModelIsTheBest]
+        expectedBestModel = bestModel
         actualBestModel = torch.load(pathToBestModel)
         self._compareModels(actualBestModel, expectedBestModel)
         
@@ -245,7 +229,7 @@ class TestTrainingResultsRepository(unittest.TestCase):
     def _assertSaveTestForInvalidParameters(
             self,
             population,
-            whichModelIsTheBest,
+            bestModel,
             shouldSavePopulation,
             mock_datetime,
             expectedLogContent):
@@ -258,7 +242,7 @@ class TestTrainingResultsRepository(unittest.TestCase):
             datetime_log.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
             self._repository.Save(
                     population,
-                    whichModelIsTheBest,
+                    bestModel,
                     shouldSavePopulation)
         
         doesLocationExist = os.path.isdir(locationForResults)
@@ -657,22 +641,23 @@ class TestTrainingResultsRepository(unittest.TestCase):
     def test_doParametersHaveValidTypes_False(
             self,
             population,
-            whichModelIsTheBest,
+            bestModel,
             shouldSavePopulation):
         expectedResult = False
         actualResult = \
                 self._repository._doParametersHaveValidTypes(
                         population,
-                        whichModelIsTheBest,
+                        bestModel,
                         shouldSavePopulation)
         self.assertEqual(actualResult, expectedResult)
 
     def test_doParametersHaveValidTypes_True(self):
+        tempPopulation = AgentsPopulation(2, [2, 2], None)
         expectedResult = True
         actualResult = \
                 self._repository._doParametersHaveValidTypes(
-                        population = AgentsPopulation(2, [2, 2], None),
-                        whichModelIsTheBest = 1,
+                        population = tempPopulation,
+                        bestIndividual = tempPopulation._agents[1],
                         shouldSavePopulation = True)
         self.assertEqual(actualResult, expectedResult)
 
@@ -722,12 +707,7 @@ class TestTrainingResultsRepository(unittest.TestCase):
         self.assertEqual(actualDirName, expectedDirName)
 
     def test_saveBestModel_OK(self):
-        population = \
-                AgentsPopulation(
-                        numberOfAgents = 5,
-                        agentDimensions = [5, 3, 2],
-                        learningAlgorithm = None)
-        whichModelIsBest = 3
+        bestModel = AgentNeuralNetwork([5, 3, 2])
         
         locationForModel = "TEST_LOCATION_TO_SAVE_BEST_MODEL"
         if os.path.exists(locationForModel):
@@ -736,16 +716,13 @@ class TestTrainingResultsRepository(unittest.TestCase):
         os.mkdir(locationForModel)
         self.assertTrue(os.path.isdir(locationForModel))
         
-        self._repository._saveBestModel(
-                locationForModel,
-                population,
-                whichModelIsBest)
+        self._repository._saveBestModel(locationForModel, bestModel)
         
         modelFilePath = os.path.join(locationForModel, "best_model.pth")
         doesModelFileExist = os.path.isfile(modelFilePath)
         self.assertTrue(doesModelFileExist)
         
-        expectedSavedModel = population._agents[whichModelIsBest]
+        expectedSavedModel = bestModel
         actualSavedModel = torch.load(modelFilePath)
         self._compareModels(expectedSavedModel, actualSavedModel)
         

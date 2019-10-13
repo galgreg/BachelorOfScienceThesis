@@ -1,5 +1,5 @@
 {
-    "Description" : "Train config for RaceTrack_2 Unity scene",
+    "Description" : "Train config for RaceTrack_3 Unity scene",
     "UnityEnvironment" : {
         "no_graphics" : false,
         "timeout_wait" : 30,
@@ -12,7 +12,7 @@
     "TrainingParameters" : {
         "randomSeed" : 0,
         "maxNumberOfEpisodes" : 100,
-        "minimalAcceptableFitness": 110.00,
+        "minimalAcceptableFitness": 130.00,
         "networkHiddenDimensions" : [5 ],
         "maxNumberOfEpisodesWithoutImprovement" : 90,
         "maxNumberOfStepsPerEpisode" : 2000,

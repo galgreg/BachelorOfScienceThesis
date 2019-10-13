@@ -7,18 +7,12 @@
     },
     "LearningAlgorithms" : {
         "ppo" : { },
-        "neat" : { },
-        "genetic" : {
-            "selectionPercentRate" : 10,
-            "minimalProbabilityToMutateChromosome" : 1.0,
-            "minimalProbabilityToMutateGenome" : 0.1,
-            "scaleOfMutateDeviation" : 0.3
-        }
+        "neat" : { }
     },
     "TrainingParameters" : {
         "randomSeed" : 0,
         "maxNumberOfEpisodes" : 1000,
-        "minimalAcceptableFitness": 10.00,
+        "minimalAcceptableFitness": 104.00,
         "networkHiddenDimensions" : [5 ],
         "maxNumberOfEpisodesWithoutImprovement" : 1000,
         "maxNumberOfStepsPerEpisode" : 2000,

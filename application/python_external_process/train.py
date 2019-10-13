@@ -60,12 +60,11 @@ def main():
 Train neural networks to drive a car on a racetrack. Racetrack must be valid Unity ML-Agents environment.
 
 Usage:
-    train.py <config-file-path> (--genetic | --neat | --ppo) [options]
+    train.py <config-file-path> (--neat | --ppo) [options]
     train.py -h | --help
 
 Options:
     -v --verbose                            Run in verbose mode
-    --genetic                               Use Genetic Algorithm to learn network
     --neat                                  Use NEAT algorithm to learn network
     --ppo                                   Use PPO algorithm to learn network
     --save-population                       Save population after training
@@ -185,112 +184,116 @@ Options:
                     MAX_STEPS_NUMBER_FOR_EPISODE,
                     TRAINING_PARAMS["minimalAcceptableFitness"],
                     TRAINING_PARAMS["maxNumberOfEpisodesWithoutImprovement"]))
-    # --- Episode loop --- #
-    for episodeCounter in range(MAX_EPISODES_NUMBER):
-        fitnessList = [0] * numberOfAgents
-        
-        envInfo = env.reset(train_mode = True)[brainName]
-        listOfInputData = envInfo.vector_observations.tolist()
-        listOfInputData = \
-                [listOfInputData[i][:-1] for i in range(len(listOfInputData))]
-        agentDones = envInfo.local_done
-        
-        # --- Step loop --- #
-        for stepCounter in range(MAX_STEPS_NUMBER_FOR_EPISODE):
-            listOfOutputData = population.DoForward(listOfInputData, agentDones)
-            envInfo = env.step(listOfOutputData)[brainName]
+    
+    try:
+        # --- Episode loop --- #
+        for episodeCounter in range(MAX_EPISODES_NUMBER):
+            fitnessList = [0] * numberOfAgents
             
+            envInfo = env.reset(train_mode = True)[brainName]
             listOfInputData = envInfo.vector_observations.tolist()
-            episodeRewards = \
-                    [listOfInputData[i][-1] for i in range(len(listOfInputData))]
             listOfInputData = \
                     [listOfInputData[i][:-1] for i in range(len(listOfInputData))]
-            
             agentDones = envInfo.local_done
             
-            for i in range(len(episodeRewards)):
-                if episodeRewards[i] > fitnessList[i]:
-                    fitnessList[i] = episodeRewards[i]
+            # --- Step loop --- #
+            for stepCounter in range(MAX_STEPS_NUMBER_FOR_EPISODE):
+                listOfOutputData = population.DoForward(listOfInputData, agentDones)
+                envInfo = env.step(listOfOutputData)[brainName]
+                
+                listOfInputData = envInfo.vector_observations.tolist()
+                episodeRewards = \
+                        [listOfInputData[i][-1] for i in range(len(listOfInputData))]
+                listOfInputData = \
+                        [listOfInputData[i][:-1] for i in range(len(listOfInputData))]
+                
+                agentDones = envInfo.local_done
+                
+                for i in range(len(episodeRewards)):
+                    if episodeRewards[i] > fitnessList[i]:
+                        fitnessList[i] = episodeRewards[i]
+                
+                if areAllAgentsDone(agentDones):
+                    trainingLog.Append(
+                            "Episode {0}: all agents are done after {1} steps!" \
+                            .format(episodeCounter, stepCounter + 1))
+                    break
+                
+                if stepCounter >= MAX_STEPS_NUMBER_FOR_EPISODE-1:
+                    for i in range(len(agentDones)):
+                        if not agentDones[i]:
+                            fitnessList[i] += \
+                                    TRAINING_PARAMS["penaltyForTooLongEpisode"]
+                    trainingLog.Append(
+                            "Interrupted {0} episode, reason: "
+                            "reached max allowed steps for episode! "
+                            "(maxNumberOfStepsPerEpisode = {1})".format(
+                                    episodeCounter,
+                                    MAX_STEPS_NUMBER_FOR_EPISODE))
             
-            if areAllAgentsDone(agentDones):
-                trainingLog.Append(
-                        "Episode {0}: all agents are done after {1} steps!" \
-                        .format(episodeCounter, stepCounter + 1))
-                break
+            currentBestFitness = max(fitnessList)
+            currentMeanFitness = statistics.mean(fitnessList)
+            currentStdDevFitness = statistics.stdev(fitnessList)
             
-            if stepCounter >= MAX_STEPS_NUMBER_FOR_EPISODE-1:
-                for i in range(len(agentDones)):
-                    if not agentDones[i]:
-                        fitnessList[i] += \
-                                TRAINING_PARAMS["penaltyForTooLongEpisode"]
-                trainingLog.Append(
-                        "Interrupted {0} episode, reason: "
-                        "reached max allowed steps for episode! "
-                        "(maxNumberOfStepsPerEpisode = {1})".format(
-                                episodeCounter,
-                                MAX_STEPS_NUMBER_FOR_EPISODE))
-        
-        currentBestFitness = max(fitnessList)
-        currentMeanFitness = statistics.mean(fitnessList)
-        currentStdDevFitness = statistics.stdev(fitnessList)
-        
-        if currentBestFitness > totalBestFitness:
-            totalBestFitness = currentBestFitness
-            indexOfBestIndividual = fitnessList.index(currentBestFitness)
-            bestIndividual = deepcopy(population._agents[indexOfBestIndividual])
-            numOfEpisodesWithoutImprovement = 0
-        else:
-            numOfEpisodesWithoutImprovement += 1
-        
-        if currentMeanFitness > meanOfBestPopulation:
-            meanOfBestPopulation = currentMeanFitness
-            stdDevOfBestPopulation = currentStdDevFitness
-            bestPopulation = deepcopy(population._agents)
-        
-        trainingLog.Append(
-                "Episode {0}: currentBest = {1}, currentMean = {2}, currentStdDev = {3} \n" \
-                        "\t totalBestFitness = {4}, meanOfBestPopulation = {5}, stdDevOfBestPopulation = {6}".format(
-                        episodeCounter,
-                        currentBestFitness,
-                        currentMeanFitness,
-                        currentStdDevFitness,
-                        totalBestFitness,
-                        meanOfBestPopulation,
-                        stdDevOfBestPopulation))
-        
-        if totalBestFitness >= TRAINING_PARAMS["minimalAcceptableFitness"]:
+            if currentBestFitness > totalBestFitness:
+                totalBestFitness = currentBestFitness
+                indexOfBestIndividual = fitnessList.index(currentBestFitness)
+                bestIndividual = deepcopy(population._agents[indexOfBestIndividual])
+                numOfEpisodesWithoutImprovement = 0
+            else:
+                numOfEpisodesWithoutImprovement += 1
+            
+            if currentMeanFitness > meanOfBestPopulation:
+                meanOfBestPopulation = currentMeanFitness
+                stdDevOfBestPopulation = currentStdDevFitness
+                bestPopulation = deepcopy(population._agents)
+            
             trainingLog.Append(
-                    "Training interrupted after {0} episodes, reason: " \
-                    "reached minimal acceptable fitness for totalBestFitness." \
-                    " (minimalAcceptableFitness = {1}, totalBestFitness = {2})" \
-                    .format(
-                            episodeCounter + 1,
-                            TRAINING_PARAMS["minimalAcceptableFitness"],
-                            totalBestFitness))
-            break
-        elif numOfEpisodesWithoutImprovement >= \
-                TRAINING_PARAMS["maxNumberOfEpisodesWithoutImprovement"]:
-            trainingLog.Append(
-                    "Training interrupted after {0} episodes, reason: " \
-                    "too much episodes without improvement!" \
-                    " (maxNumberOfEpisodesWithoutImprovement = {1}, " \
-                    "totalBestFitness = {2}, minimalAcceptableFitness = {3})" \
-                    .format(
-                            episodeCounter + 1,
-                            TRAINING_PARAMS["maxNumberOfEpisodesWithoutImprovement"],
+                    "Episode {0}: currentBest = {1}, currentMean = {2}, " \
+                    "currentStdDev = {3} \n\t totalBestFitness = {4}, " \
+                    "meanOfBestPopulation = {5}, stdDevOfBestPopulation = {6}".format(
+                            episodeCounter,
+                            currentBestFitness,
+                            currentMeanFitness,
+                            currentStdDevFitness,
                             totalBestFitness,
-                            TRAINING_PARAMS["minimalAcceptableFitness"]))
-            break
-        
-        population.Learn(fitnessList)
+                            meanOfBestPopulation,
+                            stdDevOfBestPopulation))
+            
+            if totalBestFitness >= TRAINING_PARAMS["minimalAcceptableFitness"]:
+                trainingLog.Append(
+                        "Training interrupted after {0} episodes, reason: " \
+                        "reached minimal acceptable fitness for totalBestFitness." \
+                        " (minimalAcceptableFitness = {1}, totalBestFitness = {2})" \
+                        .format(
+                                episodeCounter + 1,
+                                TRAINING_PARAMS["minimalAcceptableFitness"],
+                                totalBestFitness))
+                break
+            elif numOfEpisodesWithoutImprovement >= \
+                    TRAINING_PARAMS["maxNumberOfEpisodesWithoutImprovement"]:
+                trainingLog.Append(
+                        "Training interrupted after {0} episodes, reason: " \
+                        "too much episodes without improvement!" \
+                        " (maxNumberOfEpisodesWithoutImprovement = {1}, " \
+                        "totalBestFitness = {2}, minimalAcceptableFitness = {3})" \
+                        .format(
+                                episodeCounter + 1,
+                                TRAINING_PARAMS["maxNumberOfEpisodesWithoutImprovement"],
+                                totalBestFitness,
+                                TRAINING_PARAMS["minimalAcceptableFitness"]))
+                break
+                
+            population.Learn(fitnessList)
+    
+    except KeyboardInterrupt:
+        trainingLog.Append("Training interrupted because of KeyboardInterrupt!")
     
     trainingLog.Append("End of training!")
-    
     # --- 11 --- #
     env.close()
     trainingLog.Append("Closed Unity environment.")
     # --- 12 --- #
-    whichModelIsBest = fitnessList.index(max(fitnessList))
     shouldSavePopulation = options["--save-population"]
     population._agents = bestPopulation
     resultsRepository.Save(population, bestIndividual, shouldSavePopulation)
