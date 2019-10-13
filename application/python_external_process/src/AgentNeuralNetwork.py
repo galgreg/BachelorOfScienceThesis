@@ -10,10 +10,10 @@ class AgentNeuralNetwork(nn.Module):
         for i in range(len(dimensions) - 1):
             self._layers.append(nn.Linear(dimensions[i], dimensions[i+1]))
             self._layers[i].weight = nn.Parameter(
-                    data = torch.randn(dimensions[i+1], dimensions[i]),
+                    data = torch.FloatTensor(dimensions[i+1], dimensions[i]).uniform_(-2.0, 2.0),
                     requires_grad = requires_grad)
             self._layers[i].bias = nn.Parameter(
-                    data = torch.randn(dimensions[i+1]),
+                    data = torch.FloatTensor(dimensions[i+1]).uniform_(-2.0, 2.0),
                     requires_grad = requires_grad)
 
     # Define how output is computed
@@ -22,5 +22,6 @@ class AgentNeuralNetwork(nn.Module):
         dataToProcess = torch.tensor(dataToProcess)
         for networkLayer in self._layers:
             dataToProcess = F.elu(networkLayer(dataToProcess))
-        dataToProcess[0] = dataToProcess[0] / 2 + 1
+        dataToProcess[0] = min((dataToProcess[0] + 1), 1)
+        dataToProcess[1] = min(dataToProcess[1], 1)
         return dataToProcess.tolist()
