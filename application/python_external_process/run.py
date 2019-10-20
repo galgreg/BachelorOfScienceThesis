@@ -7,14 +7,23 @@ def main():
 Run best trained model of car on a specified racetrack. Racetrack must be valid Unity ML-Agents environment.
 
 Usage:
-    run.py --population=<pretrained-population> [options]
+    run.py --model=<pretrained-model> [options]
     run.py -h | --help
 
 Options:
-    --population=<pretrained-population>    Specify path to pretrained population
-    --env-path=<unity-build>                Specify path to Unity environment build
+    --model=<pretrained-model>      Specify path to pretrained model
+    --env-path=<unity-build>        Specify path to Unity environment build
 """
     options = docopt(APP_USAGE_DESCRIPTION)
+    
+    print("This is run.py -> script for running pretrained models!")
+    locationForPretrainedPopulation = options["--model"]
+    resultsRepository = TrainingResultsRepository()
+    bestAgent = resultsRepository.LoadBestModel(locationForPretrainedPopulation)
+    if bestAgent is None:
+        print("Cannot load model, reason: location '{0}' does not exist!"
+                .format(locationForPretrainedPopulation))
+        exit()
 
     env = UnityEnvironment(file_name = options["--env-path"])
     brainName = env.brain_names[0]
@@ -23,10 +32,6 @@ Options:
     brainInfo = env.reset(train_mode=False)[brainName]
     del brain
 
-    locationForPretrainedPopulation = options["--population"]
-    resultsRepository = TrainingResultsRepository()
-    bestAgent = resultsRepository.LoadBestModel(locationForPretrainedPopulation)
-    
     try:
         while True:
             envInfo = env.reset(train_mode = False)[brainName]
@@ -41,7 +46,7 @@ Options:
                     break
     
     except KeyboardInterrupt:
-        print("Run interrupted because of KeyboardInterrupt!")
+        print("\nRun interrupted because of KeyboardInterrupt!")
     
     print("End of run!")
     env.close()

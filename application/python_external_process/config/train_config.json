@@ -1,0 +1,25 @@
+{
+    "LearningAlgorithms" : {
+        "pso" : {
+            "numberOfAgents" : 100,
+            "W" : 0.729,
+            "c1" : 2.05,
+            "c2" : 2.05
+        },
+        "diff_evo" : {
+            "numberOfAgents" : 50,
+            "mutationFactor" : 0.8,
+            "crossProbability" : 0.7
+        }
+    },
+    "TrainingParameters" : {
+        "randomSeed" : null,
+        "maxNumberOfEpisodes" : 1000,
+        "minimalAcceptableFitness": {
+            "RaceTrack_1" : 104.00,
+            "RaceTrack_2" : 110.00,
+            "RaceTrack_3" : 130.00
+        },
+        "networkHiddenDimensions" : [5 ]
+    }
+}

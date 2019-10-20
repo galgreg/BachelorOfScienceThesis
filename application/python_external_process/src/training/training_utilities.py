@@ -1,5 +1,24 @@
 import torch
 
+def loadConfigData(configFilePath):
+    if type(configFilePath) != str:
+        return {}
+    configFilePath = configFilePath.strip()
+    if configFilePath == "" or not configFilePath.endswith('.json'):
+        return {}
+    
+    from os.path import isfile
+    if not isfile(configFilePath):
+        return {}
+    
+    configFileContent = ""
+    with open(configFilePath, "r") as configFile:
+        configFileContent = configFile.read()
+    
+    from json import loads
+    configData = loads(configFileContent)
+    return configData
+
 def computeNumOfParameters(agentDimensions):
     numOfParameters = 0
     for i in range(len(agentDimensions) - 1):

@@ -15,15 +15,16 @@ Train neural networks to drive a car on a racetrack. Racetrack must be valid Uni
 Algorithm used to train is Particle Swarm Optimization.
 
 Usage:
-    train_pso.py [options]
+    train_pso.py <config-file-path> (--track-1 | --track-2 | --track-3) [options]
     train_pso.py -h | --help
 
 Options:
+    --track-1                               Run training on RaceTrack_1
+    --track-2                               Run training on RaceTrack_2
+    --track-3                               Run training on RaceTrack_3
     -v --verbose                            Run in verbose mode
     --save-population                       Save population after training
     --population=<pretrained-population>    Specify path to pretrained population
-    --random-seed=<random_seed>             Specify random seed
-    --max-episodes-number=<n>               Specify max number of episodes for training [default: 1000]
 """
     options = docopt(APP_USAGE_DESCRIPTION)
     
@@ -33,19 +34,26 @@ Options:
     trainingLog.Append("This is train_pso.py -> Particle Swarm Optimization " \
             "training!")
     
-    # --- 3 - Set random seed --- #
-    RANDOM_SEED = options["--random-seed"]
-    if isinstance(RANDOM_SEED, str) and RANDOM_SEED.isdigit():
-        RANDOM_SEED = int(RANDOM_SEED)
+    # --- 3 - Load config data from file --- #
+    pathToConfigFile = options["<config-file-path>"]
+    CONFIG_DATA = loadConfigData(pathToConfigFile)
+    trainingLog.Append("Config data has been loaded from file: {0}".format(
+            pathToConfigFile))
+    del pathToConfigFile
+    
+    # --- 4 - Set random seed --- #
+    TRAINING_PARAMS = CONFIG_DATA["TrainingParameters"]
+    RANDOM_SEED = TRAINING_PARAMS["randomSeed"]
+    if isinstance(RANDOM_SEED, int):
         random.seed(RANDOM_SEED)
         torch.manual_seed(RANDOM_SEED)
         trainingLog.Append("Random seed set to value: {0}".format(RANDOM_SEED))
     
-    # --- 4 - Establish connection with Unity environment --- #
+    # --- 5 - Establish connection with Unity environment --- #
     env = UnityEnvironment()
     trainingLog.Append("Established connection to the Unity environment!")
    
-    # --- 5 - Get info from Unity environment --- #
+    # --- 6 - Get info from Unity environment --- #
     brainName = env.brain_names[0]
     trainingLog.Append("Brain name: {0}".format(brainName))
     brain = env.brains[brainName]
@@ -56,15 +64,15 @@ Options:
             "Loaded from Unity environment: observationSize = {0}, " \
             "actionSize = {1}".format(observationSize, actionSize))
     
-    # --- 6 - Compute agent dimensions -- #
-    HIDDEN_DIMENSIONS = [5 ]
+    # --- 7 - Compute agent dimensions -- #
+    HIDDEN_DIMENSIONS = TRAINING_PARAMS["networkHiddenDimensions"]
     agentDimensions = [observationSize - 1] + HIDDEN_DIMENSIONS + [actionSize]
     trainingLog.Append("Computed agentDimensions: {0}".format(agentDimensions))
     
-    # --- 7 - Create population ---- #
+    # --- 8 - Create population ---- #
     locationForPretrainedPopulation = options["--population"]
-    NUM_OF_AGENTS = 100
-    population = None
+    PSO_PARAMS = CONFIG_DATA["LearningAlgorithms"]["pso"]
+    NUM_OF_AGENTS = PSO_PARAMS["numberOfAgents"]
     resultsRepository = TrainingResultsRepository(trainingLog)
     
     if locationForPretrainedPopulation is None:
@@ -79,16 +87,22 @@ Options:
         population._sizeOfOutput = agentDimensions[-1]
         population._learningAlgorithm = None
     
-    # --- 8 - Training sequence --- #
-    MAX_EPISODES_NUMBER = int(options["--max-episodes-number"])
+    # --- 9 - Training sequence --- #
+    MAX_EPISODES_NUMBER = TRAINING_PARAMS["maxNumberOfEpisodes"]
     currentBestFitness = float("-inf")
     currentMeanFitness = float("-inf")
     currentStdDevFitness = float("-inf")
     
     try:
-        MINIMAL_ACCEPTABLE_FITNESS = 104.0 # RaceTrack_1
-        # MINIMAL_ACCEPTABLE_FITNESS = 110.0 # RaceTrack_2
-        # MINIMAL_ACCEPTABLE_FITNESS = 130.0 # RaceTrack_3
+        if options["--track-1"]:
+            MINIMAL_ACCEPTABLE_FITNESS = \
+                    TRAINING_PARAMS["minimalAcceptableFitness"]["RaceTrack_1"]
+        elif options["--track-2"]:
+            MINIMAL_ACCEPTABLE_FITNESS = \
+                    TRAINING_PARAMS["minimalAcceptableFitness"]["RaceTrack_2"]
+        elif options["--track-3"]:
+            MINIMAL_ACCEPTABLE_FITNESS = \
+                    TRAINING_PARAMS["minimalAcceptableFitness"]["RaceTrack_3"]
         fitnessFunction = AgentFitnessEvaluator(env, brainName)
         
         trainingLog.Append("Start training with parameters: " \
@@ -99,7 +113,6 @@ Options:
                     MINIMAL_ACCEPTABLE_FITNESS,
                     type(fitnessFunction)))
         
-        ########### Start of Particle Swarm Optimization #######################
         particlePositions = retrieveParametersFromAgentList(population._agents)
         particleVelocities = \
                 torch.FloatTensor(particlePositions.shape).uniform_(-2.0, 2.0)
@@ -110,9 +123,9 @@ Options:
         gbestPosition = torch.zeros(particlePositions.shape[1])
         gbestFitnessValue = float("-inf")
         
-        W = 0.729
-        c1 = 2.05
-        c2 = 2.05
+        W = PSO_PARAMS["W"]
+        c1 = PSO_PARAMS["c1"]
+        c2 = PSO_PARAMS["c2"]
         
         bestAgent = None
         for episodeCounter in range(MAX_EPISODES_NUMBER):
@@ -168,15 +181,15 @@ Options:
                 setNewParametersOnAgent(population._agents[i], particlePositions[i])
         
     except KeyboardInterrupt:
-        trainingLog.Append("Training interrupted because of KeyboardInterrupt!")
+        trainingLog.Append("\nTraining interrupted because of KeyboardInterrupt!")
     
     trainingLog.Append("End of training!")
     
-    # --- 9 - Close environment --- #
+    # --- 10 - Close environment --- #
     env.close()
     trainingLog.Append("Closed Unity environment.")
     
-    # --- 10 - Save training results --- #
+    # --- 11 - Save training results --- #
     shouldSavePopulation = options["--save-population"]
     resultsRepository.Save(population, bestAgent, shouldSavePopulation)
     
