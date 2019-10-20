@@ -1,6 +1,5 @@
 from mlagents.envs import UnityEnvironment
 from docopt import docopt
-from src.AgentsPopulation import *
 from src.training.TrainingLog import *
 from src.training.TrainingResultsRepository import *
 from src.training.training_utilities import *
@@ -71,11 +70,11 @@ Options:
     locationForPretrainedPopulation = options["--population"]
     DIFF_EVO_PARAMS = CONFIG_DATA["LearningAlgorithms"]["diff_evo"]
     NUM_OF_AGENTS = DIFF_EVO_PARAMS["numberOfAgents"]
-    population = None
     resultsRepository = TrainingResultsRepository(trainingLog)
     
     if locationForPretrainedPopulation is None:
-        population = AgentsPopulation(NUM_OF_AGENTS, agentDimensions, None)
+        population = [ AgentNeuralNetwork(agentDimensions) \
+                for _ in range(NUM_OF_AGENTS) ]
         trainingLog.Append("Created new population, with parameters: " \
                 "NUM_OF_AGENTS = {0}, agentDimensions = {1}, ".format(
                         NUM_OF_AGENTS,
@@ -83,8 +82,6 @@ Options:
     else:
         population = \
                 resultsRepository.LoadPopulation(locationForPretrainedPopulation)
-        population._sizeOfOutput = agentDimensions[-1]
-        population._learningAlgorithm = None
     
     # --- 9 - Training sequence --- #
     MAX_EPISODES_NUMBER = TRAINING_PARAMS["maxNumberOfEpisodes"]
@@ -122,7 +119,7 @@ Options:
                     type(fitnessEvaluation)))
         
         for agentIndex in range(NUM_OF_AGENTS):
-            agentFitness = fitnessEvaluation(population._agents[agentIndex])
+            agentFitness = fitnessEvaluation(population[agentIndex])
             fitnessList.append(agentFitness)
 
         indexOfBestAgent = fitnessList.index(max(fitnessList))
@@ -130,7 +127,7 @@ Options:
         meanFitness = statistics.mean(fitnessList)
         stdDevFitness = statistics.stdev(fitnessList)
         
-        pop_denorm = retrieveParametersFromAgentList(population._agents)
+        pop_denorm = retrieveParametersFromAgentList(population)
         pop_norm = pop_denorm / 4 + 0.5
         for i in range(MAX_EPISODES_NUMBER):
             for j in range(NUM_OF_AGENTS):
@@ -148,9 +145,9 @@ Options:
                         trial_norm[k] = pop_norm[j][k]
                 trial_denorm = trial_norm * 4 - 2
 
-                setNewParametersOnAgent(population._agents[j], trial_denorm)
+                setNewParametersOnAgent(population[j], trial_denorm)
                 agentIndex = j
-                fitness_trial = fitnessEvaluation(population._agents[agentIndex])
+                fitness_trial = fitnessEvaluation(population[agentIndex])
                 
                 if fitness_trial > fitnessList[j]:
                     fitnessList[j] = fitness_trial
@@ -160,7 +157,7 @@ Options:
                         indexOfBestAgent = j
                         bestFitness = fitness_trial
                 else:
-                    setNewParametersOnAgent(population._agents[j], pop_denorm[j])
+                    setNewParametersOnAgent(population[j], pop_denorm[j])
                 
             meanFitness = statistics.mean(fitnessList)
             stdDevFitness = statistics.stdev(fitnessList)
@@ -187,7 +184,7 @@ Options:
     
     # --- 11 - Save training results --- #
     shouldSavePopulation = options["--save-population"]
-    bestAgent = population._agents[indexOfBestAgent]
+    bestAgent = population[indexOfBestAgent]
     resultsRepository.Save(population, bestAgent, shouldSavePopulation)
     
 if __name__ == "__main__":

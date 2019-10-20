@@ -1,7 +1,6 @@
 from mlagents.envs import UnityEnvironment
 from copy import deepcopy
 from docopt import docopt
-from src.AgentsPopulation import *
 from src.training.TrainingLog import *
 from src.training.TrainingResultsRepository import *
 from src.training.training_utilities import *
@@ -76,7 +75,8 @@ Options:
     resultsRepository = TrainingResultsRepository(trainingLog)
     
     if locationForPretrainedPopulation is None:
-        population = AgentsPopulation(NUM_OF_AGENTS, agentDimensions, None)
+        population = [ AgentNeuralNetwork(agentDimensions) \
+                for _ in range(NUM_OF_AGENTS) ]
         trainingLog.Append("Created new population, with parameters: " \
                 "NUM_OF_AGENTS = {0}, agentDimensions = {1}, ".format(
                         NUM_OF_AGENTS,
@@ -84,8 +84,6 @@ Options:
     else:
         population = \
                 resultsRepository.LoadPopulation(locationForPretrainedPopulation)
-        population._sizeOfOutput = agentDimensions[-1]
-        population._learningAlgorithm = None
     
     # --- 9 - Training sequence --- #
     MAX_EPISODES_NUMBER = TRAINING_PARAMS["maxNumberOfEpisodes"]
@@ -113,7 +111,7 @@ Options:
                     MINIMAL_ACCEPTABLE_FITNESS,
                     type(fitnessFunction)))
         
-        particlePositions = retrieveParametersFromAgentList(population._agents)
+        particlePositions = retrieveParametersFromAgentList(population)
         particleVelocities = \
                 torch.FloatTensor(particlePositions.shape).uniform_(-2.0, 2.0)
         
@@ -131,7 +129,7 @@ Options:
         for episodeCounter in range(MAX_EPISODES_NUMBER):
             fitnessList = []            
             for i in range(NUM_OF_AGENTS):
-                fitnessCandidate = fitnessFunction(population._agents[i])
+                fitnessCandidate = fitnessFunction(population[i])
                 fitnessList.append(fitnessCandidate)
                 
                 if pbestFitnessValues[i] < fitnessCandidate:
@@ -141,7 +139,7 @@ Options:
                 if gbestFitnessValue < fitnessCandidate:
                     gbestFitnessValue = fitnessCandidate
                     gbestPosition = particlePositions[i]
-                    bestAgent = deepcopy(population._agents[i])
+                    bestAgent = deepcopy(population[i])
             
             bestEpisodeFitness = max(fitnessList)
             meanFitness = statistics.mean(fitnessList)
@@ -178,7 +176,7 @@ Options:
                 particlePositions[i] = torch.clamp(
                         particlePositions[i] + particleVelocities[i],
                         -2.0, 2.0)
-                setNewParametersOnAgent(population._agents[i], particlePositions[i])
+                setNewParametersOnAgent(population[i], particlePositions[i])
         
     except KeyboardInterrupt:
         trainingLog.Append("\nTraining interrupted because of KeyboardInterrupt!")

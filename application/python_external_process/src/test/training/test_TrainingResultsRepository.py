@@ -1,6 +1,5 @@
 from src.training.TrainingResultsRepository import *
 from src.training.TrainingLog import *
-from src.AgentsPopulation import *
 from src.AgentNeuralNetwork import *
 from ddt import ddt, data, unpack
 import os
@@ -15,9 +14,9 @@ class TestTrainingResultsRepository(unittest.TestCase):
     def setUp(self):
         self._trainingLog = TrainingLog(isVerbose = False)
         self._repository = TrainingResultsRepository(self._trainingLog)
-        ###############################
-        self.maxDiff = None
-        ###############################
+        #################################################
+        torch.manual_seed(0)
+        #################################################
     
     def tearDown(self):
         del self._repository
@@ -31,8 +30,8 @@ class TestTrainingResultsRepository(unittest.TestCase):
         if os.path.isdir(locationForResults):
             rmtree(locationForResults)
         
-        population = AgentsPopulation(2, [2, 2], None)
-        bestModel = population._agents[1]
+        population = [ AgentNeuralNetwork([2, 2]) for _ in range(2) ]
+        bestModel = population[1]
         
         with patch('src.training.TrainingLog.datetime') as datetime_log:
             datetime_log.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
@@ -77,8 +76,8 @@ class TestTrainingResultsRepository(unittest.TestCase):
         if os.path.isdir(locationForResults):
             rmtree(locationForResults)
         
-        population = AgentsPopulation(2, [2, 2], None)
-        bestModel = population._agents[1]
+        population = [ AgentNeuralNetwork([2, 2]) for _ in range(2) ]
+        bestModel = population[1]
         
         with patch('src.training.TrainingLog.datetime') as datetime_log:
             datetime_log.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
@@ -113,7 +112,7 @@ class TestTrainingResultsRepository(unittest.TestCase):
         doesPopulationExist = os.path.isdir(pathToPopulation)
         self.assertTrue(doesPopulationExist)
         
-        for i in range(len(population._agents)):
+        for i in range(len(population)):
             pathToModelFile = \
                     os.path.join(
                             pathToPopulation,
@@ -121,7 +120,7 @@ class TestTrainingResultsRepository(unittest.TestCase):
             doesModelFileExist = os.path.exists(pathToModelFile)
             self.assertTrue(doesModelFileExist)
             
-            expectedModel = population._agents[i]
+            expectedModel = population[i]
             actualModel = torch.load(pathToModelFile)
             self._compareModels(actualModel, expectedModel)
         
@@ -129,12 +128,12 @@ class TestTrainingResultsRepository(unittest.TestCase):
     
     @unpack
     @data((None, None, None), (None, None, True), (None, 5, None), \
-            (AgentsPopulation(2, [2, 2], None), None, None), \
-            (AgentsPopulation(2, [2, 2], None), 1, None), \
-            (AgentsPopulation(2, [2, 2], None), None, True),
-            ([1, 2, 3, 4], 2, True), \
-            (AgentsPopulation(2, [2, 2], None), 1.2, True), \
-            (AgentsPopulation(2, [2, 2], None), 1, "kanapka"))
+            ([ AgentNeuralNetwork([2, 2]) for _ in range(2) ], None, None), \
+            ([ AgentNeuralNetwork([2, 2]) for _ in range(2) ], 1, None), \
+            ([ AgentNeuralNetwork([2, 2]) for _ in range(2) ], None, True),
+            ((1, 2, 3, 4), 2, True), \
+            ([ AgentNeuralNetwork([2, 2]) for _ in range(2) ], 1.2, True), \
+            ([ AgentNeuralNetwork([2, 2]) for _ in range(2) ], 1, "kanapka"))
     @patch('src.training.TrainingResultsRepository.datetime')
     def test_Save_SomeParametersHaveWrongType(
             self,
@@ -168,7 +167,7 @@ class TestTrainingResultsRepository(unittest.TestCase):
                 "[ 1995-07-04 17:15:00 ] " \
                 "TrainingResultsRepository.Save() error: population is empty!\n"
         self._assertSaveTestForInvalidParameters(
-                population = AgentsPopulation(0, [2, 2], None),
+                population = [ ],
                 bestModel = AgentNeuralNetwork([2, 2]),
                 shouldSavePopulation = True,
                 mock_datetime = mock_datetime,
@@ -182,8 +181,8 @@ class TestTrainingResultsRepository(unittest.TestCase):
         if os.path.isdir(locationForResults):
             rmtree(locationForResults)
         
-        population = AgentsPopulation(2, [2, 2], None)
-        bestModel = population._agents[1]
+        population = [ AgentNeuralNetwork([2, 2]) for _ in range(2) ]
+        bestModel = population[1]
         
         self._repository = TrainingResultsRepository(trainingLog = None)
         
@@ -444,14 +443,14 @@ class TestTrainingResultsRepository(unittest.TestCase):
         
         numberOfAgents = 5
         agentDimensions = [5, 3, 2]
-        expectedPopulation = \
-                AgentsPopulation(numberOfAgents, agentDimensions, None)
+        expectedPopulation = [ AgentNeuralNetwork(agentDimensions) \
+                for _ in range(numberOfAgents) ]
         
         for i in range(numberOfAgents):
             modelFileName = "model_{0}.pth".format(str(i+1).zfill(3))
             fullPathToModelFile = \
                     os.path.join(pathToPopulationFiles, modelFileName)
-            torch.save(expectedPopulation._agents[i], fullPathToModelFile)
+            torch.save(expectedPopulation[i], fullPathToModelFile)
             doesModelExist = os.path.isfile(fullPathToModelFile)
             self.assertTrue(doesModelExist)
         
@@ -462,6 +461,10 @@ class TestTrainingResultsRepository(unittest.TestCase):
             datetime_log.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
             actualPopulation = \
                     self._repository.LoadPopulation(dirNameForPopulation)
+        
+        for expectedModel, actualModel \
+                in zip(expectedPopulation, actualPopulation):
+            self._compareModels(expectedModel, actualModel)
         
         expectedLogContent = \
                 logWarning + "[ 1995-07-04 17:15:00 ] " \
@@ -632,12 +635,12 @@ class TestTrainingResultsRepository(unittest.TestCase):
     
     @unpack
     @data((None, None, None), (None, None, True), (None, 5, None), \
-            (AgentsPopulation(2, [2, 2], None), None, None), \
-            (AgentsPopulation(2, [2, 2], None), 1, None), \
-            (AgentsPopulation(2, [2, 2], None), None, True),
-            ([1, 2, 3, 4], 2, True), \
-            (AgentsPopulation(2, [2, 2], None), 1.2, True), \
-            (AgentsPopulation(2, [2, 2], None), 1, "kanapka"))
+            ([ AgentNeuralNetwork([2, 2]) for _ in range(2) ], None, None), \
+            ([ AgentNeuralNetwork([2, 2]) for _ in range(2) ], 1, None), \
+            ([ AgentNeuralNetwork([2, 2]) for _ in range(2) ], None, True),
+            ((1, 2, 3, 4), 2, True), \
+            ([ AgentNeuralNetwork([2, 2]) for _ in range(2) ], 1.2, True), \
+            ([ AgentNeuralNetwork([2, 2]) for _ in range(2) ], 1, "kanapka"))
     def test_doParametersHaveValidTypes_False(
             self,
             population,
@@ -652,12 +655,12 @@ class TestTrainingResultsRepository(unittest.TestCase):
         self.assertEqual(actualResult, expectedResult)
 
     def test_doParametersHaveValidTypes_True(self):
-        tempPopulation = AgentsPopulation(2, [2, 2], None)
+        tempPopulation = [ AgentNeuralNetwork([2, 2]) for _ in range(2) ]
         expectedResult = True
         actualResult = \
                 self._repository._doParametersHaveValidTypes(
                         population = tempPopulation,
-                        bestIndividual = tempPopulation._agents[1],
+                        bestIndividual = tempPopulation[1],
                         shouldSavePopulation = True)
         self.assertEqual(actualResult, expectedResult)
 
@@ -729,11 +732,7 @@ class TestTrainingResultsRepository(unittest.TestCase):
         rmtree(locationForModel)
 
     def test_saveWholePopulation_OK(self):
-        population = \
-                AgentsPopulation(
-                        numberOfAgents = 5,
-                        agentDimensions = [5, 3, 2],
-                        learningAlgorithm = None)
+        population = [ AgentNeuralNetwork([5, 3, 2]) for _ in range(5) ]
         
         locationForPopulation = "TEST_LOCATION_TO_SAVE_BEST_POPULATION"
         if os.path.exists(locationForPopulation):
@@ -746,13 +745,13 @@ class TestTrainingResultsRepository(unittest.TestCase):
         pathToPopulationDir = os.path.join(locationForPopulation, "population")
         self.assertTrue(os.path.isdir(pathToPopulationDir))
         
-        for i in range(len(population._agents)):
+        for i in range(len(population)):
             fileNameForModel = "model_{0}.pth".format(str(i+1).zfill(3))
             fullPathToModelFile = \
                     os.path.join(pathToPopulationDir, fileNameForModel)
             self.assertTrue(os.path.isfile(fullPathToModelFile))
             
-            expectedModel = population._agents[i]
+            expectedModel = population[i]
             actualModel = torch.load(fullPathToModelFile)
             self._compareModels(actualModel, expectedModel)
         

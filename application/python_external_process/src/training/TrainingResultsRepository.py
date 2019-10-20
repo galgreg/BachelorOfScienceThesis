@@ -1,4 +1,4 @@
-from src.AgentsPopulation import *
+from src.AgentNeuralNetwork import *
 from src.training.TrainingLog import *
 from datetime import datetime
 from fnmatch import fnmatch
@@ -25,7 +25,7 @@ class TrainingResultsRepository:
                 population,
                 bestIndividual,
                 shouldSavePopulation):
-            if len(population._agents) == 0:
+            if len(population) == 0:
                 self._trainingLog.Append(
                         "TrainingResultsRepository.Save() error: " \
                         "population is empty!")
@@ -107,10 +107,13 @@ class TrainingResultsRepository:
                             "population")
             if os.path.isdir(fullPathToPopulation):
                 models = []
-                for fileName in os.listdir(fullPathToPopulation):
+                listOfModelFileNames = os.listdir(fullPathToPopulation)
+                listOfModelFileNames.sort()
+                for fileName in listOfModelFileNames:
                     if fnmatch(fileName, "model_*.pth"):
                         fullPathToModelFile = \
                                 os.path.join(fullPathToPopulation, fileName)
+                                
                         tempModel = torch.load(fullPathToModelFile)
                         models.append(tempModel)
                 
@@ -122,8 +125,7 @@ class TrainingResultsRepository:
                             "(examples: 'model_1.pth', 'model_2.pth' " \
                             "etc.)".format(dirNameWithPopulationToLoad))
                 else:
-                    population = AgentsPopulation(0, [2, 2], None)
-                    population._agents = models
+                    population = models
                     self._trainingLog.Append(
                             "TrainingResultsRepository.LoadPopulation() info: " \
                             "training_results/{0}/population has been " \
@@ -148,7 +150,7 @@ class TrainingResultsRepository:
             population,
             bestIndividual,
             shouldSavePopulation):
-        return type(population) == AgentsPopulation \
+        return type(population) == list \
                 and type(bestIndividual) == AgentNeuralNetwork \
                 and type(shouldSavePopulation) == bool
     
@@ -192,8 +194,8 @@ class TrainingResultsRepository:
             rmtree(locationForPopulationFiles)
         os.mkdir(locationForPopulationFiles)
         
-        for i in range(len(population._agents)):
+        for i in range(len(population)):
             fileNameForModel = "model_{0}.pth".format(str(i+1).zfill(3))
             fullPathForModel = \
                     os.path.join(locationForPopulationFiles, fileNameForModel)
-            torch.save(population._agents[i], fullPathForModel)
+            torch.save(population[i], fullPathForModel)
