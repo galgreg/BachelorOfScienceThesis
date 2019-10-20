@@ -1,32 +1,6 @@
-import math
+from src.benchmark_functions import *
 import numpy as np
 import statistics
-
-def ackley(chromosome):
-    firstSum = 0.0
-    secondSum = 0.0
-    for genome in chromosome:
-        firstSum += genome**2
-        secondSum += math.cos(2.0 * math.pi * genome)
-    
-    n = len(chromosome)
-    firstExp = math.exp(-0.2 * math.sqrt(firstSum / n))
-    secondExp = math.exp(secondSum / n)
-    
-    functionResult = -20.0 * firstExp - secondExp + 20 + math.exp(1)
-    if functionResult <= 5e-16:
-        functionResult = 0
-    
-    return functionResult
-
-def griewank(chromosome):
-    part1 = 0
-    for i in range(len(chromosome)):
-        part1 += chromosome[i]**2
-        part2 = 1
-    for i in range(len(chromosome)):
-        part2 *= math.cos(float(chromosome[i]) / math.sqrt(i+1))
-    return 1 + (float(part1)/4000.0) - float(part2)
 
 def de(fobj, bounds, mut=0.8, crossp=0.7, popsize=20, its=500):
     dimensions = len(bounds)
@@ -75,7 +49,7 @@ def main():
     
     NUM_OF_EPISODES = 1000000
     SIZE_OF_POPULATION = 20
-    SIZE_OF_CHROMOSOME = 100
+    SIZE_OF_CHROMOSOME = 20
     PARAMETER_BOUNDS = [(-2.0, 2.0)] * SIZE_OF_CHROMOSOME
 
     de(FITNESS_FUNCTION, PARAMETER_BOUNDS, mut = 0.8, crossp = 0.7,

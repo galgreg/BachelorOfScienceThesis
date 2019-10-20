@@ -1,4 +1,5 @@
 from mlagents.envs import UnityEnvironment
+from copy import deepcopy
 from docopt import docopt
 from src.AgentsPopulation import *
 from src.training.TrainingLog import *
@@ -11,11 +12,11 @@ def main():
     # --- 1 - Specify script's usage options --- #
     APP_USAGE_DESCRIPTION = """
 Train neural networks to drive a car on a racetrack. Racetrack must be valid Unity ML-Agents environment.
-Algorithm used to train is Differential Evolution.
+Algorithm used to train is Particle Swarm Optimization.
 
 Usage:
-    train_de.py [options]
-    train_de.py -h | --help
+    train_pso.py [options]
+    train_pso.py -h | --help
 
 Options:
     -v --verbose                            Run in verbose mode
@@ -29,7 +30,8 @@ Options:
     # --- 2 - Create logging object --- #
     trainingLog = TrainingLog(isVerbose = options["--verbose"])
     trainingLog.Append("Training log has been created!")
-    trainingLog.Append("This is train_de.py -> Differential Evolution training!")
+    trainingLog.Append("This is train_pso.py -> Particle Swarm Optimization " \
+            "training!")
     
     # --- 3 - Set random seed --- #
     RANDOM_SEED = options["--random-seed"]
@@ -61,7 +63,7 @@ Options:
     
     # --- 7 - Create population ---- #
     locationForPretrainedPopulation = options["--population"]
-    NUM_OF_AGENTS = 50
+    NUM_OF_AGENTS = 100
     population = None
     resultsRepository = TrainingResultsRepository(trainingLog)
     
@@ -83,80 +85,87 @@ Options:
     currentMeanFitness = float("-inf")
     currentStdDevFitness = float("-inf")
     
-    trainingLog.Append(
-            "Start training with parameters: maxNumberOfEpisodes = {0}".format(
-                    MAX_EPISODES_NUMBER))
-    indexOfBestAgent = -1
-    
     try:
-        ########### Start of Differential Evolution ############################
-        MUTATION_FACTOR = 0.8
-        CROSS_PROBABILITY = 0.7
-        NUM_OF_PARAMS = computeNumOfParameters(agentDimensions)
         MINIMAL_ACCEPTABLE_FITNESS = 104.0 # RaceTrack_1
         # MINIMAL_ACCEPTABLE_FITNESS = 110.0 # RaceTrack_2
         # MINIMAL_ACCEPTABLE_FITNESS = 130.0 # RaceTrack_3
+        fitnessFunction = AgentFitnessEvaluator(env, brainName)
         
-        pop_denorm = retrieveParametersFromAgentList(population._agents)
-        pop_norm = pop_denorm / 4 + 0.5
-        fitnessList = []
-        fitnessEvaluation = AgentFitnessEvaluator(env, brainName)
-        # compute fitness for whole population - Begin #########################
-        for agentIndex in range(NUM_OF_AGENTS):
-            agentFitness = fitnessEvaluation(population._agents[agentIndex])
-            fitnessList.append(agentFitness)
-        ########################################################################
-        indexOfBestAgent = fitnessList.index(max(fitnessList))
-        bestFitness = max(fitnessList)
-        meanFitness = statistics.mean(fitnessList)
-        stdDevFitness = statistics.stdev(fitnessList)
+        trainingLog.Append("Start training with parameters: " \
+                "MAX_EPISODES_NUMBER = {0}, " \
+                "MINIMAL_ACCEPTABLE_FITNESS = {1}, " \
+                "fitnessFunction = {2}".format(
+                    MAX_EPISODES_NUMBER,
+                    MINIMAL_ACCEPTABLE_FITNESS,
+                    type(fitnessFunction)))
         
-        for i in range(MAX_EPISODES_NUMBER):
-            for j in range(NUM_OF_AGENTS):
-                indices = [index for index in range(NUM_OF_AGENTS) if index != j]
-                a_idx, b_idx, c_idx = random.sample(indices, 3)
-                a, b, c = pop_norm[a_idx], pop_norm[b_idx], pop_norm[c_idx]
-                mutant = torch.clamp(a + MUTATION_FACTOR * (b - c), 0.0, 1.0)
-                cross_points = [random.uniform(0, 1) for _ in range(NUM_OF_PARAMS)]
-
-                trial_norm = torch.zeros(NUM_OF_PARAMS)
-                for k in range(NUM_OF_PARAMS):
-                    if cross_points[k] < CROSS_PROBABILITY:
-                        trial_norm[k] = mutant[k]
-                    else:
-                        trial_norm[k] = pop_norm[j][k]
-                trial_denorm = trial_norm * 4 - 2
+        ########### Start of Particle Swarm Optimization #######################
+        particlePositions = retrieveParametersFromAgentList(population._agents)
+        particleVelocities = \
+                torch.FloatTensor(particlePositions.shape).uniform_(-2.0, 2.0)
+        
+        pbestPositions = particlePositions.clone().detach()
+        pbestFitnessValues = torch.tensor([float("-inf")] * NUM_OF_AGENTS)
+        
+        gbestPosition = torch.zeros(particlePositions.shape[1])
+        gbestFitnessValue = float("-inf")
+        
+        W = 0.729
+        c1 = 2.05
+        c2 = 2.05
+        
+        bestAgent = None
+        for episodeCounter in range(MAX_EPISODES_NUMBER):
+            fitnessList = []            
+            for i in range(NUM_OF_AGENTS):
+                fitnessCandidate = fitnessFunction(population._agents[i])
+                fitnessList.append(fitnessCandidate)
                 
-                # compute fitness for trial - Begin ###########################
-                setNewParametersOnAgent(population._agents[j], trial_denorm)
-                agentIndex = j
-                fitness_trial = fitnessEvaluation(population._agents[agentIndex])
-                ###############################################################
+                if pbestFitnessValues[i] < fitnessCandidate:
+                    pbestFitnessValues[i] = fitnessCandidate
+                    pbestPositions[i] = particlePositions[i]
                 
-                if fitness_trial > fitnessList[j]:
-                    fitnessList[j] = fitness_trial
-                    pop_denorm[j] = trial_denorm
-                    pop_norm[j] = trial_norm
-                    if fitness_trial > bestFitness:
-                        indexOfBestAgent = j
-                        bestFitness = fitness_trial
-                else:
-                    setNewParametersOnAgent(population._agents[j], pop_denorm[j])
-                
+                if gbestFitnessValue < fitnessCandidate:
+                    gbestFitnessValue = fitnessCandidate
+                    gbestPosition = particlePositions[i]
+                    bestAgent = deepcopy(population._agents[i])
+            
+            bestEpisodeFitness = max(fitnessList)
             meanFitness = statistics.mean(fitnessList)
             stdDevFitness = statistics.stdev(fitnessList)
-            
             trainingLog.Append(
-                    "Episode {0}: best = {1}, mean = {2}, stdDev = {3}".format(
-                        i, bestFitness, meanFitness, stdDevFitness))
+                    "Episode {0}: globalBest = {1}, episodeBest = {2}, " \
+                    "mean = {3}, stdDev = {4}".format(
+                            episodeCounter,
+                            gbestFitnessValue,
+                            bestEpisodeFitness,
+                            meanFitness,
+                            stdDevFitness))
             
-            if bestFitness >= MINIMAL_ACCEPTABLE_FITNESS:
+            if gbestFitnessValue >= MINIMAL_ACCEPTABLE_FITNESS:
                 trainingLog.Append(
                         "Training interrupted after {0} episodes, reason: " \
-                        "reached minimal acceptable value for bestFitness!" \
-                        " (minimalAcceptableFitness = {1}, bestFitness = {2})" \
-                        .format(i + 1, MINIMAL_ACCEPTABLE_FITNESS, bestFitness))
+                        "reached minimal acceptable value for globalBestFitness!" \
+                        " (minimalAcceptableFitness = {1}, globalBestFitness = {2})" \
+                        .format(
+                                episodeCounter + 1,
+                                MINIMAL_ACCEPTABLE_FITNESS,
+                                gbestFitnessValue))
                 break
+            
+            for i in range(NUM_OF_AGENTS):
+                firstAddend = W * particleVelocities[i]
+                secondAddend = c1 * random.random() * \
+                        (pbestPositions[i] - particlePositions[i])
+                thirdAddend = c2 * random.random() * \
+                        (gbestPosition - particlePositions[i])
+                
+                newVelocity = firstAddend + secondAddend + thirdAddend
+                particleVelocities[i] = torch.clamp(newVelocity, -2.0, 2.0)
+                particlePositions[i] = torch.clamp(
+                        particlePositions[i] + particleVelocities[i],
+                        -2.0, 2.0)
+                setNewParametersOnAgent(population._agents[i], particlePositions[i])
         
     except KeyboardInterrupt:
         trainingLog.Append("Training interrupted because of KeyboardInterrupt!")
@@ -169,7 +178,6 @@ Options:
     
     # --- 10 - Save training results --- #
     shouldSavePopulation = options["--save-population"]
-    bestAgent = population._agents[indexOfBestAgent]
     resultsRepository.Save(population, bestAgent, shouldSavePopulation)
     
 if __name__ == "__main__":
