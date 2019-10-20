@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
 
@@ -32,7 +31,7 @@ public class RaceTrackAcademy : Academy {
     }
     private void PrepareCarAgentComponent(GameObject aAgentObject) {
         var carAgentComponent = aAgentObject.AddComponent<CarAgent>();
-        carAgentComponent.Constructor(this, aAgentObject, StartAgentPosition, RewardPerStep);
+        carAgentComponent.Constructor(this, aAgentObject, StartAgentPosition);
         carAgentComponent.SetInputProperties(MaxSensorLength, FieldOfView, RaysCount);
         carAgentComponent.SetOutputProperties(MaxSteeringAngle, MotorForce);
         carAgentComponent.AgentReset();
@@ -47,7 +46,6 @@ public class RaceTrackAcademy : Academy {
             carAgentComponent.AgentReset();
         }
     }
-
     public override void AcademyStep() {
         if (mDoneAgentsCounter >= PopulationSize) {
             Done();
@@ -77,8 +75,7 @@ public class RaceTrackAcademy : Academy {
     public float MaxSteeringAngle = 30.0f;
     public float MotorForce = 250.0f;
 
-    [Header("Learning parameters")]
-    public float RewardPerStep = -0.001f;
+    [Header("Others")]
     public int PopulationSize = 100;
     
     private List<GameObject> mAgentList;

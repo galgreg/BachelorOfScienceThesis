@@ -6,11 +6,9 @@ public class CarAgent : Agent {
     public void Constructor(
             RaceTrackAcademy aAcademy,
             GameObject aCarObject,
-            Vector3 aInitialPosition,
-            float aRewardPerStep) {
+            Vector3 aInitialPosition) {
         mEnvironmentAcademy = aAcademy;
         mCarObject = aCarObject;
-        mRewardPerStep = aRewardPerStep;
         mWheelColliders = CreateWheelColliders(aCarObject);
         mWheelTransforms = CreateWheelTransform(aCarObject);
         agentParameters = new AgentParameters();
@@ -88,7 +86,6 @@ public class CarAgent : Agent {
 
     private RaceTrackAcademy mEnvironmentAcademy;
     private GameObject mCarObject;
-    private float mRewardPerStep;
     private List<WheelCollider> mWheelColliders;
     private List<Transform> mWheelTransforms;
     private float mMaxSensorLength = 0.5f;
