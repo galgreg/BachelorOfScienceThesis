@@ -13,12 +13,12 @@
         }
     },
     "TrainingParameters" : {
-        "randomSeed" : null,
+        "randomSeed" : 0,
         "maxNumberOfEpisodes" : 100,
         "minimalAcceptableFitness": {
             "RaceTrack_1" : 104.00,
             "RaceTrack_2" : 110.00,
-            "RaceTrack_3" : 135.00
+            "RaceTrack_3" : 130.00
         },
         "networkHiddenDimensions" : [5 ]
     }

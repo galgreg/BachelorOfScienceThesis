@@ -144,15 +144,9 @@ Options:
                     pbestPositions[i] = particlePositions[i]
                 
                 if gbestFitnessValue < fitnessCandidate:
-                    try:
-                        gbestFitnessValue = fitnessCandidate
-                        gbestPosition = particlePositions[i]
-                        bestAgent = deepcopy(population[i])
-                    except KeyboardInterrupt:
-                        gbestFitnessValue = fitnessCandidate
-                        gbestPosition = particlePositions[i]
-                        bestAgent = deepcopy(population[i])
-                        raise KeyboardInterrupt
+                    gbestFitnessValue = fitnessCandidate
+                    gbestPosition = particlePositions[i]
+                    bestAgent = deepcopy(population[i])
             
             bestEpisodeFitness = max(fitnessList)
             meanFitness = statistics.mean(fitnessList)
