@@ -88,7 +88,7 @@ class AgentFitnessEvaluator:
                 fitness = episodeReward
             if envInfo.local_done[0]:
                 break
-            if stepCounter > 1000 and fitness < 1.0:
+            if stepCounter > 500 and fitness < 1.0:
                 fitness -= 10.0
                 break
             

@@ -130,7 +130,6 @@ GameObject:
   m_Component:
   - component: {fileID: 110721515}
   - component: {fileID: 110721514}
-  - component: {fileID: 110721513}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -138,14 +137,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!81 &110721513
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 110721512}
-  m_Enabled: 1
 --- !u!20 &110721514
 Camera:
   m_ObjectHideFlags: 0
@@ -573,7 +564,6 @@ MonoBehaviour:
   RaysCount: 3
   MaxSteeringAngle: 30
   MotorForce: 500
-  RewardPerStep: 0
   PopulationSize: 1
 --- !u!1 &1471889553
 GameObject:
@@ -695,7 +685,7 @@ TerrainCollider:
   m_Material: {fileID: 0}
   m_Enabled: 1
   m_TerrainData: {fileID: 15600000, guid: 7e4c7751e4a2a6eeab2927756e2594b3, type: 2}
-  m_EnableTreeColliders: 1
+  m_EnableTreeColliders: 0
 --- !u!218 &1506022784
 Terrain:
   m_ObjectHideFlags: 0

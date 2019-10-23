@@ -1,9 +1,11 @@
 from mlagents.envs import UnityEnvironment
+from copy import deepcopy
 from docopt import docopt
 from src.training.TrainingLog import *
 from src.training.TrainingResultsRepository import *
 from src.training.training_utilities import *
 import statistics
+import sys
 import random
 
 def main():
@@ -30,6 +32,13 @@ Options:
     trainingLog = TrainingLog(isVerbose = options["--verbose"])
     trainingLog.Append("Training log has been created!")
     trainingLog.Append("This is train_de.py -> Differential Evolution training!")
+    
+    if options["--track-1"]:
+        trainingLog.Append("Training on RaceTrack_1.")
+    elif options["--track-2"]:
+        trainingLog.Append("Training on RaceTrack_2.")
+    elif options["--track-3"]:
+        trainingLog.Append("Training on RaceTrack_3.")
     
     # --- 3 - Load config data from file --- #
     pathToConfigFile = options["<config-file-path>"]
@@ -89,7 +98,7 @@ Options:
     currentMeanFitness = float("-inf")
     currentStdDevFitness = float("-inf")
     
-    indexOfBestAgent = -1
+    bestAgent = None
     try:
         MUTATION_FACTOR = DIFF_EVO_PARAMS["mutationFactor"]
         CROSS_PROBABILITY = DIFF_EVO_PARAMS["crossProbability"]
@@ -122,8 +131,9 @@ Options:
             agentFitness = fitnessEvaluation(population[agentIndex])
             fitnessList.append(agentFitness)
 
-        indexOfBestAgent = fitnessList.index(max(fitnessList))
         bestFitness = max(fitnessList)
+        indexOfBestFitness = fitnessList.index(bestFitness)
+        bestAgent = deepcopy(population[indexOfBestFitness])
         meanFitness = statistics.mean(fitnessList)
         stdDevFitness = statistics.stdev(fitnessList)
         
@@ -154,8 +164,18 @@ Options:
                     pop_denorm[j] = trial_denorm
                     pop_norm[j] = trial_norm
                     if fitness_trial > bestFitness:
-                        indexOfBestAgent = j
                         bestFitness = fitness_trial
+                        bestAgent = deepcopy(population[j])
+                    
+                    # if fitness_trial > bestFitness:
+                        # try:
+                            # bestFitness = fitness_trial
+                            # bestAgent = deepcopy(population[j])
+                        # except:
+                            # bestFitness = fitness_trial
+                            # bestAgent = deepcopy(population[j])
+                            # typeOfException = sys.exc_info()[0]
+                            # raise typeOfException
                 else:
                     setNewParametersOnAgent(population[j], pop_denorm[j])
                 
@@ -173,8 +193,9 @@ Options:
                         .format(i + 1, MINIMAL_ACCEPTABLE_FITNESS, bestFitness))
                 break
         
-    except KeyboardInterrupt:
-        trainingLog.Append("Training interrupted because of KeyboardInterrupt!")
+    except:
+        trainingLog.Append("Training interrupted because of exception: {0}" \
+                .format(sys.exc_info()[0]))
     
     trainingLog.Append("End of training!")
     
@@ -184,7 +205,6 @@ Options:
     
     # --- 11 - Save training results --- #
     shouldSavePopulation = options["--save-population"]
-    bestAgent = population[indexOfBestAgent]
     resultsRepository.Save(population, bestAgent, shouldSavePopulation)
     
 if __name__ == "__main__":

@@ -57,11 +57,12 @@ public class CarAgent : Agent {
         mCarObject.SetActive(true);
     }
     public override void CollectObservations() {
-        AddVectorObs(mCarInput.RenderSensorsAndGetNormalizedDistanceList());
-        AddVectorObs(GetEpisodeReward());
-
         mDrivenDistance += Vector3.Distance(transform.position, mLastPosition);
         mLastPosition = transform.position;
+        SaveEpisodeReward();
+
+        AddVectorObs(mCarInput.RenderSensorsAndGetNormalizedDistanceList());
+        AddVectorObs(GetEpisodeReward());
     }
     public override void AgentAction(float[] vectorAction, string textAction) {
         mCarOutput.Update(vectorAction[0], vectorAction[1]);
@@ -69,7 +70,7 @@ public class CarAgent : Agent {
     }
     public override void AgentOnDone() {
         // Display episode reward (optional line, only for debug purpose!)
-        // Debug.Log("Episode reward: " + GetEpisodeReward());
+        Debug.Log("Episode reward: " + GetEpisodeReward());
         mEnvironmentAcademy.IncrementAgentDoneCounter();
         mCarObject.SetActive(false);
 

@@ -33,6 +33,13 @@ Options:
     trainingLog.Append("This is train_pso.py -> Particle Swarm Optimization " \
             "training!")
     
+    if options["--track-1"]:
+        trainingLog.Append("Training on RaceTrack_1.")
+    elif options["--track-2"]:
+        trainingLog.Append("Training on RaceTrack_2.")
+    elif options["--track-3"]:
+        trainingLog.Append("Training on RaceTrack_3.")
+    
     # --- 3 - Load config data from file --- #
     pathToConfigFile = options["<config-file-path>"]
     CONFIG_DATA = loadConfigData(pathToConfigFile)
@@ -137,9 +144,15 @@ Options:
                     pbestPositions[i] = particlePositions[i]
                 
                 if gbestFitnessValue < fitnessCandidate:
-                    gbestFitnessValue = fitnessCandidate
-                    gbestPosition = particlePositions[i]
-                    bestAgent = deepcopy(population[i])
+                    try:
+                        gbestFitnessValue = fitnessCandidate
+                        gbestPosition = particlePositions[i]
+                        bestAgent = deepcopy(population[i])
+                    except KeyboardInterrupt:
+                        gbestFitnessValue = fitnessCandidate
+                        gbestPosition = particlePositions[i]
+                        bestAgent = deepcopy(population[i])
+                        raise KeyboardInterrupt
             
             bestEpisodeFitness = max(fitnessList)
             meanFitness = statistics.mean(fitnessList)
