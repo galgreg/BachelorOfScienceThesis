@@ -8,7 +8,7 @@ import statistics
 import sys
 import random
 
-def main():
+def train_de():
     # --- 1 - Specify script's usage options --- #
     APP_USAGE_DESCRIPTION = """
 Train neural networks to drive a car on a racetrack. Racetrack must be valid Unity ML-Agents environment.
@@ -166,16 +166,6 @@ Options:
                     if fitness_trial > bestFitness:
                         bestFitness = fitness_trial
                         bestAgent = deepcopy(population[j])
-                    
-                    # if fitness_trial > bestFitness:
-                        # try:
-                            # bestFitness = fitness_trial
-                            # bestAgent = deepcopy(population[j])
-                        # except:
-                            # bestFitness = fitness_trial
-                            # bestAgent = deepcopy(population[j])
-                            # typeOfException = sys.exc_info()[0]
-                            # raise typeOfException
                 else:
                     setNewParametersOnAgent(population[j], pop_denorm[j])
                 
@@ -208,4 +198,4 @@ Options:
     resultsRepository.Save(population, bestAgent, shouldSavePopulation)
     
 if __name__ == "__main__":
-    main()
+    train_de()

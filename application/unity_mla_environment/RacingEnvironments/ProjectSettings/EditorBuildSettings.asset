@@ -8,4 +8,7 @@ EditorBuildSettings:
   - enabled: 0
     path: 
     guid: 00000000000000000000000000000000
+  - enabled: 1
+    path: Assets/Scenes/RaceTrack_1.unity
+    guid: 667a68903128d69ccbea592217366a02
   m_configObjects: {}

@@ -7,7 +7,7 @@ from src.training.training_utilities import *
 import statistics
 import random
 
-def main():
+def train_pso():
     # --- 1 - Specify script's usage options --- #
     APP_USAGE_DESCRIPTION = """
 Train neural networks to drive a car on a racetrack. Racetrack must be valid Unity ML-Agents environment.
@@ -199,4 +199,4 @@ Options:
     resultsRepository.Save(population, bestAgent, shouldSavePopulation)
     
 if __name__ == "__main__":
-    main()
+    train_pso()
