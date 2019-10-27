@@ -1,7 +1,7 @@
 import os.path
 from datetime import datetime
 
-class TrainingLog:
+class Logger:
     def __init__(self, isVerbose, fileName = "training"):
         self._isVerbose = isVerbose
         self._fileName = fileName

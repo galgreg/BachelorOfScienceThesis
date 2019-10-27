@@ -1,7 +1,7 @@
 from mlagents.envs import UnityEnvironment
 from copy import deepcopy
 from docopt import docopt
-from src.training.TrainingLog import *
+from src.Logger import *
 from src.training.TrainingResultsRepository import *
 from src.training.training_utilities import *
 import statistics
@@ -28,7 +28,7 @@ Options:
     options = docopt(APP_USAGE_DESCRIPTION)
     
     # --- 2 - Create logging object --- #
-    trainingLog = TrainingLog(isVerbose = options["--verbose"])
+    trainingLog = Logger(isVerbose = options["--verbose"])
     trainingLog.Append("Training log has been created!")
     trainingLog.Append("This is train_pso.py -> Particle Swarm Optimization " \
             "training!")
@@ -91,6 +91,9 @@ Options:
     else:
         population = \
                 resultsRepository.LoadPopulation(locationForPretrainedPopulation)
+        if population is None:
+            env.close()
+            exit()
     
     # --- 9 - Training sequence --- #
     MAX_EPISODES_NUMBER = TRAINING_PARAMS["maxNumberOfEpisodes"]

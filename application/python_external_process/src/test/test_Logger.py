@@ -1,4 +1,4 @@
-from src.training.TrainingLog import *
+from src.Logger import *
 from ddt import ddt, data, unpack
 from io import StringIO
 import os
@@ -8,7 +8,7 @@ import unittest
 from unittest.mock import patch
 
 @ddt
-class TestTrainingLog(unittest.TestCase):
+class TestLogger(unittest.TestCase):
     @unpack
     @data((True, True, ""), (False, False, "run_log"))
     def test_Constructor(
@@ -18,9 +18,9 @@ class TestTrainingLog(unittest.TestCase):
             logFileName):
         trainingLog = None
         if shouldContructWithDefaultFileName:
-            trainingLog = TrainingLog(expectedVerboseValue)
+            trainingLog = Logger(expectedVerboseValue)
         else:
-            trainingLog = TrainingLog(expectedVerboseValue, logFileName)
+            trainingLog = Logger(expectedVerboseValue, logFileName)
         
         actualVerboseValue = trainingLog._isVerbose
         self.assertEqual(actualVerboseValue, expectedVerboseValue)
@@ -41,7 +41,7 @@ class TestTrainingLog(unittest.TestCase):
     @unpack
     @data((True, "Peugeot 106 Rallye 1.4 75KM", "Peugeot 106 Rallye 1.4 75KM\n"),
             (False, "Peugeot 106 Rallye 1.4 75KM", ""))
-    @patch('src.training.TrainingLog.datetime')
+    @patch('src.Logger.datetime')
     def test_Append(
             self,
             isLogVerbose,
@@ -49,7 +49,7 @@ class TestTrainingLog(unittest.TestCase):
             expectedPrintMessage,
             mock_datetime):
         mock_datetime.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
-        trainingLog = TrainingLog(isLogVerbose)
+        trainingLog = Logger(isLogVerbose)
         logContentBeforeCall = "Ford Sierra II 2.0 DOHC 125KM\n"
         trainingLog._content = logContentBeforeCall
         
@@ -68,7 +68,7 @@ class TestTrainingLog(unittest.TestCase):
     @data((True, 1), (True, ""), (True, None), (True, [1, 2]), (True, {"a": "b"}),
             (False, 1), (False, ""), (False, None), (False, [1, 2]), (False, {"a": "b"}))
     def test_Append_InvalidParameters(self, isLogVerbose, invalidInfoParameter):
-        trainingLog = TrainingLog(isLogVerbose)
+        trainingLog = Logger(isLogVerbose)
         
         logContentBeforeCall = "Ford Sierra II 2.0 DOHC 125KM\n"
         trainingLog._content = logContentBeforeCall
@@ -82,10 +82,10 @@ class TestTrainingLog(unittest.TestCase):
         logContentAfterCall = trainingLog._content
         self.assertEqual(logContentAfterCall, logContentBeforeCall)
 
-    @patch('src.training.TrainingLog.datetime')
+    @patch('src.Logger.datetime')
     def test_createEntryHeader(self, mock_datetime):
         mock_datetime.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
-        trainingLog = TrainingLog(False)
+        trainingLog = Logger(False)
         expectedEntryHeader = "[ 1995-07-04 17:15:00 ]"
         actualEntryHeader = trainingLog._createEntryHeader()
         self.assertEqual(actualEntryHeader, expectedEntryHeader)
@@ -98,7 +98,7 @@ class TestTrainingLog(unittest.TestCase):
         os.mkdir(testLocation)
         self.assertTrue(os.path.isdir(testLocation))
         
-        trainingLog = TrainingLog(False)
+        trainingLog = Logger(False)
         trainingLog._content = "Ford Sierra II 2.0 DOHC 125KM"
         trainingLog.Save(testLocation)
         
@@ -122,7 +122,7 @@ class TestTrainingLog(unittest.TestCase):
         self.assertTrue(os.path.exists(nonDirectoryLocation))
         self.assertFalse(os.path.isdir(nonDirectoryLocation))
         
-        trainingLog = TrainingLog(False)
+        trainingLog = Logger(False)
         trainingLog._content = "Ford Sierra II 2.0 DOHC 125KM"
         trainingLog.Save(nonDirectoryLocation)
         
@@ -137,7 +137,7 @@ class TestTrainingLog(unittest.TestCase):
     def test_Save_LocationDoesNotExist(self):
         nonExistentLocation = "TEST_NON_EXISTENT_LOCATION"
         self.assertFalse(os.path.exists(nonExistentLocation))
-        trainingLog = TrainingLog(False)
+        trainingLog = Logger(False)
         trainingLog._content = "Ford Sierra II 2.0 DOHC 125KM"
         trainingLog.Save(nonExistentLocation)
         
@@ -149,7 +149,7 @@ class TestTrainingLog(unittest.TestCase):
     
     @data(None, 1, 1.0, [1, 2, 3, 4], {"not" : "string"})
     def test_Save_LocationIsNotString(self, notStringLocation):
-        trainingLog = TrainingLog(False)
+        trainingLog = Logger(False)
         trainingLog._content = "Ford Sierra II 2.0 DOHC 125KM"
         trainingLog.Save(notStringLocation)
         
@@ -168,7 +168,7 @@ class TestTrainingLog(unittest.TestCase):
         os.mkdir(testLocation)
         self.assertTrue(os.path.isdir(testLocation))
         
-        trainingLog = TrainingLog(False)
+        trainingLog = Logger(False)
         trainingLog._content = logContent
         trainingLog.Save(testLocation)
         

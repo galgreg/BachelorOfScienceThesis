@@ -21,7 +21,7 @@ Options:
     resultsRepository = TrainingResultsRepository()
     bestAgent = resultsRepository.LoadBestModel(locationOfPretrainedModel)
     if bestAgent is None:
-        print("Cannot load model, reason: location '{0}' does not exist!"
+        print("Cannot load model, reason: location 'training_results/{0}' does not exist!"
                 .format(locationOfPretrainedModel))
         exit()
 

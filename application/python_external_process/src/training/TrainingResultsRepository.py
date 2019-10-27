@@ -1,5 +1,5 @@
 from src.AgentNeuralNetwork import *
-from src.training.TrainingLog import *
+from src.Logger import *
 from datetime import datetime
 from fnmatch import fnmatch
 import torch
@@ -13,7 +13,7 @@ class TrainingResultsRepository:
 
     def Save(self, population, bestIndividual, shouldSavePopulation):
         if self._trainingLog is None:
-            self._trainingLog = TrainingLog(isVerbose = False)
+            self._trainingLog = Logger(isVerbose = False)
             self._trainingLog.Append(
                     "TrainingResultsRepository.Save() warning: " \
                     "trainingLog was None! Potentially important details about " \
@@ -56,7 +56,7 @@ class TrainingResultsRepository:
     
     def LoadBestModel(self, dirNameWithModelToLoad):
         if self._trainingLog is None:
-            self._trainingLog = TrainingLog(isVerbose = False)
+            self._trainingLog = Logger(isVerbose = False)
             self._trainingLog.Append(
                     "TrainingResultsRepository.LoadBestModel() warning: " \
                     "trainingLog was None! Potentially important details about" \
@@ -74,7 +74,7 @@ class TrainingResultsRepository:
                 bestModel = torch.load(fullPathToModel)
                 self._trainingLog.Append(
                         "TrainingResultsRepository.LoadBestModel() info: " \
-                        "training_results/{0}/best_model.pth file has been "
+                        "'training_results/{0}/best_model.pth' file has been "
                         "loaded!".format(dirNameWithModelToLoad))
             else:
                 self._trainingLog.Append(
@@ -91,7 +91,7 @@ class TrainingResultsRepository:
     
     def LoadPopulation(self, dirNameWithPopulationToLoad):
         if self._trainingLog is None:
-            self._trainingLog = TrainingLog(isVerbose = False)
+            self._trainingLog = Logger(isVerbose = False)
             self._trainingLog.Append(
                     "TrainingResultsRepository.LoadPopulation() warning: " \
                     "trainingLog was None! Potentially important details about" \
@@ -120,7 +120,7 @@ class TrainingResultsRepository:
                 if len(models) == 0:
                     self._trainingLog.Append(
                             "TrainingResultsRepository.LoadPopulation() error: " \
-                            "training_results/{0}/population is empty - " \
+                            "'training_results/{0}/population' is empty - " \
                             "has no 'model_<n>.pth' files! " \
                             "(examples: 'model_1.pth', 'model_2.pth' " \
                             "etc.)".format(dirNameWithPopulationToLoad))
@@ -128,13 +128,13 @@ class TrainingResultsRepository:
                     population = models
                     self._trainingLog.Append(
                             "TrainingResultsRepository.LoadPopulation() info: " \
-                            "training_results/{0}/population has been " \
+                            "'training_results/{0}/population' has been " \
                             "loaded!".format(dirNameWithPopulationToLoad))
             else:
                 self._trainingLog.Append(
                         "TrainingResultsRepository.LoadPopulation() error: " \
                         "cannot load population from " \
-                        "training_results/{0}/population - path " \
+                        "'training_results/{0}/population' - path " \
                         "does not exist!".format(dirNameWithPopulationToLoad))
         else:
             self._trainingLog.Append(
@@ -156,6 +156,8 @@ class TrainingResultsRepository:
     
     def _createLocationForTrainingResults(self):
         basePath = self._createBasePathForResults()
+        if not os.path.isdir(basePath):
+            os.mkdir(basePath)
         dirName = self._createDirNameForResults()
         fullPathToLocation = os.path.join(basePath, dirName)
         return fullPathToLocation

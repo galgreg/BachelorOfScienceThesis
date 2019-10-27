@@ -1,5 +1,5 @@
 from src.training.TrainingResultsRepository import *
-from src.training.TrainingLog import *
+from src.Logger import *
 from src.AgentNeuralNetwork import *
 from ddt import ddt, data, unpack
 import os
@@ -12,11 +12,9 @@ from unittest.mock import patch
 @ddt
 class TestTrainingResultsRepository(unittest.TestCase):
     def setUp(self):
-        self._trainingLog = TrainingLog(isVerbose = False)
+        self._trainingLog = Logger(isVerbose = False)
         self._repository = TrainingResultsRepository(self._trainingLog)
-        #################################################
         torch.manual_seed(0)
-        #################################################
     
     def tearDown(self):
         del self._repository
@@ -33,7 +31,7 @@ class TestTrainingResultsRepository(unittest.TestCase):
         population = [ AgentNeuralNetwork([2, 2]) for _ in range(2) ]
         bestModel = population[1]
         
-        with patch('src.training.TrainingLog.datetime') as datetime_log:
+        with patch('src.Logger.datetime') as datetime_log:
             datetime_log.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
             self._repository.Save(population, bestModel, False)
         
@@ -79,7 +77,7 @@ class TestTrainingResultsRepository(unittest.TestCase):
         population = [ AgentNeuralNetwork([2, 2]) for _ in range(2) ]
         bestModel = population[1]
         
-        with patch('src.training.TrainingLog.datetime') as datetime_log:
+        with patch('src.Logger.datetime') as datetime_log:
             datetime_log.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
             self._repository.Save(population, bestModel, True)
         
@@ -174,7 +172,7 @@ class TestTrainingResultsRepository(unittest.TestCase):
                 expectedLogContent = expectedLogContent)
 
     @patch('src.training.TrainingResultsRepository.datetime')
-    def test_Save_TrainingLogWasNone(self, mock_datetime):
+    def test_Save_LoggerWasNone(self, mock_datetime):
         mock_datetime.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
         locationForResults = \
                 self._createExpectedLocationForResults(mock_datetime)
@@ -186,7 +184,7 @@ class TestTrainingResultsRepository(unittest.TestCase):
         
         self._repository = TrainingResultsRepository(trainingLog = None)
         
-        with patch('src.training.TrainingLog.datetime') as datetime_log:
+        with patch('src.Logger.datetime') as datetime_log:
             datetime_log.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
             self._repository.Save(population, bestModel, False)
         
@@ -237,7 +235,7 @@ class TestTrainingResultsRepository(unittest.TestCase):
         if os.path.isdir(locationForResults):
             rmtree(locationForResults)
         
-        with patch('src.training.TrainingLog.datetime') as datetime_log:
+        with patch('src.Logger.datetime') as datetime_log:
             datetime_log.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
             self._repository.Save(
                     population,
@@ -266,7 +264,7 @@ class TestTrainingResultsRepository(unittest.TestCase):
         rmtree(locationForResults)
     
     @unpack
-    @data((TrainingLog(isVerbose = False), ""), \
+    @data((Logger(isVerbose = False), ""), \
         (None, "[ 1995-07-04 17:15:00 ] TrainingResultsRepository.LoadBestModel() " \
                 "warning: trainingLog was None! Potentially important details" \
                 " about training (or run) could haven't been saved!\n"))
@@ -291,14 +289,14 @@ class TestTrainingResultsRepository(unittest.TestCase):
         expectedModel = tempBestModel
         self._repository._trainingLog = trainingLog
         
-        with patch('src.training.TrainingLog.datetime') as datetime_log:
+        with patch('src.Logger.datetime') as datetime_log:
             datetime_log.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
             actualModel = self._repository.LoadBestModel(dirNameForModel)
         
         expectedLogContent = \
                 logWarning + "[ 1995-07-04 17:15:00 ] " \
                 "TrainingResultsRepository.LoadBestModel() info:" \
-                " training_results/{0}/best_model.pth file has been loaded!" \
+                " 'training_results/{0}/best_model.pth' file has been loaded!" \
                 "\n".format(dirNameForModel)
         actualLogContent = self._repository._trainingLog._content
         self.assertEqual(actualLogContent, expectedLogContent)
@@ -307,10 +305,10 @@ class TestTrainingResultsRepository(unittest.TestCase):
         rmtree(locationForModel)
     
     @unpack
-    @data((None, TrainingLog(isVerbose = False), ""), \
-        ([1, 2, 3, 4], TrainingLog(isVerbose = False), ""),
-        (1.1, TrainingLog(isVerbose = False), ""),
-        ({"wrong" : "type"}, TrainingLog(isVerbose = False), ""),
+    @data((None, Logger(isVerbose = False), ""), \
+        ([1, 2, 3, 4], Logger(isVerbose = False), ""),
+        (1.1, Logger(isVerbose = False), ""),
+        ({"wrong" : "type"}, Logger(isVerbose = False), ""),
         (None, None, "[ 1995-07-04 17:15:00 ] TrainingResultsRepository" \
                 ".LoadBestModel() warning: trainingLog was None! Potentially " \
                 "important details about training (or run) could haven't been " \
@@ -334,7 +332,7 @@ class TestTrainingResultsRepository(unittest.TestCase):
             logWarning):
         self._repository._trainingLog = trainingLog
         
-        with patch('src.training.TrainingLog.datetime') as datetime_log:
+        with patch('src.Logger.datetime') as datetime_log:
             datetime_log.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
             bestModel = self._repository.LoadBestModel(dirName)
         
@@ -348,7 +346,7 @@ class TestTrainingResultsRepository(unittest.TestCase):
         self.assertEqual(actualLog, expectedLog)
     
     @unpack
-    @data((TrainingLog(isVerbose = False), ""), \
+    @data((Logger(isVerbose = False), ""), \
         (None, "[ 1995-07-04 17:15:00 ] " \
                 "TrainingResultsRepository.LoadBestModel() warning: " \
                 "trainingLog was None! Potentially important details about " \
@@ -357,7 +355,7 @@ class TestTrainingResultsRepository(unittest.TestCase):
         nonExistentDirName = "TEST_NON_EXISTENT_DIR_NAME"
         self._repository._trainingLog = trainingLog
         
-        with patch('src.training.TrainingLog.datetime') as datetime_log:
+        with patch('src.Logger.datetime') as datetime_log:
             datetime_log.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
             bestModel = self._repository.LoadBestModel(nonExistentDirName)
         
@@ -371,7 +369,7 @@ class TestTrainingResultsRepository(unittest.TestCase):
         self.assertEqual(actualLogContent, expectedLogContent)
     
     @unpack
-    @data((TrainingLog(isVerbose = False), ""), \
+    @data((Logger(isVerbose = False), ""), \
         (None, "[ 1995-07-04 17:15:00 ] " \
                 "TrainingResultsRepository.LoadBestModel() warning: " \
                 "trainingLog was None! Potentially important details about " \
@@ -398,7 +396,7 @@ class TestTrainingResultsRepository(unittest.TestCase):
         dirNameForModel = "1995_07_04_17_15_00"
         self._repository._trainingLog = trainingLog
         
-        with patch('src.training.TrainingLog.datetime') as datetime_log:
+        with patch('src.Logger.datetime') as datetime_log:
             datetime_log.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
             bestModel = self._repository.LoadBestModel(dirNameForModel)
         
@@ -415,7 +413,7 @@ class TestTrainingResultsRepository(unittest.TestCase):
         rmtree(locationForModel)
     
     @unpack
-    @data((TrainingLog(isVerbose = False), ""), \
+    @data((Logger(isVerbose = False), ""), \
         (None, "[ 1995-07-04 17:15:00 ] " \
                 "TrainingResultsRepository.LoadPopulation() warning: " \
                 "trainingLog was None! Potentially important details about " \
@@ -457,7 +455,7 @@ class TestTrainingResultsRepository(unittest.TestCase):
         self._repository._trainingLog = trainingLog
         dirNameForPopulation = "1995_07_04_17_15_00"
         
-        with patch('src.training.TrainingLog.datetime') as datetime_log:
+        with patch('src.Logger.datetime') as datetime_log:
             datetime_log.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
             actualPopulation = \
                     self._repository.LoadPopulation(dirNameForPopulation)
@@ -469,7 +467,7 @@ class TestTrainingResultsRepository(unittest.TestCase):
         expectedLogContent = \
                 logWarning + "[ 1995-07-04 17:15:00 ] " \
                 "TrainingResultsRepository.LoadPopulation() info: " \
-                "training_results/{0}/population has been loaded!\n".format(
+                "'training_results/{0}/population' has been loaded!\n".format(
                         dirNameForPopulation)
         actualLogContent = self._repository._trainingLog._content
         self.assertEqual(actualLogContent, expectedLogContent)
@@ -477,10 +475,10 @@ class TestTrainingResultsRepository(unittest.TestCase):
         rmtree(locationForPopulation)
     
     @unpack
-    @data((None, TrainingLog(isVerbose = False), ""), \
-        ([1, 2, 3, 4], TrainingLog(isVerbose = False), ""),
-        (1.1, TrainingLog(isVerbose = False), ""),
-        ({"wrong" : "type"}, TrainingLog(isVerbose = False), ""),
+    @data((None, Logger(isVerbose = False), ""), \
+        ([1, 2, 3, 4], Logger(isVerbose = False), ""),
+        (1.1, Logger(isVerbose = False), ""),
+        ({"wrong" : "type"}, Logger(isVerbose = False), ""),
         (None, None, "[ 1995-07-04 17:15:00 ] " \
                 "TrainingResultsRepository.LoadPopulation() warning: " \
                 "trainingLog was None! Potentially important details about " \
@@ -504,7 +502,7 @@ class TestTrainingResultsRepository(unittest.TestCase):
             logWarning):
         self._repository._trainingLog = trainingLog
         
-        with patch('src.training.TrainingLog.datetime') as datetime_log:
+        with patch('src.Logger.datetime') as datetime_log:
             datetime_log.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
             population = self._repository.LoadPopulation(dirName)
         
@@ -520,7 +518,7 @@ class TestTrainingResultsRepository(unittest.TestCase):
     
     
     @unpack
-    @data((TrainingLog(isVerbose = False), ""), \
+    @data((Logger(isVerbose = False), ""), \
         (None, "[ 1995-07-04 17:15:00 ] " \
                 "TrainingResultsRepository.LoadPopulation() warning: " \
                 "trainingLog was None! Potentially important details about " \
@@ -529,7 +527,7 @@ class TestTrainingResultsRepository(unittest.TestCase):
         nonExistentDirName = "TEST_NON_EXISTENT_DIR_NAME"
         self._repository._trainingLog = trainingLog
         
-        with patch('src.training.TrainingLog.datetime') as datetime_log:
+        with patch('src.Logger.datetime') as datetime_log:
             datetime_log.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
             population = self._repository.LoadPopulation(nonExistentDirName)
         
@@ -537,13 +535,13 @@ class TestTrainingResultsRepository(unittest.TestCase):
         expectedLogContent = \
                 logWarning + "[ 1995-07-04 17:15:00 ] " \
                 "TrainingResultsRepository.LoadPopulation() error: " \
-                "cannot load population from training_results/{0}/population -" \
+                "cannot load population from 'training_results/{0}/population' -" \
                 " path does not exist!\n".format(nonExistentDirName)
         actualLogContent = self._repository._trainingLog._content
         self.assertEqual(actualLogContent, expectedLogContent)
     
     @unpack
-    @data((TrainingLog(isVerbose = False), ""), \
+    @data((Logger(isVerbose = False), ""), \
         (None, "[ 1995-07-04 17:15:00 ] " \
                 "TrainingResultsRepository.LoadPopulation() warning: " \
                 "trainingLog was None! Potentially important details about " \
@@ -572,7 +570,7 @@ class TestTrainingResultsRepository(unittest.TestCase):
         self._repository._trainingLog = trainingLog
         dirName = "1995_07_04_17_15_00"
         
-        with patch('src.training.TrainingLog.datetime') as datetime_log:
+        with patch('src.Logger.datetime') as datetime_log:
             datetime_log.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
             population = self._repository.LoadPopulation(dirName)
         
@@ -582,13 +580,13 @@ class TestTrainingResultsRepository(unittest.TestCase):
                 logWarning + "[ 1995-07-04 17:15:00 ] " \
                 "TrainingResultsRepository.LoadPopulation() " \
                 "error: cannot load population from " \
-                "training_results/{0}/population - path does not " \
+                "'training_results/{0}/population' - path does not " \
                 "exist!\n".format(dirName)
         actualLogContent = self._repository._trainingLog._content
         self.assertEqual(actualLogContent, expectedLogContent)
     
     @unpack
-    @data((TrainingLog(isVerbose = False), ""), \
+    @data((Logger(isVerbose = False), ""), \
         (None, "[ 1995-07-04 17:15:00 ] " \
                 "TrainingResultsRepository.LoadPopulation() warning: " \
                 "trainingLog was None! Potentially important details about " \
@@ -618,7 +616,7 @@ class TestTrainingResultsRepository(unittest.TestCase):
         self._repository._trainingLog = trainingLog
         dirName = "1995_07_04_17_15_00"
         
-        with patch('src.training.TrainingLog.datetime') as datetime_log:
+        with patch('src.Logger.datetime') as datetime_log:
             datetime_log.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
             population = self._repository.LoadPopulation(dirName)
         
@@ -627,7 +625,7 @@ class TestTrainingResultsRepository(unittest.TestCase):
         expectedLogContent = \
                 logWarning + "[ 1995-07-04 17:15:00 ] " \
                 "TrainingResultsRepository.LoadPopulation() " \
-                "error: training_results/{0}/population is empty - " \
+                "error: 'training_results/{0}/population' is empty - " \
                 "has no 'model_<n>.pth' files! " \
                 "(examples: 'model_1.pth', 'model_2.pth' etc.)\n".format(dirName)
         actualLogContent = self._repository._trainingLog._content
@@ -679,6 +677,9 @@ class TestTrainingResultsRepository(unittest.TestCase):
         basePath = basePath[ : basePathEnd]
         self.assertTrue(basePath.endswith(basePathLastPart))
         basePath = os.path.join(basePath, "training_results")
+        
+        if not os.path.isdir(basePath):
+            os.mkdir(basePath)
         
         datetimeNow = mock_datetime.now()
         dirName = "{0}_{1}_{2}_{3}_{4}_{5}".format(
