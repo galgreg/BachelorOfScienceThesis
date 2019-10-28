@@ -69,31 +69,31 @@ class TestExperimentDataCollector(unittest.TestCase):
         expectedMeanTrainingTimesAsSeconds = {
             "RaceTrack_1" : {
                 "DE": {
-                    "Time" : 0.0,
+                    "Sum" : 0.0,
                     "TrialCounter" : 0
                 },
                 "PSO" : {
-                    "Time" : 0.0,
+                    "Sum" : 0.0,
                     "TrialCounter" : 0
                 }
             },
             "RaceTrack_2" : {
                 "DE": {
-                    "Time" : 0.0,
+                    "Sum" : 0.0,
                     "TrialCounter" : 0
                 },
                 "PSO" : {
-                    "Time" : 0.0,
+                    "Sum" : 0.0,
                     "TrialCounter" : 0
                 }
             },
             "RaceTrack_3" : {
                 "DE": {
-                    "Time" : 0.0,
+                    "Sum" : 0.0,
                     "TrialCounter" : 0
                 },
                 "PSO" : {
-                    "Time" : 0.0,
+                    "Sum" : 0.0,
                     "TrialCounter" : 0
                 }
             }
@@ -105,31 +105,31 @@ class TestExperimentDataCollector(unittest.TestCase):
         expectedMeanTrainingTimesAsEpisodes = {
             "RaceTrack_1" : {
                 "DE": {
-                    "Episodes" : 0,
+                    "Sum" : 0,
                     "TrialCounter" : 0
                 },
                 "PSO" : {
-                    "Episodes" : 0,
+                    "Sum" : 0,
                     "TrialCounter" : 0
                 }
             },
             "RaceTrack_2" : {
                 "DE": {
-                    "Episodes" : 0,
+                    "Sum" : 0,
                     "TrialCounter" : 0
                 },
                 "PSO" : {
-                    "Episodes" : 0,
+                    "Sum" : 0,
                     "TrialCounter" : 0
                 }
             },
             "RaceTrack_3" : {
                 "DE": {
-                    "Episodes" : 0,
+                    "Sum" : 0,
                     "TrialCounter" : 0
                 },
                 "PSO" : {
-                    "Episodes" : 0,
+                    "Sum" : 0,
                     "TrialCounter" : 0
                 }
             }
@@ -149,31 +149,31 @@ class TestExperimentDataCollector(unittest.TestCase):
         expectedMeanSearchCounters = {
             "RaceTrack_1" : {
                 "DE": {
-                    "SearchCounter" : 0,
+                    "Sum" : 0,
                     "TrialCounter" : 0
                 },
                 "PSO" : {
-                    "SearchCounter" : 0,
+                    "Sum" : 0,
                     "TrialCounter" : 0
                 }
             },
             "RaceTrack_2" : {
                 "DE": {
-                    "SearchCounter" : 0,
+                    "Sum" : 0,
                     "TrialCounter" : 0
                 },
                 "PSO" : {
-                    "SearchCounter" : 0,
+                    "Sum" : 0,
                     "TrialCounter" : 0
                 }
             },
             "RaceTrack_3" : {
                 "DE": {
-                    "SearchCounter" : 0,
+                    "Sum" : 0,
                     "TrialCounter" : 0
                 },
                 "PSO" : {
-                    "SearchCounter" : 0,
+                    "Sum" : 0,
                     "TrialCounter" : 0
                 }
             }
@@ -276,37 +276,37 @@ class TestExperimentDataCollector(unittest.TestCase):
         expectedMeanTrainingTimesAsSeconds = {
             "RaceTrack_1" : {
                 "DE": {
-                    "Time" : 0.0,
+                    "Sum" : 0.0,
                     "TrialCounter" : 0
                 },
                 "PSO" : {
-                    "Time" : 0.0,
+                    "Sum" : 0.0,
                     "TrialCounter" : 0
                 }
             },
             "RaceTrack_2" : {
                 "DE": {
-                    "Time" : 0.0,
+                    "Sum" : 0.0,
                     "TrialCounter" : 0
                 },
                 "PSO" : {
-                    "Time" : 0.0,
+                    "Sum" : 0.0,
                     "TrialCounter" : 0
                 }
             },
             "RaceTrack_3" : {
                 "DE": {
-                    "Time" : 0.0,
+                    "Sum" : 0.0,
                     "TrialCounter" : 0
                 },
                 "PSO" : {
-                    "Time" : 0.0,
+                    "Sum" : 0.0,
                     "TrialCounter" : 0
                 }
             }
         }
         trackName = "RaceTrack_{0}".format(trackNum)
-        expectedMeanTrainingTimesAsSeconds[trackName][algorithm]["Time"] += timeInSeconds
+        expectedMeanTrainingTimesAsSeconds[trackName][algorithm]["Sum"] += timeInSeconds
         expectedMeanTrainingTimesAsSeconds[trackName][algorithm]["TrialCounter"] += 1
         self._dataCollector.AddTimeInSecondsFromTraining(
                 trackNum,
@@ -323,37 +323,37 @@ class TestExperimentDataCollector(unittest.TestCase):
         expectedMeanTrainingTimesAsEpisodes = {
             "RaceTrack_1" : {
                 "DE": {
-                    "Episodes" : 0,
+                    "Sum" : 0,
                     "TrialCounter" : 0
                 },
                 "PSO" : {
-                    "Episodes" : 0,
+                    "Sum" : 0,
                     "TrialCounter" : 0
                 }
             },
             "RaceTrack_2" : {
                 "DE": {
-                    "Episodes" : 0,
+                    "Sum" : 0,
                     "TrialCounter" : 0
                 },
                 "PSO" : {
-                    "Episodes" : 0,
+                    "Sum" : 0,
                     "TrialCounter" : 0
                 }
             },
             "RaceTrack_3" : {
                 "DE": {
-                    "Episodes" : 0,
+                    "Sum" : 0,
                     "TrialCounter" : 0
                 },
                 "PSO" : {
-                    "Episodes" : 0,
+                    "Sum" : 0,
                     "TrialCounter" : 0
                 }
             }
         }
         trackName = "RaceTrack_{0}".format(trackNum)
-        expectedMeanTrainingTimesAsEpisodes[trackName][algorithm]["Episodes"] += timeInEpisodes
+        expectedMeanTrainingTimesAsEpisodes[trackName][algorithm]["Sum"] += timeInEpisodes
         expectedMeanTrainingTimesAsEpisodes[trackName][algorithm]["TrialCounter"] += 1
         self._dataCollector.AddTimeInEpisodesFromTraining(
                 trackNum,
@@ -398,37 +398,37 @@ class TestExperimentDataCollector(unittest.TestCase):
         expectedMeanSearchCounters = {
             "RaceTrack_1" : {
                 "DE": {
-                    "SearchCounter" : 0,
+                    "Sum" : 0,
                     "TrialCounter" : 0
                 },
                 "PSO" : {
-                    "SearchCounter" : 0,
+                    "Sum" : 0,
                     "TrialCounter" : 0
                 }
             },
             "RaceTrack_2" : {
                 "DE": {
-                    "SearchCounter" : 0,
+                    "Sum" : 0,
                     "TrialCounter" : 0
                 },
                 "PSO" : {
-                    "SearchCounter" : 0,
+                    "Sum" : 0,
                     "TrialCounter" : 0
                 }
             },
             "RaceTrack_3" : {
                 "DE": {
-                    "SearchCounter" : 0,
+                    "Sum" : 0,
                     "TrialCounter" : 0
                 },
                 "PSO" : {
-                    "SearchCounter" : 0,
+                    "Sum" : 0,
                     "TrialCounter" : 0
                 }
             }
         }
         trackName = "RaceTrack_{0}".format(trackNum)
-        expectedMeanSearchCounters[trackName][algorithm]["SearchCounter"] = \
+        expectedMeanSearchCounters[trackName][algorithm]["Sum"] = \
                 numOfSearches * numOfTimesToAdd
         expectedMeanSearchCounters[trackName][algorithm]["TrialCounter"] = \
                 numOfTimesToAdd
