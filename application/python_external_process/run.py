@@ -2,7 +2,7 @@ from mlagents.envs import UnityEnvironment
 from docopt import docopt
 from src.training.TrainingResultsRepository import *
 
-def run():
+def getProgramOptions():
     APP_USAGE_DESCRIPTION = """
 Run best trained model of car on a specified racetrack. Racetrack must be valid Unity ML-Agents environment.
 
@@ -15,7 +15,9 @@ Options:
     --env-path=<unity-build>        Specify path to Unity environment build
 """
     options = docopt(APP_USAGE_DESCRIPTION)
-    
+    return options
+
+def run(options):   
     print("This is run.py -> script for running pretrained models!")
     locationOfPretrainedModel = options["--model"]
     resultsRepository = TrainingResultsRepository()
@@ -49,4 +51,5 @@ Options:
     print("Closed Unity environment.")
     
 if __name__ == "__main__":
-    run()
+    options = getProgramOptions()
+    run(options)

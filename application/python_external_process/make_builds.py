@@ -3,7 +3,7 @@ from src.training.training_utilities import loadConfigData
 import os
 import subprocess
 
-def make_builds():
+def getProgramOptions():
     APP_USAGE_DESCRIPTION = """
 Create Unity environment builds. Each build has exactly one scene (race track).
 NOTE: As a config file should be used 'config/make_config.json' file or other with appropriate fields.
@@ -13,7 +13,9 @@ Usage:
     make_builds.py -h | --help
 """
     options = docopt(APP_USAGE_DESCRIPTION)
-    
+    return options
+
+def make_builds(options):
     pathToConfigFile = options["<config-file-path>"]
     CONFIG_DATA = loadConfigData(pathToConfigFile)
     if CONFIG_DATA == {}:
@@ -67,4 +69,5 @@ Usage:
 
 
 if __name__ == "__main__":
-    make_builds()
+    options = getProgramOptions()
+    make_builds(options)

@@ -7,8 +7,7 @@ from src.training.training_utilities import *
 import statistics
 import random
 
-def train_pso():
-    # --- 1 - Specify script's usage options --- #
+def getProgramOptions():
     APP_USAGE_DESCRIPTION = """
 Train neural networks to drive a car on a racetrack. Racetrack must be valid Unity ML-Agents environment.
 Algorithm used to train is Particle Swarm Optimization.
@@ -26,8 +25,10 @@ Options:
     --population=<pretrained-population>    Specify path to pretrained population
 """
     options = docopt(APP_USAGE_DESCRIPTION)
-    
-    # --- 2 - Create logging object --- #
+    return options
+
+def train_pso(options):
+    # --- Create logging object --- #
     trainingLog = Logger(isVerbose = options["--verbose"])
     trainingLog.Append("Training log has been created!")
     trainingLog.Append("This is train_pso.py -> Particle Swarm Optimization " \
@@ -47,7 +48,7 @@ Options:
             pathToConfigFile))
     del pathToConfigFile
     
-    # --- 4 - Set random seed --- #
+    # --- Set random seed --- #
     TRAINING_PARAMS = CONFIG_DATA["TrainingParameters"]
     RANDOM_SEED = TRAINING_PARAMS["randomSeed"]
     if isinstance(RANDOM_SEED, int):
@@ -55,11 +56,11 @@ Options:
         torch.manual_seed(RANDOM_SEED)
         trainingLog.Append("Random seed set to value: {0}".format(RANDOM_SEED))
     
-    # --- 5 - Establish connection with Unity environment --- #
+    # --- Establish connection with Unity environment --- #
     env = UnityEnvironment()
     trainingLog.Append("Established connection to the Unity environment!")
    
-    # --- 6 - Get info from Unity environment --- #
+    # --- Get info from Unity environment --- #
     brainName = env.brain_names[0]
     trainingLog.Append("Brain name: {0}".format(brainName))
     brain = env.brains[brainName]
@@ -70,12 +71,12 @@ Options:
             "Loaded from Unity environment: observationSize = {0}, " \
             "actionSize = {1}".format(observationSize, actionSize))
     
-    # --- 7 - Compute agent dimensions -- #
+    # --- Compute agent dimensions -- #
     HIDDEN_DIMENSIONS = TRAINING_PARAMS["networkHiddenDimensions"]
     agentDimensions = [observationSize - 1] + HIDDEN_DIMENSIONS + [actionSize]
     trainingLog.Append("Computed agentDimensions: {0}".format(agentDimensions))
     
-    # --- 8 - Create population ---- #
+    # --- Create population ---- #
     locationForPretrainedPopulation = options["--population"]
     PSO_PARAMS = CONFIG_DATA["LearningAlgorithms"]["pso"]
     NUM_OF_AGENTS = PSO_PARAMS["numberOfAgents"]
@@ -95,7 +96,7 @@ Options:
             env.close()
             exit()
     
-    # --- 9 - Training sequence --- #
+    # --- Training sequence --- #
     MAX_EPISODES_NUMBER = TRAINING_PARAMS["maxNumberOfEpisodes"]
     currentBestFitness = float("-inf")
     currentMeanFitness = float("-inf")
@@ -193,13 +194,14 @@ Options:
     
     trainingLog.Append("End of training!")
     
-    # --- 10 - Close environment --- #
+    # --- Close environment --- #
     env.close()
     trainingLog.Append("Closed Unity environment.")
     
-    # --- 11 - Save training results --- #
+    # --- Save training results --- #
     shouldSavePopulation = options["--save-population"]
     resultsRepository.Save(population, bestAgent, shouldSavePopulation)
     
 if __name__ == "__main__":
-    train_pso()
+    options = getProgramOptions()
+    train_pso(options)
