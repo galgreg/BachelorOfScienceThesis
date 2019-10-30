@@ -1,4 +1,3 @@
-import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import os
@@ -20,13 +19,103 @@ class ChartsGenerator:
                     " does not exist!".format(self._basePathForCharts))
     
     def CreateBestComparisonCharts(self):
-        pass
+        lineLabels = ["DE", "PSO"]
+        labelX = "episodes"
+        labelY = "fitness"
+        
+        for trackNum in range(3):
+            raceTrackName = "RaceTrack_{0}".format(trackNum + 1)
+            dataFromTrack = self._dataCollector.BestFitness[raceTrackName]
+            dataFromTrain_DE = dataFromTrack["DE"]
+            dataFromTrain_PSO = dataFromTrack["PSO"]
+            numOfTrials = len(dataFromTrain_DE)
+            
+            for trialNum in range(numOfTrials):
+                fileName = os.path.join(
+                        self._pathToChartFiles,
+                        "best_track_{0}_trial_{1}.svg".format(
+                            trackNum + 1,
+                            str(trialNum + 1).zfill(2)))
+                chartData = \
+                        [dataFromTrain_DE[trialNum], dataFromTrain_PSO[trialNum]]
+                chartTitle = "Best fitness values - Track {0}, Trial {1}" \
+                        .format(trackNum + 1, trialNum + 1)
+                
+                self._drawLineChartWithMarkers(
+                        fileName = fileName,
+                        chartData = chartData,
+                        lineLabels = lineLabels,
+                        chartTitle = chartTitle,
+                        labelX = labelX,
+                        labelY = labelY)
     
     def CreateMeanComparisonCharts(self):
-        pass
+        lineLabels = ["DE", "PSO_Pbest", "PSO_Episode"]
+        labelX = "episodes"
+        labelY = "mean fitness"
+        
+        for trackNum in range(3):
+            raceTrackName = "RaceTrack_{0}".format(trackNum + 1)
+            dataFromTrack = self._dataCollector.MeanFitness[raceTrackName]
+            dataFromTrain_DE = dataFromTrack["DE"]
+            dataFromTrain_PSO_Pest = dataFromTrack["PSO_Pbest"]
+            dataFromTrain_PSO_Episode = dataFromTrack["PSO_Episode"]
+            numOfTrials = len(dataFromTrain_DE)
+            
+            for trialNum in range(numOfTrials):
+                fileName = os.path.join(
+                        self._pathToChartFiles,
+                        "mean_track_{0}_trial_{1}.svg".format(
+                            trackNum + 1,
+                            str(trialNum + 1).zfill(2)))
+                chartData = [
+                        dataFromTrain_DE[trialNum],
+                        dataFromTrain_PSO_Pest[trialNum],
+                        dataFromTrain_PSO_Episode[trialNum]]
+                chartTitle = "Mean fitness values - Track {0}, Trial {1}" \
+                        .format(trackNum + 1, trialNum + 1)
+                
+                self._drawLineChartWithMarkers(
+                        fileName = fileName,
+                        chartData = chartData,
+                        lineLabels = lineLabels,
+                        chartTitle = chartTitle,
+                        labelX = labelX,
+                        labelY = labelY)
     
     def CreateStdevComparisonCharts(self):
-        pass
+        lineLabels = ["DE", "PSO_Pbest", "PSO_Episode"]
+        labelX = "episodes"
+        labelY = "stdev of fitness"
+        
+        for trackNum in range(3):
+            raceTrackName = "RaceTrack_{0}".format(trackNum + 1)
+            dataFromTrack = self._dataCollector.StdevFitness[raceTrackName]
+            dataFromTrain_DE = dataFromTrack["DE"]
+            dataFromTrain_PSO_Pest = dataFromTrack["PSO_Pbest"]
+            dataFromTrain_PSO_Episode = dataFromTrack["PSO_Episode"]
+            numOfTrials = len(dataFromTrain_DE)
+            
+            for trialNum in range(numOfTrials):
+                fileName = os.path.join(
+                        self._pathToChartFiles,
+                        "stdev_track_{0}_trial_{1}.svg".format(
+                            trackNum + 1,
+                            str(trialNum + 1).zfill(2)))
+                chartData = [
+                        dataFromTrain_DE[trialNum],
+                        dataFromTrain_PSO_Pest[trialNum],
+                        dataFromTrain_PSO_Episode[trialNum]]
+                chartTitle = "Standard Deviation - Track {0}, Trial {1}" \
+                        .format(trackNum + 1, trialNum + 1)
+                
+                self._drawLineChartWithMarkers(
+                        fileName = fileName,
+                        chartData = chartData,
+                        lineLabels = lineLabels,
+                        chartTitle = chartTitle,
+                        labelX = labelX,
+                        labelY = labelY)
     
     def CreateMeanTrainingTimeCharts(self):
         barLabels = ["DE", "PSO"]
@@ -126,6 +215,64 @@ class ChartsGenerator:
 
         return resultData
 
+    def _drawLineChartWithMarkers(
+            self,
+            fileName,   # string
+            chartData,  # 2D list (lineClass, episode)
+            lineLabels,    # list of strings
+            chartTitle = "",    # string
+            labelX = "",          # string
+            labelY = ""):          # string
+        numOfLineClasses = len(chartData)
+        labelStrings = self._prepareLabelStrings(lineLabels, chartData)
+        figure, axes = plt.subplots()
+        
+        
+        for i in range(numOfLineClasses):
+            ticksX = np.arange(start = 1, stop = len(chartData[i]) + 1)
+            axes.plot(
+                    ticksX,
+                    chartData[i],
+                    's--',
+                    linewidth = 0.8,
+                    markersize = 5,
+                    label = labelStrings[i])
+        
+        axes.set_title(chartTitle, fontsize = 'x-large')
+        axes.set_xlabel(labelX, fontsize = 'large')
+        axes.set_ylabel(labelY, fontsize = 'large')
+        
+        start, end = axes.get_xlim()
+        axes.xaxis.set_ticks(np.arange(1, end, 1))
+        
+        start, end = axes.get_ylim()
+        axes.yaxis.set_ticks(np.arange(0, end, 5))
+        
+        axes.legend(
+                loc = "upper left",
+                bbox_to_anchor=(0, -0.2),
+                fontsize = 'large',
+                markerscale = 1.5)
+        figure.tight_layout(pad = 0.4)
+        figure.savefig(fileName, format = "svg", transparent = True)
+        plt.close('all')
+
+    def _prepareLabelStrings(self, lineLabels, chartData):
+        labelStrings = []
+        for label, lineData in zip(lineLabels, chartData):
+            tempString = "{0}: ".format(label)
+            markerCounter = 1
+            for markerValue in lineData:
+                if (markerCounter % 8) == 0:
+                    tempString += "\n"
+                tempString += "{0} - ".format(markerValue)
+                markerCounter += 1
+            
+            tempString = tempString.strip(' -')
+            labelStrings.append(tempString)
+        
+        return labelStrings
+
     def _drawGroupedBarChart(
             self,
             fileName,   # string
@@ -166,7 +313,12 @@ class ChartsGenerator:
                 self._displayBarsValues(barClass, axes)
         
         figure.tight_layout()
-        figure.savefig(fileName, format = "svg", transparent = True)
+        figure.savefig(
+                fileName,
+                format = "svg",
+                transparent = True,
+                bbox_inches='tight')
+        plt.close('all')
         
     def _displayBarsValues(self, bars, axes):
         for bar in bars:
