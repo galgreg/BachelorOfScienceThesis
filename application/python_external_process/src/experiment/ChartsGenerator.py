@@ -229,9 +229,7 @@ class ChartsGenerator:
         
         
         for i in range(numOfLineClasses):
-            ticksX = np.arange(start = 1, stop = len(chartData[i]) + 1)
             axes.plot(
-                    ticksX,
                     chartData[i],
                     's--',
                     linewidth = 0.8,
@@ -243,7 +241,7 @@ class ChartsGenerator:
         axes.set_ylabel(labelY, fontsize = 'large')
         
         start, end = axes.get_xlim()
-        axes.xaxis.set_ticks(np.arange(1, end, 1))
+        axes.xaxis.set_ticks(np.arange(0, end, 1))
         
         start, end = axes.get_ylim()
         axes.yaxis.set_ticks(np.arange(0, end, 5))

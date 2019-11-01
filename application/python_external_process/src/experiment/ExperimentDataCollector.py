@@ -166,9 +166,9 @@ class ExperimentDataCollector:
         self.MeanTrainingTimesAsSeconds[raceTrackName][algorithm]["Sum"] += time
         self.MeanTrainingTimesAsSeconds[raceTrackName][algorithm]["TrialCounter"] += 1
     
-    def AddTimeInEpisodesFromTraining(self, trackNum, algorithm, time):
+    def AddTimeInEpisodesFromTraining(self, trackNum, algorithm, episodesCount):
         raceTrackName = "RaceTrack_{0}".format(trackNum)
-        self.MeanTrainingTimesAsEpisodes[raceTrackName][algorithm]["Sum"] += time
+        self.MeanTrainingTimesAsEpisodes[raceTrackName][algorithm]["Sum"] += episodesCount
         self.MeanTrainingTimesAsEpisodes[raceTrackName][algorithm]["TrialCounter"] += 1
 
     def IncrementValidationMatrixEntry(self, algorithm, trainNum, runNum):

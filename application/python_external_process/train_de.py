@@ -2,11 +2,13 @@ from mlagents.envs import UnityEnvironment
 from copy import deepcopy
 from docopt import docopt
 from src.Logger import *
+from src.experiment.ExperimentDataCollector import *
 from src.training.TrainingResultsRepository import *
 from src.training.training_utilities import *
 import statistics
 import sys
 import random
+import time
 
 def getProgramOptions():
     APP_USAGE_DESCRIPTION = """
@@ -28,18 +30,18 @@ Options:
     options = docopt(APP_USAGE_DESCRIPTION)
     return options
 
-def train_de(options):
-    # --- Create logging object --- #
-    trainingLog = Logger(isVerbose = options["--verbose"])
-    trainingLog.Append("Training log has been created!")
+def train_de(options, trainingLog, dataCollector = None):
+    isTrainInExperimentMode = isinstance(dataCollector, ExperimentDataCollector)
     trainingLog.Append("This is train_de.py -> Differential Evolution training!")
     
     if options["--track-1"]:
-        trainingLog.Append("Training on RaceTrack_1.")
+        trackNumber = 1
     elif options["--track-2"]:
-        trainingLog.Append("Training on RaceTrack_2.")
+        trackNumber = 2
     elif options["--track-3"]:
-        trainingLog.Append("Training on RaceTrack_3.")
+        trackNumber = 3
+    
+    trainingLog.Append("Training on RaceTrack_{0}.".format(trackNumber))
     
     # --- Load config data from file --- #
     pathToConfigFile = options["<config-file-path>"]
@@ -131,6 +133,13 @@ def train_de(options):
                     NUM_OF_PARAMS,
                     type(fitnessEvaluation)))
         
+        if isTrainInExperimentMode:
+            bestFitnessSequence = []
+            meanFitnessSequence = []
+            stdevFitnessSequence = []
+            searchCounter = NUM_OF_AGENTS
+            timeOfBegin = time.time()
+        
         for agentIndex in range(NUM_OF_AGENTS):
             agentFitness = fitnessEvaluation(population[agentIndex])
             fitnessList.append(agentFitness)
@@ -141,10 +150,18 @@ def train_de(options):
         meanFitness = statistics.mean(fitnessList)
         stdDevFitness = statistics.stdev(fitnessList)
         
+        if isTrainInExperimentMode:
+            bestFitnessSequence.append(bestFitness),
+            meanFitnessSequence.append(meanFitness)
+            stdevFitnessSequence.append(stdDevFitness)
+        
         pop_denorm = retrieveParametersFromAgentList(population)
         pop_norm = pop_denorm / 4 + 0.5
-        for i in range(MAX_EPISODES_NUMBER):
+        for episodeCounter in range(MAX_EPISODES_NUMBER):
             for j in range(NUM_OF_AGENTS):
+                if isTrainInExperimentMode:
+                    searchCounter += 1
+                
                 indices = [index for index in range(NUM_OF_AGENTS) if index != j]
                 a_idx, b_idx, c_idx = random.sample(indices, 3)
                 a, b, c = pop_norm[a_idx], pop_norm[b_idx], pop_norm[c_idx]
@@ -175,16 +192,54 @@ def train_de(options):
                 
             meanFitness = statistics.mean(fitnessList)
             stdDevFitness = statistics.stdev(fitnessList)
+            
+            if isTrainInExperimentMode:
+                bestFitnessSequence.append(bestFitness),
+                meanFitnessSequence.append(meanFitness)
+                stdevFitnessSequence.append(stdDevFitness)
+            
             trainingLog.Append(
                     "Episode {0}: best = {1}, mean = {2}, stdDev = {3}".format(
-                        i, bestFitness, meanFitness, stdDevFitness))
+                        episodeCounter, bestFitness, meanFitness, stdDevFitness))
             
             if bestFitness >= MINIMAL_ACCEPTABLE_FITNESS:
                 trainingLog.Append(
                         "Training interrupted after {0} episodes, reason: " \
                         "reached minimal acceptable value for bestFitness!" \
                         " (minimalAcceptableFitness = {1}, bestFitness = {2})" \
-                        .format(i + 1, MINIMAL_ACCEPTABLE_FITNESS, bestFitness))
+                        .format(
+                                episodeCounter + 1,
+                                MINIMAL_ACCEPTABLE_FITNESS,
+                                bestFitness))
+                
+                if isTrainInExperimentMode:
+                    timeOfEnd = time.time()
+                    trainingTime = timeOfEnd - timeOfBegin
+                    
+                    dataCollector.AppendBestFitnessSequence(
+                            trackNumber,
+                            "DE",
+                            bestFitnessSequence)
+                    dataCollector.AppendMeanFitnessSequence(
+                            trackNumber,
+                            "DE",
+                            meanFitnessSequence)
+                    dataCollector.AppendStdevFitnessSequence(
+                            trackNumber,
+                            "DE",
+                            stdevFitnessSequence)
+                    dataCollector.AddTimeInSecondsFromTraining(
+                            trackNumber,
+                            "DE",
+                            trainingTime)
+                    dataCollector.AddTimeInEpisodesFromTraining(
+                            trackNumber,
+                            "DE",
+                            episodeCounter + 1)
+                    dataCollector.AddToSearchCounter(
+                            trackNumber,
+                            "DE",
+                            searchCounter)
                 break
         
     except:
@@ -203,4 +258,6 @@ def train_de(options):
     
 if __name__ == "__main__":
     options = getProgramOptions()
-    train_de(options)
+    trainingLog = Logger(isVerbose = options["--verbose"])
+    trainingLog.Append("Training log has been created!")
+    train_de(options, trainingLog)
