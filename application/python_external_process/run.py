@@ -17,30 +17,50 @@ Options:
     options = docopt(APP_USAGE_DESCRIPTION)
     return options
 
-def run(options):   
-    print("This is run.py -> script for running pretrained models!")
+def run(options, minimumAcceptableFitness = None):   
+    isFunctionInValidationMode = \
+            isinstance(minimumAcceptableFitness, float)
+    if not isFunctionInValidationMode:
+        print("This is run.py -> script for running pretrained models!")
+    
     locationOfPretrainedModel = options["--model"]
     resultsRepository = TrainingResultsRepository()
     bestAgent = resultsRepository.LoadBestModel(locationOfPretrainedModel)
+    
     if bestAgent is None:
-        print("Cannot load model, reason: location 'training_results/{0}' does not exist!"
-                .format(locationOfPretrainedModel))
+        print("run.run() error: Cannot load model, location " \
+                "'training_results/{0}' does not exist!".format(
+                        locationOfPretrainedModel))
         exit()
 
     env = UnityEnvironment(file_name = options["--env-path"])
     brainName = env.brain_names[0]
 
+    if isFunctionInValidationMode:
+        fitness = 0.0
+
+    shouldRunBeExecuted = True
     try:
-        while True:
+        while shouldRunBeExecuted:
             envInfo = env.reset(train_mode = False)[brainName]
             inputData = envInfo.vector_observations.tolist()
-            inputData = inputData[0][:-1]
-            while True:
+            
+            inputData = inputData[0][0:-1]
+            while shouldRunBeExecuted:
                 outputData = bestAgent.forward(inputData)
                 envInfo = env.step([outputData])[brainName]
                 inputData = envInfo.vector_observations.tolist()
+                
+                if isFunctionInValidationMode:
+                    episodeReward = inputData[0][-1]
+                    if episodeReward > fitness:
+                        fitness = episodeReward
+
                 inputData = inputData[0][:-1]
+
                 if envInfo.local_done[0]:
+                    if isFunctionInValidationMode:
+                        shouldRunBeExecuted = False
                     break
     
     except KeyboardInterrupt:
@@ -49,6 +69,11 @@ def run(options):
     print("End of run!")
     env.close()
     print("Closed Unity environment.")
+    
+    if isFunctionInValidationMode:
+        return fitness >= minimumAcceptableFitness
+    else:
+        return False
     
 if __name__ == "__main__":
     options = getProgramOptions()
