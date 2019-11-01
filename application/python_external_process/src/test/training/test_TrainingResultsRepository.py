@@ -20,6 +20,12 @@ class TestTrainingResultsRepository(unittest.TestCase):
         del self._repository
         del self._trainingLog
     
+    def test_DefaultObjectState(self):
+        self.assertTrue(self._repository._pathToLastSavedModel is None)
+        self.assertEqual(
+                self._trainingLog,
+                self._repository._trainingLog)
+    
     @patch('src.training.TrainingResultsRepository.datetime')
     def test_Save_OK_SaveWithoutPopulation(self, mock_datetime):
         mock_datetime.now.return_value = datetime(1995, 7, 4, 17, 15, 0)
@@ -63,6 +69,10 @@ class TestTrainingResultsRepository(unittest.TestCase):
         pathToPopulation = os.path.join(locationForResults, "population")
         doesPopulationExist = os.path.isdir(pathToPopulation)
         self.assertFalse(doesPopulationExist)
+        
+        self.assertEqual(
+                locationForResults,
+                self._repository._pathToLastSavedModel)
 
         rmtree(locationForResults)
     
@@ -109,6 +119,10 @@ class TestTrainingResultsRepository(unittest.TestCase):
         pathToPopulation = os.path.join(locationForResults, "population")
         doesPopulationExist = os.path.isdir(pathToPopulation)
         self.assertTrue(doesPopulationExist)
+        
+        self.assertEqual(
+                locationForResults,
+                self._repository._pathToLastSavedModel)
         
         for i in range(len(population)):
             pathToModelFile = \
@@ -209,6 +223,10 @@ class TestTrainingResultsRepository(unittest.TestCase):
             actualLogContent = logFile.read()
             self.assertEqual(actualLogContent, expectedLogContent)
         
+        self.assertEqual(
+                locationForResults,
+                self._repository._pathToLastSavedModel)
+
         pathToBestModel = os.path.join(locationForResults, "best_model.pth")
         doesBestModelExist = os.path.isfile(pathToBestModel)
         self.assertTrue(doesBestModelExist)
@@ -260,6 +278,8 @@ class TestTrainingResultsRepository(unittest.TestCase):
         pathToPopulation = os.path.join(locationForResults, "population")
         doesPopulationExist = os.path.isdir(pathToPopulation)
         self.assertFalse(doesPopulationExist)
+        
+        self.assertTrue(self._repository._pathToLastSavedModel is None)
         
         rmtree(locationForResults)
     

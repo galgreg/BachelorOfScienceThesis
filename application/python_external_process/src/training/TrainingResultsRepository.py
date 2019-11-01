@@ -10,6 +10,7 @@ from shutil import rmtree
 class TrainingResultsRepository:
     def __init__(self, trainingLog = None):
         self._trainingLog = trainingLog
+        self._pathToLastSavedModel = None
 
     def Save(self, population, bestIndividual, shouldSavePopulation):
         if self._trainingLog is None:
@@ -29,6 +30,7 @@ class TrainingResultsRepository:
                 self._trainingLog.Append(
                         "TrainingResultsRepository.Save() error: " \
                         "population is empty!")
+                self._pathToLastSavedModel = None
             else:
                 self._saveBestModel(
                         locationForTrainingResults,
@@ -41,6 +43,7 @@ class TrainingResultsRepository:
                         "TrainingResultsRepository.Save() info: " \
                         "training results were saved to the location " \
                         "'{0}'!".format(locationForTrainingResults))
+                self._pathToLastSavedModel = locationForTrainingResults
         else:
             self._trainingLog.Append(
                     "TrainingResultsRepository.Save() error: " \
@@ -51,6 +54,7 @@ class TrainingResultsRepository:
                             type(population),
                             type(bestIndividual),
                             type(shouldSavePopulation)))
+            self._pathToLastSavedModel = None
         
         self._trainingLog.Save(locationForTrainingResults)
     

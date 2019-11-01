@@ -1,5 +1,6 @@
 class ExperimentDataCollector:
     def __init__(self):
+        self.PathToLastSavedModel = None
         self.BestFitness = {
             "RaceTrack_1" : {
                 "DE": [],

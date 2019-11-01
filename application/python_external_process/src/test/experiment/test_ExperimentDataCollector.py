@@ -12,6 +12,8 @@ class TestExperimentDataCollector(unittest.TestCase):
         del self._dataCollector
     
     def test_Constructor(self):
+        self.assertTrue(self._dataCollector.PathToLastSavedModel is None)
+        
         expectedBestFitness = {
             "RaceTrack_1" : {
                 "DE": [],

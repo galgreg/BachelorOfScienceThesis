@@ -250,6 +250,10 @@ def train_de(options, trainingLog, dataCollector = None):
     shouldSavePopulation = options["--save-population"]
     resultsRepository.Save(population, bestAgent, shouldSavePopulation)
     
+    if isTrainInExperimentMode:
+        dataCollector.PathToLastSavedModel = \
+                resultsRepository._pathToLastSavedModel
+    
 if __name__ == "__main__":
     options = getProgramOptions()
     trainingLog = Logger(isVerbose = options["--verbose"])
