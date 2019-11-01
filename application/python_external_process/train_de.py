@@ -6,7 +6,6 @@ from src.experiment.ExperimentDataCollector import *
 from src.training.TrainingResultsRepository import *
 from src.training.training_utilities import *
 import statistics
-import sys
 import random
 import time
 
@@ -110,15 +109,10 @@ def train_de(options, trainingLog, dataCollector = None):
         CROSS_PROBABILITY = DIFF_EVO_PARAMS["crossProbability"]
         NUM_OF_PARAMS = computeNumOfParameters(agentDimensions)
         
-        if options["--track-1"]:
-            MINIMAL_ACCEPTABLE_FITNESS = \
-                    TRAINING_PARAMS["minimalAcceptableFitness"]["RaceTrack_1"]
-        elif options["--track-2"]:
-            MINIMAL_ACCEPTABLE_FITNESS = \
-                    TRAINING_PARAMS["minimalAcceptableFitness"]["RaceTrack_2"]
-        elif options["--track-3"]:
-            MINIMAL_ACCEPTABLE_FITNESS = \
-                    TRAINING_PARAMS["minimalAcceptableFitness"]["RaceTrack_3"]
+        trackName = "RaceTrack_{0}".format(trackNumber)
+        MINIMAL_ACCEPTABLE_FITNESS = \
+                TRAINING_PARAMS["minimalAcceptableFitness"][trackName]
+        del trackName
         
         fitnessList = []
         fitnessEvaluation = AgentFitnessEvaluator(env, brainName)
@@ -126,11 +120,12 @@ def train_de(options, trainingLog, dataCollector = None):
         trainingLog.Append(
             "Start training with parameters: MAX_EPISODES_NUMBER = {0}, " \
             "MUTATION_FACTOR = {1}, CROSS_PROBABILITY = {2}, NUM_OF_PARAMS = " \
-            "{3}, fitnessFunction = {4}".format(
+            "{3}, MINIMAL_ACCEPTABLE_FITNESS = {4}, fitnessFunction = {5}".format(
                     MAX_EPISODES_NUMBER,
                     MUTATION_FACTOR,
                     CROSS_PROBABILITY,
                     NUM_OF_PARAMS,
+                    MINIMAL_ACCEPTABLE_FITNESS,
                     type(fitnessEvaluation)))
         
         if isTrainInExperimentMode:
@@ -242,9 +237,8 @@ def train_de(options, trainingLog, dataCollector = None):
                             searchCounter)
                 break
         
-    except:
-        trainingLog.Append("Training interrupted because of exception: {0}" \
-                .format(sys.exc_info()[0]))
+    except KeyboardInterrupt:
+        trainingLog.Append("\nTraining interrupted because of KeyboardInterrupt!")
     
     trainingLog.Append("End of training!")
     

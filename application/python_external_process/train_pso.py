@@ -2,10 +2,12 @@ from mlagents.envs import UnityEnvironment
 from copy import deepcopy
 from docopt import docopt
 from src.Logger import *
+from src.experiment.ExperimentDataCollector import *
 from src.training.TrainingResultsRepository import *
 from src.training.training_utilities import *
 import statistics
 import random
+import time
 
 def getProgramOptions():
     APP_USAGE_DESCRIPTION = """
@@ -27,21 +29,21 @@ Options:
     options = docopt(APP_USAGE_DESCRIPTION)
     return options
 
-def train_pso(options):
-    # --- Create logging object --- #
-    trainingLog = Logger(isVerbose = options["--verbose"])
-    trainingLog.Append("Training log has been created!")
+def train_pso(options, trainingLog, dataCollector = None):
+    isTrainInExperimentMode = isinstance(dataCollector, ExperimentDataCollector)
     trainingLog.Append("This is train_pso.py -> Particle Swarm Optimization " \
             "training!")
     
     if options["--track-1"]:
-        trainingLog.Append("Training on RaceTrack_1.")
+        trackNumber = 1
     elif options["--track-2"]:
-        trainingLog.Append("Training on RaceTrack_2.")
+        trackNumber = 2
     elif options["--track-3"]:
-        trainingLog.Append("Training on RaceTrack_3.")
+        trackNumber = 3
     
-    # --- 3 - Load config data from file --- #
+    trainingLog.Append("Training on RaceTrack_{0}.".format(trackNumber))
+    
+    # --- Load config data from file --- #
     pathToConfigFile = options["<config-file-path>"]
     CONFIG_DATA = loadConfigData(pathToConfigFile)
     trainingLog.Append("Config data has been loaded from file: {0}".format(
@@ -103,23 +105,24 @@ def train_pso(options):
     currentStdDevFitness = float("-inf")
     
     try:
-        if options["--track-1"]:
-            MINIMAL_ACCEPTABLE_FITNESS = \
-                    TRAINING_PARAMS["minimalAcceptableFitness"]["RaceTrack_1"]
-        elif options["--track-2"]:
-            MINIMAL_ACCEPTABLE_FITNESS = \
-                    TRAINING_PARAMS["minimalAcceptableFitness"]["RaceTrack_2"]
-        elif options["--track-3"]:
-            MINIMAL_ACCEPTABLE_FITNESS = \
-                    TRAINING_PARAMS["minimalAcceptableFitness"]["RaceTrack_3"]
+        trackName = "RaceTrack_{0}".format(trackNumber)
+        MINIMAL_ACCEPTABLE_FITNESS = \
+                TRAINING_PARAMS["minimalAcceptableFitness"][trackName]
+        del trackName
+
+        W = PSO_PARAMS["W"]
+        c1 = PSO_PARAMS["c1"]
+        c2 = PSO_PARAMS["c2"]
         fitnessFunction = AgentFitnessEvaluator(env, brainName)
         
         trainingLog.Append("Start training with parameters: " \
-                "MAX_EPISODES_NUMBER = {0}, " \
-                "MINIMAL_ACCEPTABLE_FITNESS = {1}, " \
-                "fitnessFunction = {2}".format(
+                "MAX_EPISODES_NUMBER = {0}, MINIMAL_ACCEPTABLE_FITNESS = {1}," \
+                " W = {2}, c1 = {3}, c2 = {4}, fitnessFunction = {5}".format(
                     MAX_EPISODES_NUMBER,
                     MINIMAL_ACCEPTABLE_FITNESS,
+                    W,
+                    c1,
+                    c2,
                     type(fitnessFunction)))
         
         particlePositions = retrieveParametersFromAgentList(population)
@@ -127,19 +130,28 @@ def train_pso(options):
                 torch.FloatTensor(particlePositions.shape).uniform_(-2.0, 2.0)
         
         pbestPositions = particlePositions.clone().detach()
-        pbestFitnessValues = torch.tensor([float("-inf")] * NUM_OF_AGENTS)
+        pbestFitnessValues = [float("-inf")] * NUM_OF_AGENTS
         
         gbestPosition = torch.zeros(particlePositions.shape[1])
         gbestFitnessValue = float("-inf")
         
-        W = PSO_PARAMS["W"]
-        c1 = PSO_PARAMS["c1"]
-        c2 = PSO_PARAMS["c2"]
-        
         bestAgent = None
+        
+        if isTrainInExperimentMode:
+            gbestSequence = []
+            pbestMeanSequence = []
+            episodeMeanSequence = []
+            pbestStdevSequence = []
+            episodeStdevSequence = []
+            timeOfBegin = time.time()
+            searchCounter = 0
+        
         for episodeCounter in range(MAX_EPISODES_NUMBER):
             fitnessList = []            
             for i in range(NUM_OF_AGENTS):
+                if isTrainInExperimentMode:
+                    searchCounter += 1
+                
                 fitnessCandidate = fitnessFunction(population[i])
                 fitnessList.append(fitnessCandidate)
                 
@@ -153,16 +165,25 @@ def train_pso(options):
                     bestAgent = deepcopy(population[i])
             
             bestEpisodeFitness = max(fitnessList)
-            meanFitness = statistics.mean(fitnessList)
-            stdDevFitness = statistics.stdev(fitnessList)
+            pbestMeanFitness = statistics.mean(pbestFitnessValues)
+            episodeMeanFitness = statistics.mean(fitnessList)
+            pbestStdevFitness = statistics.stdev(pbestFitnessValues)
+            episodeStdevFitness = statistics.stdev(fitnessList)
             trainingLog.Append(
                     "Episode {0}: globalBest = {1}, episodeBest = {2}, " \
                     "mean = {3}, stdDev = {4}".format(
                             episodeCounter,
                             gbestFitnessValue,
                             bestEpisodeFitness,
-                            meanFitness,
-                            stdDevFitness))
+                            episodeMeanFitness,
+                            episodeStdevFitness))
+            
+            if isTrainInExperimentMode:
+                gbestSequence.append(gbestFitnessValue)
+                pbestMeanSequence.append(pbestFitnessValues)
+                episodeMeanSequence.append(episodeMeanFitness)
+                pbestStdevSequence.append(pbestStdevFitness)
+                episodeStdevSequence.append(episodeStdevFitness)
             
             if gbestFitnessValue >= MINIMAL_ACCEPTABLE_FITNESS:
                 trainingLog.Append(
@@ -173,6 +194,43 @@ def train_pso(options):
                                 episodeCounter + 1,
                                 MINIMAL_ACCEPTABLE_FITNESS,
                                 gbestFitnessValue))
+                
+                if isTrainInExperimentMode:
+                    timeOfEnd = time.time()
+                    trainingTime = timeOfEnd - timeOfBegin
+                    
+                    dataCollector.AppendBestFitnessSequence(
+                            trackNumber,
+                            "PSO",
+                            gbestSequence)
+                    dataCollector.AppendMeanFitnessSequence(
+                            trackNumber,
+                            "PSO_Pbest",
+                            pbestMeanSequence)
+                    dataCollector.AppendMeanFitnessSequence(
+                            trackNumber,
+                            "PSO_Episode",
+                            episodeMeanSequence)
+                    dataCollector.AppendStdevFitnessSequence(
+                            trackNumber,
+                            "PSO_Pbest",
+                            pbestStdevSequence)
+                    dataCollector.AppendStdevFitnessSequence(
+                            trackNumber,
+                            "PSO_Episode",
+                            episodeStdevSequence)
+                    dataCollector.AddTimeInSecondsFromTraining(
+                            trackNumber,
+                            "PSO",
+                            trainingTime)
+                    dataCollector.AddTimeInEpisodesFromTraining(
+                            trackNumber,
+                            "PSO",
+                            episodeCounter + 1)
+                    dataCollector.AddToSearchCounter(
+                            trackNumber,
+                            "PSO",
+                            searchCounter)
                 break
             
             for i in range(NUM_OF_AGENTS):
@@ -204,4 +262,6 @@ def train_pso(options):
     
 if __name__ == "__main__":
     options = getProgramOptions()
-    train_pso(options)
+    trainingLog = Logger(isVerbose = options["--verbose"])
+    trainingLog.Append("Training log has been created!")
+    train_pso(options, trainingLog)
