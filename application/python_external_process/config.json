@@ -1,4 +1,8 @@
 {
+    "MakeBuilds" : {
+        "Unity" : "/home/galgreg/Programy/Unity3D/2019.1.12f1/Editor/Unity",
+        "Target" : "Linux"
+    },
     "BuildPaths" : {
         "Linux" : {
             "RaceTrack_1" : "env_builds/RaceTrack_1/RaceTrack_1.x86_64",
@@ -10,7 +14,7 @@
             "RaceTrack_2" : "env_builds/RaceTrack_2/RaceTrack_2.exe",
             "RaceTrack_3" : "env_builds/RaceTrack_3/RaceTrack_3.exe"
         }
-    }
+    },
     "LearningAlgorithms" : {
         "pso" : {
             "numberOfAgents" : 100,

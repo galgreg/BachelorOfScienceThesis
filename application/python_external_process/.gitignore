@@ -1,6 +1,7 @@
 __pycache__/
 *.pyc
-training_results/
 *.log
 *.txt
 env_builds/
+experiment_results/
+training_results/
