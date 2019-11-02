@@ -13,6 +13,7 @@ def getProgramOptions():
     APP_USAGE_DESCRIPTION = """
 Train neural networks to drive a car on a racetrack. Racetrack must be valid Unity ML-Agents environment.
 Algorithm used to train is Differential Evolution.
+NOTE: As a config file should be used 'config.json' file or other with appropriate fields.
 
 Usage:
     train_de.py <config-file-path> (--track-1 | --track-2 | --track-3) [options]
@@ -25,6 +26,7 @@ Options:
     -v --verbose                            Run in verbose mode
     --save-population                       Save population after training
     --population=<pretrained-population>    Specify path to pretrained population
+    --env-path=<unity-build>                Specify path to Unity environment build
 """
     options = docopt(APP_USAGE_DESCRIPTION)
     return options
@@ -58,7 +60,7 @@ def train_de(options, trainingLog, dataCollector = None):
         trainingLog.Append("Random seed set to value: {0}".format(RANDOM_SEED))
     
     # --- Establish connection with Unity environment --- #
-    env = UnityEnvironment()
+    env = UnityEnvironment(file_name = options["--env-path"])
     trainingLog.Append("Established connection to the Unity environment!")
    
     # --- Get info from Unity environment --- #
