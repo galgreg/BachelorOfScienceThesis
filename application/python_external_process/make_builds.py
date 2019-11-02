@@ -2,11 +2,15 @@ from docopt import docopt
 from src.training.training_utilities import loadConfigData
 import os
 import subprocess
+from shutil import rmtree
 
 def getProgramOptions():
     APP_USAGE_DESCRIPTION = """
 Create Unity environment builds. Each build has exactly one scene (race track).
-NOTE: As a config file should be used 'config/make_config.json' file or other with appropriate fields.
+NOTE: As a config file should be used 'config.json' file or other with appropriate fields.
+Before run this script, ensure that 'MakeBuilds' section from config file contains valid data.
+On 'Unity' field you have to type the path to your Unity editor.
+On 'Target' field, you have to type either 'Linux' or 'Windows' (it depends on what OS you have).
 
 Usage:
     make_builds.py <config-file-path>
@@ -22,9 +26,21 @@ def make_builds(options):
         print("Wrong path to config file! (config file path = '{0}')" \
                 .format(pathToConfigFile))
         exit()
+    CONFIG_DATA = CONFIG_DATA["MakeBuilds"]
     
     pathToUnityEditor = CONFIG_DATA["Unity"]
+    if not os.path.isfile(pathToUnityEditor):
+        print("Error: Wrong path to Unity editor - '{0}' doesn't exist!".format(
+                pathToUnityEditor))
+        exit()
+    
+    allowedTargets = ("Linux", "Windows")
     targetName = CONFIG_DATA["Target"]
+    if targetName not in allowedTargets:
+        print("Error: Wrong target name! Allowed targets: {0}, specified " \
+                "target: '{1}'.".format(allowedTargets, targetName))
+        exit()
+    del allowedTargets
     
     projectRootPath = \
             os.path.join(os.path.abspath(os.path.dirname(__file__)), '..')
@@ -32,8 +48,7 @@ def make_builds(options):
             os.path.join(projectRootPath, "python_external_process/env_builds")
     
     if os.path.isdir(envBuildsRootPath):
-        removeCommand = "rm {0} -rf".format(envBuildsRootPath)
-        subprocess.call(args = removeCommand, shell = True)
+        rmtree(envBuildsRootPath)
     
     os.mkdir(envBuildsRootPath)
     for i in range(3):
@@ -64,8 +79,7 @@ def make_builds(options):
                 "for further details!".format(pathToTempLogFile))
         exit()
         
-    removeTempLogCommand = "rm {0}".format(pathToTempLogFile)
-    subprocess.call(args = removeTempLogCommand, shell = True)
+    os.remove(pathToTempLogFile)
 
 
 if __name__ == "__main__":
