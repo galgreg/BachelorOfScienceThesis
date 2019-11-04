@@ -278,6 +278,36 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7586285562849516382, guid: 6891ef4ac556a57eaac3f1bf74c764de,
+        type: 3}
+      propertyPath: m_Size.x
+      value: 0.30465758
+      objectReference: {fileID: 0}
+    - target: {fileID: 7586285562849516382, guid: 6891ef4ac556a57eaac3f1bf74c764de,
+        type: 3}
+      propertyPath: m_Size.y
+      value: 0.26058096
+      objectReference: {fileID: 0}
+    - target: {fileID: 7586285562849516382, guid: 6891ef4ac556a57eaac3f1bf74c764de,
+        type: 3}
+      propertyPath: m_Size.z
+      value: 2.1713452
+      objectReference: {fileID: 0}
+    - target: {fileID: 7586285562849516382, guid: 6891ef4ac556a57eaac3f1bf74c764de,
+        type: 3}
+      propertyPath: m_Center.x
+      value: -0.057672948
+      objectReference: {fileID: 0}
+    - target: {fileID: 7586285562849516382, guid: 6891ef4ac556a57eaac3f1bf74c764de,
+        type: 3}
+      propertyPath: m_Center.y
+      value: 0.33703297
+      objectReference: {fileID: 0}
+    - target: {fileID: 7586285562849516382, guid: 6891ef4ac556a57eaac3f1bf74c764de,
+        type: 3}
+      propertyPath: m_Center.z
+      value: 0.50063956
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6891ef4ac556a57eaac3f1bf74c764de, type: 3}
 --- !u!4 &609385529 stripped
@@ -484,7 +514,7 @@ MonoBehaviour:
   FieldOfView: 180
   RaysCount: 3
   MaxSteeringAngle: 40
-  MotorForce: 500
+  MotorForce: 400
   PopulationSize: 1
 --- !u!1 &1257988368
 GameObject:
