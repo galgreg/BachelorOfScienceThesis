@@ -61,8 +61,15 @@ def train_pso(options, trainingLog, dataCollector = None):
         trainingLog.Append("Random seed set to value: {0}".format(RANDOM_SEED))
     
     # --- Establish connection with Unity environment --- #
-    env = UnityEnvironment(file_name = options["--env-path"])
-    trainingLog.Append("Established connection to the Unity environment!")
+    pathToEnv = options["--env-path"]
+    env = UnityEnvironment(file_name = pathToEnv)
+    
+    if pathToEnv is None:
+        trainingLog.Append("Established connection with Unity Editor!")
+    else:
+        trainingLog.Append("Established connection with Unity build '{0}'!" \
+                .format(pathToEnv))
+    del pathToEnv
    
     # --- Get info from Unity environment --- #
     brainName = env.brain_names[0]
@@ -182,7 +189,7 @@ def train_pso(options, trainingLog, dataCollector = None):
             
             if isTrainInExperimentMode:
                 gbestSequence.append(gbestFitnessValue)
-                pbestMeanSequence.append(pbestFitnessValues)
+                pbestMeanSequence.append(pbestMeanFitness)
                 episodeMeanSequence.append(episodeMeanFitness)
                 pbestStdevSequence.append(pbestStdevFitness)
                 episodeStdevSequence.append(episodeStdevFitness)
