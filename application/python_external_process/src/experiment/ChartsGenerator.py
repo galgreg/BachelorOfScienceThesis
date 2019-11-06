@@ -18,6 +18,14 @@ class ChartsGenerator:
             raise NotADirectoryError("ChartsGenerator.__init__() error: '{0}'" \
                     " does not exist!".format(self._basePathForCharts))
     
+    def CreateAll(self):
+        self.CreateBestComparisonCharts()
+        self.CreateMeanComparisonCharts()
+        self.CreateStdevComparisonCharts()
+        self.CreateMeanTrainingTimeCharts()
+        self.CreateValidationCharts()
+        self.CreateMeanSearchCounterChart()
+    
     def CreateBestComparisonCharts(self):
         lineLabels = ["DE", "PSO"]
         labelX = "episodes"
@@ -151,7 +159,8 @@ class ChartsGenerator:
                 tickLabelsOnX = tickLabelsOnX,
                 chartTitle = chartTitle_TimeInEpisodes,
                 labelY = labelY_TimeInEpisodes,
-                doesPrintBarValues = True)
+                doesPrintBarValues = True,
+                floatPrecision = 0)
         
     def CreateValidationCharts(self):
         barLabels = ["Run_1", "Run_2", "Run_3"]
@@ -169,7 +178,8 @@ class ChartsGenerator:
                 tickLabelsOnX = tickLabelsOnX,
                 chartTitle = chartTitle_DE,
                 labelY = labelY,
-                doesPrintBarValues = True)
+                doesPrintBarValues = True,
+                floatPrecision = 0)
         
         fileName_PSO = os.path.join(self._pathToChartFiles, "validation_pso.svg")
         chartData_PSO = self._dataCollector.ValidationMatrices["PSO"]
@@ -182,7 +192,8 @@ class ChartsGenerator:
                 tickLabelsOnX = tickLabelsOnX,
                 chartTitle = chartTitle_PSO,
                 labelY = labelY,
-                doesPrintBarValues = True)
+                doesPrintBarValues = True,
+                floatPrecision = 0)
     
     def CreateMeanSearchCounterChart(self):
         barLabels = ["DE", "PSO"]
@@ -201,7 +212,8 @@ class ChartsGenerator:
                 tickLabelsOnX = tickLabelsOnX,
                 chartTitle = chartTitle,
                 labelY = labelY,
-                doesPrintBarValues = True)
+                doesPrintBarValues = True,
+                floatPrecision = 0)
 
     def _calculateMeanValuesForData(self, data):
         resultData = [[0 for _ in range(2)] for _ in range(3)]
@@ -225,8 +237,11 @@ class ChartsGenerator:
             labelY = ""):          # string
         numOfLineClasses = len(chartData)
         labelStrings = self._prepareLabelStrings(lineLabels, chartData)
-        figure, axes = plt.subplots()
         
+        figureSize = (10, 8)
+        figure, axes = plt.subplots(figsize = figureSize)
+        
+        axes.tick_params(axis='x', which='both', labelsize = 7)
         
         for i in range(numOfLineClasses):
             axes.plot(
@@ -261,9 +276,9 @@ class ChartsGenerator:
             tempString = "{0}: ".format(label)
             markerCounter = 1
             for markerValue in lineData:
-                if (markerCounter % 8) == 0:
+                if (markerCounter % 15) == 0:
                     tempString += "\n"
-                tempString += "{0} - ".format(markerValue)
+                tempString += "{0:.2f} - ".format(markerValue)
                 markerCounter += 1
             
             tempString = tempString.strip(' -')
@@ -280,7 +295,8 @@ class ChartsGenerator:
             chartTitle = "",    # string
             labelX = "",          # string
             labelY = "",          # string
-            doesPrintBarValues = False): # boolean
+            doesPrintBarValues = False,
+            floatPrecision = 2): # boolean
         ticksOnX = np.arange(len(tickLabelsOnX))
         numOfBarClasses = len(chartData[0])
         
@@ -294,7 +310,7 @@ class ChartsGenerator:
         for i in range(numOfBarClasses):
             tempBarClass = axes.bar(
                     ticksOnX + (i*2 - (numOfBarClasses*2 - 1 - numOfBarClasses)) * barsWidth / 2,
-                    [tickData[i] for tickData in chartData],
+                    [round(tickData[i], floatPrecision) for tickData in chartData],
                     barsWidth,
                     label = barLabels[i])
             barClasses.append(tempBarClass)
@@ -308,7 +324,7 @@ class ChartsGenerator:
         
         if doesPrintBarValues:
             for barClass in barClasses:
-                self._displayBarsValues(barClass, axes)
+                self._displayBarsValues(barClass, axes, floatPrecision)
         
         figure.tight_layout()
         figure.savefig(
@@ -318,11 +334,11 @@ class ChartsGenerator:
                 bbox_inches='tight')
         plt.close('all')
         
-    def _displayBarsValues(self, bars, axes):
+    def _displayBarsValues(self, bars, axes, floatPrecision):
         for bar in bars:
             height = bar.get_height()
             axes.annotate(
-                    '{0}'.format(height),
+                    '{0:.{1}f}'.format(height, floatPrecision),
                     xy = (bar.get_x() + bar.get_width() / 2, height),
                     xytext = (0, 3),
                     textcoords = "offset points",

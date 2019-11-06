@@ -104,7 +104,7 @@ class TestChartsGenerator(unittest.TestCase):
             },
             "RaceTrack_2" : {
                 "DE": [ [2.13, 7.57, 13.07],
-                    [2.73, 7.7, 5.17, 13.11],
+                    [2.73, 7.7, 5.17, 13.11, 2.73, 7.7, 5.17, 13.11, 2.73, 7.7, 5.17, 13.11],
                     [7.71, 15.07],
                     [3.14, 5.68, 9.46, 14.13]],
                 "PSO_Pbest" : [ [1.95, 3.21, 5.17, 13.99],
@@ -117,8 +117,7 @@ class TestChartsGenerator(unittest.TestCase):
                     [1.23, 5.67, 7.7, 11.1]],
             },
             "RaceTrack_3" : {
-                "DE": [ [2.14, 3.57, 4.13, 5.11, 6.18, 6.48, 6.7, 8.13, 9.27, \
-                        11.35, 12.48, 13.57, 14.03, 14.35, 15.78, 17.33, 19.21],
+                "DE": [ [i/2 for i in range(50)],
                     [2.73, 7.7, 5.17, 13.11]],
                 "PSO_Pbest" : [ [1.95, 4.21, 5.13, 14.99, 20.0, 20.5, 21.3, \
                         22.4, 23.1, 24.2, 24.6, 25.6, 26.11],
@@ -207,31 +206,31 @@ class TestChartsGenerator(unittest.TestCase):
         fullFilledMeanTrainingTimesAsSeconds = {
             "RaceTrack_1" : {
                 "DE": {
-                    "Sum" : 600,
+                    "Sum" : 600.12345567,
                     "TrialCounter" : 10
                 },
                 "PSO" : {
-                    "Sum" : 540,
+                    "Sum" : 540.5165789,
                     "TrialCounter" : 10
                 }
             },
             "RaceTrack_2" : {
                 "DE": {
-                    "Sum" : 800,
+                    "Sum" : 800.2648972,
                     "TrialCounter" : 10
                 },
                 "PSO" : {
-                    "Sum" : 765,
+                    "Sum" : 765.9449842,
                     "TrialCounter" : 10
                 }
             },
             "RaceTrack_3" : {
                 "DE": {
-                    "Sum" : 999,
+                    "Sum" : 999.1226489,
                     "TrialCounter" : 10
                 },
                 "PSO" : {
-                    "Sum" : 987,
+                    "Sum" : 987.4537895,
                     "TrialCounter" : 10
                 }
             }
@@ -239,31 +238,31 @@ class TestChartsGenerator(unittest.TestCase):
         fullFilledMeanTrainingTimesAsEpisodes = {
             "RaceTrack_1" : {
                 "DE": {
-                    "Sum" : 60,
+                    "Sum" : 60.51384,
                     "TrialCounter" : 10
                 },
                 "PSO" : {
-                    "Sum" : 54,
+                    "Sum" : 54.13,
                     "TrialCounter" : 10
                 }
             },
             "RaceTrack_2" : {
                 "DE": {
-                    "Sum" : 80,
+                    "Sum" : 80.695,
                     "TrialCounter" : 10
                 },
                 "PSO" : {
-                    "Sum" : 76,
+                    "Sum" : 76.1,
                     "TrialCounter" : 10
                 }
             },
             "RaceTrack_3" : {
                 "DE": {
-                    "Sum" : 99,
+                    "Sum" : 99.83,
                     "TrialCounter" : 10
                 },
                 "PSO" : {
-                    "Sum" : 98,
+                    "Sum" : 98.11,
                     "TrialCounter" : 10
                 }
             }
@@ -307,31 +306,31 @@ class TestChartsGenerator(unittest.TestCase):
         fulfilledMeanSearchCounters = {
             "RaceTrack_1" : {
                 "DE": {
-                    "Sum" : 600,
+                    "Sum" : 600.12345567,
                     "TrialCounter" : 10
                 },
                 "PSO" : {
-                    "Sum" : 540,
+                    "Sum" : 540.5165789,
                     "TrialCounter" : 10
                 }
             },
             "RaceTrack_2" : {
                 "DE": {
-                    "Sum" : 800,
+                    "Sum" : 800.2648972,
                     "TrialCounter" : 10
                 },
                 "PSO" : {
-                    "Sum" : 765,
+                    "Sum" : 765.9449842,
                     "TrialCounter" : 10
                 }
             },
             "RaceTrack_3" : {
                 "DE": {
-                    "Sum" : 999,
+                    "Sum" : 999.1226489,
                     "TrialCounter" : 10
                 },
                 "PSO" : {
-                    "Sum" : 987,
+                    "Sum" : 989.4537895,
                     "TrialCounter" : 10
                 }
             }
@@ -349,7 +348,7 @@ class TestChartsGenerator(unittest.TestCase):
         lineLabels = ["DE", "PSO"]
         chartData = [[2.98, 3.015, 14.48, 21.14, 44.39], [3.64, 14.19, 44.69]]
         expectedLabelStrings = [
-                "DE: 2.98 - 3.015 - 14.48 - 21.14 - 44.39",
+                "DE: 2.98 - 3.02 - 14.48 - 21.14 - 44.39",
                 "PSO: 3.64 - 14.19 - 44.69" ]
         actualLabelStrings = \
                 self._generator._prepareLabelStrings(lineLabels, chartData)

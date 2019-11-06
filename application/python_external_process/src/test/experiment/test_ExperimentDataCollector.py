@@ -376,8 +376,8 @@ class TestExperimentDataCollector(unittest.TestCase):
                     runNum)
         
         expectedValidationMatrices = {
-            "PSO" : [[0] * 3] * 3,
-            "DE" : [[0] * 3] * 3
+            "PSO" : [ [0, 0, 0], [0, 0, 0], [0, 0, 0] ],
+            "DE" : [ [0, 0, 0], [0, 0, 0], [0, 0, 0] ]
         }
         expectedValidationMatrices[algorithm][trainNum-1][runNum-1] = \
                 numOfIncrements

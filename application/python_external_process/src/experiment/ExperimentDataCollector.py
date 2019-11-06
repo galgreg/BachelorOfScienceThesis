@@ -114,8 +114,8 @@ class ExperimentDataCollector:
             }
         }
         self.ValidationMatrices = {
-            "PSO" : [[0] * 3] * 3,
-            "DE" : [[0] * 3] * 3
+            "PSO" : [ [0, 0, 0], [0, 0, 0], [0, 0, 0] ],
+            "DE" : [ [0, 0, 0], [0, 0, 0], [0, 0, 0] ]
         }
         self.MeanSearchCounters = {
             "RaceTrack_1" : {

@@ -72,22 +72,29 @@ class AgentFitnessEvaluator:
     def __call__(self, agent):
         fitness = 0
         envInfo = self.env.reset(train_mode = True)[self.brainName]
-        inputData = envInfo.vector_observations.tolist()
-        inputData = inputData[0][:-1]
-        
+
+        errorCounter = 0
         stepCounter = 0
         while True:
-            stepCounter += 1
-            outputData = agent.forward(inputData)
-            envInfo = self.env.step([outputData])[self.brainName]
-            inputData = envInfo.vector_observations.tolist()
-            episodeReward = inputData[0][-1]
-            inputData = inputData[0][:-1]
-
-            if episodeReward > fitness:
-                fitness = episodeReward
-            if envInfo.local_done[0]:
-                break
+            try:
+                inputData = envInfo.vector_observations.tolist()
+                episodeReward = inputData[0][-1]
+                inputData = inputData[0][:-1]
+                stepCounter += 1
+                outputData = agent.forward(inputData)
+                if episodeReward > fitness:
+                    fitness = episodeReward
+                if envInfo.local_done[0]:
+                    break
+                envInfo = self.env.step([outputData])[self.brainName]
+            except IndexError:
+                errorCounter += 1
+                print("Index error {0}".format(errorCounter))
+                if errorCounter > 1000:
+                    print("Too much errors!")
+                    exit()
+                continue
+            
             if stepCounter > 500 and fitness < 2:
                 fitness -= 10.0
                 break
