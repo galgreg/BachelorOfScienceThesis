@@ -25,6 +25,14 @@ class TestChartsGenerator(unittest.TestCase):
         del self._basePathForCharts
         del self._dataCollector
 
+    def _assertFileContent(self, pathToFile, expectedFileContent):
+        doesFileExist = os.path.isfile(pathToFile)
+        self.assertTrue(doesFileExist)
+        
+        with open(pathToFile, "r") as actualFile:
+            actualFileContent = actualFile.read()
+            self.assertEqual(actualFileContent, expectedFileContent)
+
     def test_Constructor_OK(self):
         self.assertEqual(self._dataCollector, self._generator._dataCollector)
         self.assertEqual(
@@ -42,7 +50,7 @@ class TestChartsGenerator(unittest.TestCase):
                 self._dataCollector,
                 pathToNonExistentDir)
 
-    def test_CreateBestComparisonCharts(self):
+    def test_ExportBestComparisonToCsv(self):
         fullFilledBestFitness = {
             "RaceTrack_1" : {
                 "DE": [ [2.14, 3.57, 14.03],
@@ -71,25 +79,41 @@ class TestChartsGenerator(unittest.TestCase):
                     [7.71, 15.07] ]
             }
         }
-        self._generator._dataCollector.BestFitness = fullFilledBestFitness
-        self._generator.CreateBestComparisonCharts()
-        
-        expectedListOfChartFiles = [
-            "best_track_1_trial_01.svg",
-            "best_track_1_trial_02.svg",
-            "best_track_1_trial_03.svg",
-            "best_track_2_trial_01.svg",
-            "best_track_2_trial_02.svg",
-            "best_track_2_trial_03.svg",
-            "best_track_2_trial_04.svg",
-            "best_track_3_trial_01.svg",
-            "best_track_3_trial_02.svg"
+        expectedFileContents = [
+            "DE,2.14,3.57,14.03\nPSO,1.95,4.21,5.13,14.99\n",
+            "DE,2.34,3.7,5.13,14.11\nPSO,1.74,8.13,14.56\n",
+            "DE,3.31,15.03\nPSO,1.23,5.67,9.99,14.0\n",
+            "DE,2.13,7.57,13.07\nPSO,1.95,3.21,5.17,13.99\n",
+            "DE,2.73,7.7,5.17,13.11\nPSO,1.73,8.17,13.56\n",
+            "DE,7.71,15.07\nPSO,1.27,5.67,9.99,13.0\n",
+            "DE,3.14,5.68,9.46,14.13\nPSO,2.14,6.8,9.7,15.3\n",
+            "DE,2.14,3.57,4.13,5.11,6.18,6.48,6.7,8.13,9.27," \
+            "11.35,12.48,13.57,14.03,14.35,15.78,17.33,19.21\n" \
+            "PSO,1.95,4.21,5.13,14.99,20.0,20.5,21.3,22.4,23.1,24.2," \
+            "24.6,25.6,26.11\n",
+            "DE,2.73,7.7,5.17,13.11\nPSO,7.71,15.07\n"
         ]
-        actualListOfChartFiles = os.listdir(self.pathToChartsDir)
-        actualListOfChartFiles.sort()
-        self.assertEqual(actualListOfChartFiles, expectedListOfChartFiles)
+        self._generator._dataCollector.BestFitness = fullFilledBestFitness
+        self._generator.ExportBestComparisonToCsv()
+        
+        expectedListOfCsvFiles = [
+            "best_track_1_trial_01.csv",
+            "best_track_1_trial_02.csv",
+            "best_track_1_trial_03.csv",
+            "best_track_2_trial_01.csv",
+            "best_track_2_trial_02.csv",
+            "best_track_2_trial_03.csv",
+            "best_track_2_trial_04.csv",
+            "best_track_3_trial_01.csv",
+            "best_track_3_trial_02.csv"
+        ]
+        
+        for fileName, expectedFileContent \
+                in zip(expectedListOfCsvFiles, expectedFileContents):
+            fullPathToFile = os.path.join(self.pathToChartsDir, fileName)
+            self._assertFileContent(fullPathToFile, expectedFileContent)
 
-    def test_CreateMeanComparisonCharts(self):
+    def test_ExportMeanComparisonToCsv(self):
         fullFilledMeanFitness = {
             "RaceTrack_1" : {
                 "DE": [ [2.14, 3.57, 14.03],
@@ -104,7 +128,7 @@ class TestChartsGenerator(unittest.TestCase):
             },
             "RaceTrack_2" : {
                 "DE": [ [2.13, 7.57, 13.07],
-                    [2.73, 7.7, 5.17, 13.11, 2.73, 7.7, 5.17, 13.11, 2.73, 7.7, 5.17, 13.11],
+                    [2.73, 7.7, 5.17, 13.11],
                     [7.71, 15.07],
                     [3.14, 5.68, 9.46, 14.13]],
                 "PSO_Pbest" : [ [1.95, 3.21, 5.17, 13.99],
@@ -117,7 +141,8 @@ class TestChartsGenerator(unittest.TestCase):
                     [1.23, 5.67, 7.7, 11.1]],
             },
             "RaceTrack_3" : {
-                "DE": [ [i/2 for i in range(50)],
+                "DE": [ [2.14, 3.57, 4.13, 5.11, 6.18, 6.48, 6.7, 8.13, 9.27, \
+                        11.35, 12.48, 13.57, 14.03, 14.35, 15.78, 17.33, 19.21],
                     [2.73, 7.7, 5.17, 13.11]],
                 "PSO_Pbest" : [ [1.95, 4.21, 5.13, 14.99, 20.0, 20.5, 21.3, \
                         22.4, 23.1, 24.2, 24.6, 25.6, 26.11],
@@ -128,24 +153,50 @@ class TestChartsGenerator(unittest.TestCase):
             }
         }
         self._generator._dataCollector.MeanFitness = fullFilledMeanFitness
-        self._generator.CreateMeanComparisonCharts()
+        self._generator.ExportMeanComparisonToCsv()
         
-        expectedListOfChartFiles = [
-            "mean_track_1_trial_01.svg",
-            "mean_track_1_trial_02.svg",
-            "mean_track_1_trial_03.svg",
-            "mean_track_2_trial_01.svg",
-            "mean_track_2_trial_02.svg",
-            "mean_track_2_trial_03.svg",
-            "mean_track_2_trial_04.svg",
-            "mean_track_3_trial_01.svg",
-            "mean_track_3_trial_02.svg"
+        expectedFileContents = [
+            "DE,2.14,3.57,14.03\nPSO_Pbest,1.95,4.21,5.13,14.99\n" \
+                "PSO_Episode,1.34,3.45,4.91,12.33\n",
+            "DE,2.34,3.7,5.13,14.11\nPSO_Pbest,1.74,8.13,14.56\n" \
+                "PSO_Episode,1.5,7.33,13.78\n",
+            "DE,3.31,15.03\nPSO_Pbest,1.23,5.67,9.99,14.0\n" \
+                "PSO_Episode,0.99,4.21,8.88,13.5\n",
+            "DE,2.13,7.57,13.07\nPSO_Pbest,1.95,3.21,5.17,13.99\n" \
+                "PSO_Episode,1.95,2.21,4.17,12.79\n",
+            "DE,2.73,7.7,5.17,13.11\nPSO_Pbest,1.73,8.17,13.56\n" \
+                "PSO_Episode,1.23,5.67,9.99\n",
+            "DE,7.71,15.07\nPSO_Pbest,1.27,5.67,9.99,13.0\n" \
+                "PSO_Episode,0.81,4.21,8.51,12.1\n",
+            "DE,3.14,5.68,9.46,14.13\nPSO_Pbest,2.14,6.8,9.7,15.3\n" \
+                "PSO_Episode,1.23,5.67,7.7,11.1\n",
+            "DE,2.14,3.57,4.13,5.11,6.18,6.48,6.7,8.13,9.27," \
+                "11.35,12.48,13.57,14.03,14.35,15.78,17.33,19.21\n" \
+                "PSO_Pbest,1.95,4.21,5.13,14.99,20.0,20.5,21.3,22.4,23.1,24.2," \
+                "24.6,25.6,26.11\nPSO_Episode,1.35,3.21,4.13,12.99,19.0,19.5," \
+                "20.3,21.4,22.1,23.2,23.6,24.6,25.11\n",
+            "DE,2.73,7.7,5.17,13.11\nPSO_Pbest,7.71,15.07\n" \
+                "PSO_Episode,5.71,13.07\n"
         ]
-        actualListOfChartFiles = os.listdir(self.pathToChartsDir)
-        actualListOfChartFiles.sort()
-        self.assertEqual(actualListOfChartFiles, expectedListOfChartFiles)
+        
+        expectedListOfCsvFiles = [
+            "mean_track_1_trial_01.csv",
+            "mean_track_1_trial_02.csv",
+            "mean_track_1_trial_03.csv",
+            "mean_track_2_trial_01.csv",
+            "mean_track_2_trial_02.csv",
+            "mean_track_2_trial_03.csv",
+            "mean_track_2_trial_04.csv",
+            "mean_track_3_trial_01.csv",
+            "mean_track_3_trial_02.csv"
+        ]
+        
+        for fileName, expectedFileContent \
+                in zip(expectedListOfCsvFiles, expectedFileContents):
+            fullPathToFile = os.path.join(self.pathToChartsDir, fileName)
+            self._assertFileContent(fullPathToFile, expectedFileContent)
 
-    def test_CreateStdevComparisonCharts(self):
+    def test_ExportStdevComparisonToCsv(self):
         fullFilledStdevFitness = {
             "RaceTrack_1" : {
                 "DE": [ [2.14, 3.57, 14.03],
@@ -185,22 +236,71 @@ class TestChartsGenerator(unittest.TestCase):
             }
         }
         self._generator._dataCollector.StdevFitness = fullFilledStdevFitness
-        self._generator.CreateStdevComparisonCharts()
+        self._generator.ExportStdevComparisonToCsv()
         
-        expectedListOfChartFiles = [
-            "stdev_track_1_trial_01.svg",
-            "stdev_track_1_trial_02.svg",
-            "stdev_track_1_trial_03.svg",
-            "stdev_track_2_trial_01.svg",
-            "stdev_track_2_trial_02.svg",
-            "stdev_track_2_trial_03.svg",
-            "stdev_track_2_trial_04.svg",
-            "stdev_track_3_trial_01.svg",
-            "stdev_track_3_trial_02.svg"
+        expectedFileContents = [
+            "DE,2.14,3.57,14.03\nPSO_Pbest,1.95,4.21,5.13,14.99\n" \
+                "PSO_Episode,1.34,3.45,4.91,12.33\n",
+            "DE,2.34,3.7,5.13,14.11\nPSO_Pbest,1.74,8.13,14.56\n" \
+                "PSO_Episode,1.5,7.33,13.78\n",
+            "DE,3.31,15.03\nPSO_Pbest,1.23,5.67,9.99,14.0\n" \
+                "PSO_Episode,0.99,4.21,8.88,13.5\n",
+            "DE,2.13,7.57,13.07\nPSO_Pbest,1.95,3.21,5.17,13.99\n" \
+                "PSO_Episode,1.95,2.21,4.17,12.79\n",
+            "DE,2.73,7.7,5.17,13.11\nPSO_Pbest,1.73,8.17,13.56\n" \
+                "PSO_Episode,1.23,5.67,9.99\n",
+            "DE,7.71,15.07\nPSO_Pbest,1.27,5.67,9.99,13.0\n" \
+                "PSO_Episode,0.81,4.21,8.51,12.1\n",
+            "DE,3.14,5.68,9.46,14.13\nPSO_Pbest,2.14,6.8,9.7,15.3\n" \
+                "PSO_Episode,1.23,5.67,7.7,11.1\n",
+            "DE,2.14,3.57,4.13,5.11,6.18,6.48,6.7,8.13,9.27," \
+                "11.35,12.48,13.57,14.03,14.35,15.78,17.33,19.21\n" \
+                "PSO_Pbest,1.95,4.21,5.13,14.99,20.0,20.5,21.3,22.4,23.1,24.2," \
+                "24.6,25.6,26.11\nPSO_Episode,1.35,3.21,4.13,12.99,19.0,19.5," \
+                "20.3,21.4,22.1,23.2,23.6,24.6,25.11\n",
+            "DE,2.73,7.7,5.17,13.11\nPSO_Pbest,7.71,15.07\n" \
+                "PSO_Episode,5.71,13.07\n"
         ]
-        actualListOfChartFiles = os.listdir(self.pathToChartsDir)
-        actualListOfChartFiles.sort()
-        self.assertEqual(actualListOfChartFiles, expectedListOfChartFiles)
+        
+        expectedListOfCsvFiles = [
+            "stdev_track_1_trial_01.csv",
+            "stdev_track_1_trial_02.csv",
+            "stdev_track_1_trial_03.csv",
+            "stdev_track_2_trial_01.csv",
+            "stdev_track_2_trial_02.csv",
+            "stdev_track_2_trial_03.csv",
+            "stdev_track_2_trial_04.csv",
+            "stdev_track_3_trial_01.csv",
+            "stdev_track_3_trial_02.csv"
+        ]
+
+        for fileName, expectedFileContent \
+                in zip(expectedListOfCsvFiles, expectedFileContents):
+            fullPathToFile = os.path.join(self.pathToChartsDir, fileName)
+            self._assertFileContent(fullPathToFile, expectedFileContent)
+
+    def test_exportChartDataToCsv(self):
+        pathToNewCsv = os.path.join(self.pathToChartsDir, "TEST_DATA.csv")
+        lineLabels = ["DE", "PSO"]
+        chartData = [
+            [1.21, 1.45678, 2.45975, 2.459875, 3,426785],
+            [2.24598, 5.48426, 6.45216, 7.246821, 8.4897526]
+        ]
+        expectedFileContent = \
+                "DE,1.21,1.45678,2.45975,2.459875,3,426785\n" \
+                "PSO,2.24598,5.48426,6.45216,7.246821,8.4897526\n"
+        
+        self._generator._exportChartDataToCsv(
+                pathToNewCsv,
+                lineLabels,
+                chartData)
+        
+        doesCsvFileExist = os.path.isfile(pathToNewCsv)
+        self.assertTrue(doesCsvFileExist)
+        
+        with open(pathToNewCsv, "r") as actualCsvFile:
+            actualFileContent = actualCsvFile.read()
+            self.assertEqual(actualFileContent, expectedFileContent)
 
     def test_CreateMeanTrainingTimeCharts(self):
         fullFilledMeanTrainingTimesAsSeconds = {
@@ -282,7 +382,6 @@ class TestChartsGenerator(unittest.TestCase):
                 os.path.join(self.pathToChartsDir, "train_time_episodes.svg")
         doesEpisodesFileExist = os.path.isfile(pathToChartFile_Episodes)
         self.assertTrue(doesEpisodesFileExist)
-        
 
     def test_CreateValidationCharts(self):
         fulfilledMatrices = {
@@ -343,13 +442,3 @@ class TestChartsGenerator(unittest.TestCase):
                 os.path.join(self.pathToChartsDir, "search_count.svg")
         doesChartFileExist = os.path.isfile(pathToChartFile)
         self.assertTrue(doesChartFileExist)
-
-    def test_prepareLabelStrings(self):
-        lineLabels = ["DE", "PSO"]
-        chartData = [[2.98, 3.015, 14.48, 21.14, 44.39], [3.64, 14.19, 44.69]]
-        expectedLabelStrings = [
-                "DE: 2.98 - 3.02 - 14.48 - 21.14 - 44.39",
-                "PSO: 3.64 - 14.19 - 44.69" ]
-        actualLabelStrings = \
-                self._generator._prepareLabelStrings(lineLabels, chartData)
-        self.assertEqual(expectedLabelStrings, actualLabelStrings)

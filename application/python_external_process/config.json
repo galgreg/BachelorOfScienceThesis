@@ -30,7 +30,7 @@
     },
     "TrainingParameters" : {
         "randomSeed" : null,
-        "maxNumberOfEpisodes" : 200,
+        "maxNumberOfEpisodes" : 100,
         "maxNumberOfRepeatsIfTrainingFails" : 3,
         "minimalAcceptableFitness": {
             "RaceTrack_1" : 14.00,
