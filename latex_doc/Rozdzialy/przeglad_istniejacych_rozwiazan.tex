@@ -1,24 +1,244 @@
-\chapter{Przegląd i analiza istniejących rozwiązań}
+\chapter{Samochody autonomiczne}
 
-Przedstawione poniżej przykłady prezentują bardzo zróżnicowane podejścia do rozwiązywanego problemu, jak również cechują się różnym stopniem zaawansowania technicznego (zarówno w warstwie logiki, jak i reprezentacji graficznej).
-Cechą wspólną, łączącą wszystkie przykłady, jest tematyka tworzenia
-samochodów autonomicznych (wirtualnych lub rzeczywistych).
+\section{Opis problemu}
+Autonomiczny samochód to pojazd zdolny do interpretacji swojego otoczenia i bezpiecznego poruszania się w nim bez potrzeby ludzkiej ingerencji \cite{synopsys:whatIsAutonomousCar}. Taki pojazd potrafi robić to samo, co doświadczony kierowca robiłby prowadząc swój samochód.
 
-\section{
-	Samuel Artz - "Deep Learning Cars"
-	\cite{artz:deepLearningCars:blog}
-	\cite{artz:deepLearningCars:github}
-}
+\subsection{Poziomy automatyzacji sterowania}
+Organizacja SAE (Society of Automotive Engineers) definiuje skalę, zakładającą sześć poziomów automatyzacji sterowania pojazdów \cite{synopsys:sixLevelsOfCarAutonomy}:
+\begin{enumerate*}
+\item Poziom 0 - sterowanie w pełni ręczne (\textbf{No Driving Automation}). Dotyczy większości samochodów poruszających się obecnie po drogach.
+\item Poziom 1 - wsparcie kierowcy (\textbf{Driver Assistance}). Najniższy poziom automatyzacji. Samochód posiada prosty system wspomagający pojedyncze aspekty sterowania, np. kontrola kierownicy lub kontrola przyspieszenia samochodu (tzw. dynamiczny tempomat). 
+Dynamiczny tempomat kwalifikuje się na poziom 1, ponieważ kierowca musi samodzielnie kontrolować pozostałe aspekty sterowania samochodem.
+\item Poziom 2 - częściowa automatyzacja sterowania (\textbf{Partial Driving Automation}). Oznacza stosowanie zaawansowanych systemów wspomagania kierowcy (ADAS - Advanced Driver Assistant Systems) \cite{adas:opis}. Samochód potrafi kontrolować zarówno kierownicę jak również prędkość pojazdu. Samochód nie jest jednak w pełni autonomiczny, więc osoba siedząca za kierownicą może w każdej chwili przejąć kontrolę nad samochodem. Przykładem systemu będącego na Poziomie 2 jest Tesla Autopilot.
+\item Poziom 3 - warunkowa automatyzacja sterowania (\textbf{Conditional Driving Automation}). Samochody posiadają system detekcji otoczenia, więc mogą podejmować decyzje, takie jak przyspieszanie obok powoli poruszającego się pojazdu. Jednakże wciąż wymagają nadzoru człowieka. Kierowca musi być przygotowany, iż w każdej chwili będzie musiał przejąć kontrolę nad samochodem, jeśli system nie poradzi sobie w danej sytuacji. \\
+Obecna generacja samochodu Audi A8 oferuje system Traffic Jam Pilot \cite{audi:trafficJamPilot}, który zapewnia autonomiczność sterowania na Poziomie 3. Jest to pierwszy przypadek, w którym samochód produkowany seryjnie oferuje taki system \cite{audi:newAudiA8ConditionalAutomated}.
+\item Poziom 4 - wysoka automatyzacja sterowania (\textbf{High Driving Automation}). Samochód potrafi interweniować jeśli "coś pójdzie nie tak", np. jeśli dojdzie do błędu systemu. W tej sytuacji, samochód nie potrzebuje ludzkiej ingerencji \textit{w większości przypadków}. Jednakże, kierowca wciąż może przejąć kontrolę nad samochodem. Przykłady występowania samochodów o autonomiczności na Poziomie 4:
+\begin{itemize*}
+\item Samochody elektryczne marki Navya - Autonom Shuttle oraz Autonom Cab \cite{motorAuthority:navyaCars}
+\item Firma Waymo udostępniła usługę taksówkarską w Arizonie, gdzie samochody z autonomicznością na Poziomie 4 przewożą klientów  \cite{waymoAutonomousTaxi}.
+\end{itemize*}
+\item Poziom 5 - pełna automatyzacja sterowania (Full Driving Automation). Zachowanie pojazdu nigdy nie wymaga uwagi człowieka. Samochody Poziomu 5 nie będą nawet posiadać kierownicy ani pedałów. Będą wolne od ograniczeń obszarowych (geofencing), na których mogą się poruszać. W pełni autonomiczne samochody są obecnie testowane w kilku miejscach na świecie, jednakże żaden z tych systemów nie jest dostępny publicznie.
+\end{enumerate*}
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=15cm]{resources/figures/automation_levels.jpg}
+\caption{Poziomy automatyzacji sterowania samochodem (według SAE)}
+\label{CarAutomationLevels}
+\end{center}
+\end{figure}
+
+Skala ta została zaakceptowana przez Amerykański Departament Transportu.
+
+\subsection{Zasady działania}
+Autonomiczne samochody korzystają z wszelkiego rodzaju urządzeń rejestrujących stan otoczenia, takich jak czujniki, radary i kamery. Radary monitorują pozycję obiektów znajdujących się wokół pojazdu, kamery wideo rozpoznają znaki drogowe oraz tor ruchu innych obiektów. Czujniki LIDAR (Light Detection and Ranging) odbijają impulsy świetlne od otoczenia samochodu. Dzięki temu są w stanie odmierzać dystans, rozpoznawać pobocza dróg oraz identyfikować oznaczenia pasa ruchu.
+Czujniki ultradźwiękowe, montowane w kołach, rozpoznają krawężniki oraz inne pojazdy podczas parkowania.
+
+Skomplikowane oprogramowanie przetwarza dane z urządzeń wejściowych, oblicza parametry dalszej jazdy (takie jak kierunek lub prędkość) i wysyła je do siłowników samochodu, które kontrolują przyspieszenie, hamowanie i kąt skrętu kierownicy.
+
+\subsection{Wyzwania stawiane producentom}
+W pełni autonomiczne samochody są poddawane wyczerpującym testom w kilku miejscach na świecie, jednakże żaden z nich nie jest dostępny publicznie. Od wprowadzenia takich systemów do produkcji seryjnej dzieli nas jeszcze wiele lat. Ponadto, przed projektantami i producentami stoi szereg wyzwań na polu technologicznym, prawnym, środowiskowym, a nawet filozoficznym. \\
+Część z tych wyzwań to:
+\begin{enumerate*}
+\item LIDAR - problem wzajemnego zakłócania sygnałów w sytuacji gdy wiele autonomicznych samochodów będzie jechało blisko siebie. W sytuacji stosowania wielu różnych częstotliwości, czy zakres częstotliwości będzie wystarczająco szeroki aby obsłużyć masową produkcję takich pojazdów?
+\item Warunki pogodowe - co się dzieje, gdy samochody autonomiczne podróżują w bardzo ciężkich warunkach? Jeśli śnieg zalega na drodze, oznaczenia pasa ruchu są niewidoczne. Jak kamery i czujniki będą rozpoznawać pasy ruchu, jeśli oznaczenia są zamazywane przez wodę, lód, olej lub błoto?
+\item Regulacje prawne - wiele kwestii wymaga uregulowania, co nie będzie łatwe, bo dotyczy bardzo skomplikowanych zagadnień. Najistotniejszym z nich będzie kwestia \textbf{ustalenia odpowiedzialności prawnej za ewentualne wypadki powodowane przez samochody autonomiczne}.
+
+\newpage
+Cytując Norberta Biedrzyckiego z portalu Business Insider \cite{businessInsider:autonomiczneAutaPrawo}: \\
+\begin{itshape}
+,,Kto w sytuacji kolizji, zagrożenia czy nawet utraty życia, staje się przedmiotem sporu, możliwego pozwu, czy odszkodowania? Kto ma ponosić zasadniczą odpowiedzialność w sytuacji, w której giną osoby w wypadku z udziałem autonomicznych pojazdów? Czy kłopoty będzie miał producent algorytmu, w oparciu o który porusza się autonomiczne auto na drodze, firma produkująca takie auto, czy kierowca – właściciel? A jeśli ten ostatni spowoduje wypadek, czy może on liczyć na wystarczające rozwiązania związane z ubezpieczeniem, które zapewnią mu komfort użytkowania? \\
+
+Na tym przykładzie widać wyraźnie, że możliwości technologiczne wyprzedzają nasze czasy. Tutaj właściwie wszystko jest możliwe – bo całe floty autonomicznych ciężarówek czekają już, by wyruszyć w drogę, a myśl o tym, by budować usługi taksówkarskie w oparciu o autonomiczne pojazdy, zaprząta głowę niejednemu biznesmenowi. \\
+
+Okazuje się jednak, że podstawową barierą, która jeszcze długo będzie blokować zmiany na światowych drogach, będą kwestie niewystarczających uregulowań prawnych.''
+\end{itshape}
+\end{enumerate*}
+
+\subsection{Korzyści z istnienia samochodów autonomicznych}
+Scenariusze w których fakt wykorzystania pojazdów autonomicznych podnosi poziom wygody i jakości życia wydają się nieograniczone. Osoby starsze i niepełnosprawne mogą zyskać niezależność. Można wysłać psa do weterynarza. Albo przywieźć dzieciom na obóz brakujące rzeczy, których zapomniały zapakować.
+
+Oprócz tego, z samochodami autonomicznymi wiąże się ogromną nadzieję, iż przyczynią się do drastycznego obniżenia emisji dwutlenku węgla do atmosfery. W artykule z 2017 roku, opublikowanego przez organizację ITDP, zamieszczono analizę na temat przyszłości transportu drogowego w kontekście wykorzystania samochodów autonomicznych \cite{itdp:urbanTransportRevolutions}. Autorzy analizy zwrócili uwagę na trzy tendencje we współczesnym spojrzeniu na transport, które jeśli będą występować jednocześnie, uwolnią pełny potencjał drzemiący w samochodach autonomicznych:
+\begin{itemize*}
+\item Automatyzacja
+\item Elektryfikacja
+\item Współdzielenie środka transportu (ridesharing)
+\end{itemize*}
+\newpage
+Autorzy szacują, iż dzięki tym trzem ,,rewolucjom'', do roku 2050 będzie można osiągnąć:
+\begin{enumerate*}
+\item Zmniejszenie natężenia ruchu miejskiego o 30\%
+\item Oszczędności w kosztach transportu na poziomie 40\%
+\item Redukcję dwutlenku węgla emitowanego przez miasta na poziomie 80\% w skali światowej
+\end{enumerate*}
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=15cm]{resources/figures/itdp_infographic.jpg}
+\caption{Przyszłość transportu miejskiego wg organizacji ITDP}
+\label{IdtpTransportFuture}
+\end{center}
+\end{figure}
+
+\section{Podejścia stosowane do rozwiązania problemu}
+Stworzenie samochodu autonomicznego, który będzie w stanie samodzielnie poruszać się po otoczeniu i służyć jako środek transportu dla milionów ludzi na świecie, nie jest zadaniem trywialnym. Wymaga rozwiązania szeregu problemów, związanych z tym zagadnieniem. Takimi problemami mogą być chociażby rozpoznawanie znaków drogowych czy predykcja zachowań innych uczestników ruchu drogowego. Każdy z tych problemów może zostać rozpatrzony na wiele sposobów, istnieje zatem wiele alternatywnych rozwiązań dla danego problemu. Często nie można stwierdzić, czy dane rozwiązanie jest lepsze od reszty. Po prostu każde takie rozwiązanie ma swoją specyfikę, a co za tym idzie swoje wady i zalety.
+
+Dlatego jest oczywiste, że firmy podejmujące się zbudowania samochodu autonomicznego mogą przyjmować różne, czasem skrajne podejścia w kwestii rozwiązań stosowanych w procesie tworzenia takiej maszyny.
+
+Jednym z najtrudniejszych problemów do rozwiązania jest kwestia orientacji w terenie. Zagadnienie te zostało pokrótce przedstawione w artykule \cite{threeApproachesToOrientation}.
+Artykuł prezentuje również trzy propozycje rozwiązania tego problemu. Warto zauważyć, że każda z tych propozycji znacząco różni się od pozostałych.
+
+\section{Typy istniejących rozwiązań}
+Tematyka tworzenia samochodów autonomicznych, bądź też samochodów o dużym stopniu automatyzacji sterowania, stała się w ostatnich latach niezwykle popularna. Z tego powodu istnieje obecnie ogromna ilość projektów nawiązujących do tej tematyki.
+
+Projekty te tworzą bardzo interesujące spektrum przypadków. Różnią między sobą w wielu aspektach, takich jak:
+\begin{itemize*}
+\item stopień skomplikowania projektu
+\item podejście do rozwiązywania poszczególnych aspektów projektu
+\item zakres tematyczny projektu
+\item środowisko testowania
+\item i wiele innych
+\end{itemize*}
+
+Na podstawie własnych obserwacji, postanowiłem podzielić te projekty na kilka zasadniczych grup:
+
+\begin{enumerate*}
+\item \textbf{Wielkie projekty badawczo-rozwojowe} \\
+Projekty o największym stopniu skomplikowania. Rozwijane przez międzynarodowe korporacje posiadające gigantyczny budżet i zaplecze kadrowo-techniczne, potrzebne do realizacji takiego przedsięwzięcia. 
+Są to projekty, które do postawionego problemu podchodzą w sposób najbardziej kompleksowy. Ich celem jest stworzenie samochodu poruszającego się w rzeczywistym środowisku, który naprawdę będzie w stanie poradzić sobie w każdych warunkach bez potrzeby ingerencji człowieka.
+Część z tych projektów jest rozwijana z myślą o wdrożeniu do produkcji seryjnej, do zastosowania w prawdziwym transporcie drogowym, do przewozu osób na masową skalę.
+Inne projekty mają charakter czysto badawczy. Ich celem jest eksploracja nowych strategii rozwiązywania danego problemu. Część z tych strategii, jeśli wykaże swoją wartość podczas serii testów, może zostać zaadoptowana do systemów produkowanych seryjnie. \\
+
+\item \textbf{Środowiska symulacyjne} \\
+Nie są to projekty ściśle związane z tworzeniem samochodu autonomicznego. Są to raczej projekty, którego celem jest ułatwienie prac nad rozwojem takich maszyn innym twórcom. Osiągane jest to poprzez tworzenie wirtualnych środowisk symulacyjnych, dostosowanych do tego typu potrzeb.
+
+Praca w symulatorze posiada wiele zalet względem operowania na rzeczywistych maszynach. Najważniejszą z nich jest duża oszczędność pieniędzy i czasu. Symulatory pozwalają na szybkie i bezpieczne testowanie wymyślanych rozwiązań.
+
+Faktem jest, iż wszystkie firmy pracujące nad wielkimi projektami badawczo-rozwojowymi, w mniejszym lub większym stopniu korzystają z takich środowisk symulacyjnych. \\
+
+\item \textbf{Projekty modelarskie} \\
+To projekty, które nie są realizowane ani na rzeczywistych samochodach, ani w środowiskach symulacyjnych. Są to projekty, w których eksperymenty przeprowadzane są na miniaturowych modelach samochodów. Czasami te modele nie są odwzorowaniem żadnego rzeczywistego samochodu. Mogą to być projekty wysokobudżetowe, rozwijane w celach komercyjnych. \\
+
+\item \textbf{Małe prywatne projekty} \\
+Są to niewielkie projekty, realizowane przez pojedyncze osoby lub małe zespoły złożone z kilku osób. Często podchodzą do problemu w sposób mniej kompleksowy, skupiając się na eksploracji tylko wybranych aspektów problemu. Są to projekty niskobudżetowe, realizowane hobbistycznie, najczęściej w celach edukacyjnych. Rzadko się zdarza, że takie projekty są komercjalizowane. Często są jednak udostępniane publicznie. \\
+Najczęściej takie projekty są realizowane w środowiskach symulacyjnych (czasem własnoręcznie tworzonych), rzadziej są to projekty modelarskie. Zdecydowanie najrzadszą, praktycznie niewystępującą grupą są projekty realizowane na rzeczywistych samochodach. Wiąże się to oczywiście z kosztami, jakie należałoby ponieść w takim wypadku.
+
+\end{enumerate*}
+
+Chciałbym w tym miejscu zaznaczyć, że powyższy podział nie może być w żadnym razie traktowany jako formalny. 
+Użyte przeze mnie sformułowania mogą nie być precyzyjne, co może prowadzić do nieporozumień i mylnych interpretacji.
+Ponadto, klasyfikacja którą przedstawiłem może nie być kompletna. Być może istnieją projekty, których nie można zaklasyfikować do żadnej z powyższych grup. Temat wymaga dalszych badań, co niestety wykracza poza zakres tej pracy. \\
+W dalszej części rozdziału zostaną zaprezentowane przykłady dla każdej z opisanych grup. 
+
+\section{Wielkie projekty badawcze}
+W obecnych czasach, wiele korporacji o zasięgu międzynarodowym angażuje się w prace nad rozwojem samochodów autonomicznych. 
+Niniejsze zestawienie zawiera tylko bardzo mały wycinek z listy istniejących rozwiązań.
+
+\subsection{NVIDIA}
+Firma NVIDIA od wielu lat angażuje się w prace badawczo-rozwojowe nad szeroko rozumianą tematyką uczenia maszynowego. Jednym ze szczególnych obszarów zainteresowań firmy jest branża automotive.
+NVIDIA nie zajmuje się produkcją samochodów autonomicznych, lecz wytwarzaniem kompleksowych systemów sprzętowo-programowych, które mogą stanowić bazę do tworzenia takich pojazdów. \\
+NVIDIA współpracuje z wieloma partnerami, którzy kupują od niej te systemy i wykorzystują do rozwoju własnych rozwiązań. Obecnie jest to ponad 370 partnerów \cite{nvidia:partners}. Wśród nich są między innymi: Toyota, Volkswagen, Audi, Volvo.
+
+Strategia biznesowa, oparta na otwarciu się na współpracę z partnerami działającymi w branży transportowej (i nie tylko), przynosi firmie wymierne korzyści finansowe \cite{nvidia:financialSuccess}. 
+Duże zainteresowanie współpracą z firmą NVIDIA jest spowodowane faktem, iż oferowany przez nich system otwiera drogę do zupełnie nowych możliwości. Pozwala między innymi na szybkie wdrożenie usługi przewozów miejskich, o czym przekonała się firma Optimus Ride \cite{nvidia:optimusRide}.
+
+Rozwiązania w zakresie samochodów autonomicznych, oferowane przez firmę NVIDIA, występują pod wspólną nazwą NVIDIA DRIVE \cite{nvidia:drive}. Rozwiązania NVIDIA DRIVE można podzielić na część sprzętową (hardware) i programową (software).
+
+\subsubsection{Rozwiązania sprzętowe - NVIDIA DRIVE AGX}
+NVIDIA DRIVE AGX to rodzina platform obliczeniowych, zbudowanych na bazie procesora NVIDIA Xavier.
+Obecnie w skład tej rodziny wchodzą dwa modele:
+\begin{enumerate*}
+\item NVIDIA DRIVE AGX Pegasus \\
+Osiąga moc obliczeniową 320 TOPS (Tera Operations Per Second), co czyni go najszybszym rozwiązaniem dostępnym obecnie na rynku. Jego architektura oparta jest na dwóch procesorach NVIDIA Xavier i dwóch kartach graficznych TensorCore. \\
+Cechuje się wysoką efektywnością energetyczną. Potrafi utrzymywać w wykonaniu wiele sieci neuronowych jednocześnie. Został zaprojektowany do bezpiecznej obsługi wysoce zautomatyzowanych oraz w pełni autonomicznych systemów jazdy. Kierownica i pedały nie są wymagane.
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=15cm]{resources/figures/nv-drive-pegasus.jpg}
+\caption{NVIDIA DRIVE AGX Pegasus}
+\label{NvidiaDrivePegasus}
+\end{center}
+\end{figure}
+
+\item NVIDIA DRIVE AGX Xavier \\
+Jest mniejszy od Pegasusa. Dostarcza jedynie 30 TOPS mocy obliczeniowej. Charakteryzuje się jednak bardzo niskim zużyciem energii, pobiera tylko 30 watów. Przeznaczony dla systemów wspomagania kierowcy. Zbyt słaby dla wsparcia w pełni autonomicznych systemów jazdy.
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=15cm]{resources/figures/nv-drive-xavier.jpg}
+\caption{NVIDIA DRIVE AGX Xavier}
+\label{NvidiaDriveXavier}
+\end{center}
+\end{figure}
+
+\newpage
+\item NVIDIA DRIVE Hyperion \\
+Najbardziej kompleksowe rozwiązanie oferowane przez firmę NVIDIA. W jego skład wchodzi platforma obliczeniowa (Xavier/Pegasus), zestaw kamer/czujników oraz oprogramowanie sterujące. \\
+Więcej informacji o oprogramowaniu znajdzie się w dalszej części rozdziału.
+\end{enumerate*}
+
+\subsubsection{Oprogramowanie NVIDIA DRIVE}
+W skład pakietu oprogramowania NVIDIA DRIVE wchodzą m.in. następujące komponenty \cite{nvidia:drive:software}:
+\begin{enumerate*}
+\item DRIVE OS Linux \\
+Podstawowy komponent oprogramowania, składający się m.in z wbudowanego systemu czasu rzeczywistego (RTOS), bibliotek NVIDIA CUDA, platformy NVIDIA TensorRT \cite{nvidia:tensorRT} oraz wielu innych modułów. DRIVE OS zapewnia bezpieczne środowisko uruchomieniowe dla aplikacji. Pełni funkcję systemu operacyjnego dla platform obliczeniowych z rodziny NVIDIA DRIVE AGX.
+\item DRIVE AV \\
+Dostarcza modułów dla percepcji otoczenia (NVIDIA DRIVE Perception \cite{nvidia:drivePerception}), mapowania środowiska (NVIDIA DRIVE Mapping \cite{nvidia:driveMapping}) i planowania trasy (NVIDIA DRIVE Planning \cite{nvidia:drivePlanning})
+\item DRIVE IX \\
+Dostarcza algorytmów do wizualizacji otoczenia pojazdu, monitoruje zachowanie kierowcy i służy jako asystent kabiny.
+\item DriveWorks \\
+Jest frameworkiem dostarczającym zestaw bibliotek i narzędzi dla użytkowników pakietu NVIDIA DRIVE.
+\end{enumerate*}
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=15cm]{resources/figures/nvidia-drive-software-stack.jpg}
+\caption{Oprogramowanie wchodzące w skład pakietu NVIDIA DRIVE}
+\label{NvidiaDriveSoftwareStack}
+\end{center}
+\end{figure}
+
+\subsection{Udacity}
+Udacity jest edukacyjną organizacją oferującą tzw. ,,masywne otwarte kursy online'' (MOOCs - Massive Open Online Courses) \cite{mooc:guide}. Posiadają własną platformę kursową, na której publikowane są kursy dotyczące szeroko pojętej branży IT. \\
+Jednym z kursów, oferowanych przez Udacity, jest \textit{Self-Driving Car Engineer Nanodegree program}. Został stworzony w partnerstwie z gigantami branż automotive oraz IT, m.in. Mercedes-Benz, NVIDIA, Uber, BMW.
+
+Wraz z uruchomieniem kursu, firma Udacity zdecydowała się na dosyć odważny krok. Postanowiła zrealizować, we współpracy z programistami z całego świata, własny projekt samochodu autonomicznego. Projekt ten ma być w całości \textbf{otwartoźródłowy}. \\
+Jak opisuje Oliver Cameron, ówczesny lider programu Udacity Self-Driving Car \cite{udacity:selfDrivingCar}: \\
+,,Gdy decydowaliśmy się na tworzenie programu  \textit{Self-Driving Car Engineer}, od razu wiedzieliśmy, że musimy zbudować własny samochód autonomiczny. (...) utworzyliśmy więc zespół \textit{Self-Driving Car Team}. Jedna z pierwszych decyzji jaką podjęliśmy? \textbf{Kod open source, pisany przez setki studentów z całego świata!}''
+
+Aby wcielić ten projekt w życie, firma Udacity dokonała niezbędnych przygotowań:
+\begin{enumerate*}
+\item Zakup samochodu marki Lincoln MKZ (rocznik 2016)
+\item Montaż dodatkowych komponentów:
+\begin{itemize*}
+\item Dwa radary LIDAR marki Velodyne VLP-16
+\item Jeden radar marki Delphi
+\item Trzy kamery marki Point Grey Blackfly
+\item Xsens IMU \cite{imu:wikipedia}
+\item ECU \cite{ecu:wikipedia}
+\item i wiele innych
+\end{itemize*}
+\item Konfiguracja systemu ROS (Robot Operating System) \cite{ros:about}
+\item Stworzenie wstępnej bazy kodu
+\end{enumerate*}
+
+
+\subsection{Waymo}
+\section{Środowiska symulacyjne}
+\subsection{Microsoft AirSim}
+\subsection{Voyage Deepdrive}
+\section{Projekty modelarskie}
+\subsection{donkeycar}
+\section{Małe prywatne projekty}
+\subsection{Deep Learning Cars}
+Autorem projektu jest austriacki programista Samuel Arzt \cite{artz:deepLearningCars:blog} \cite{artz:deepLearningCars:github}. \\
 
 \begin{figure}[h]
 \begin{center}
 \includegraphics[width=16cm]{resources/figures/samuelArtzDeepCars.png}
 \caption{Stopklatka z pracy systemu}
+\label{SamuelArtzDeepLearningCars}
 \end{center}
 \end{figure}
-\label{SamuelArtzDeepLearningCars}
 
-\subsection{Opis implementacji}
+\subsubsection{Opis implementacji}
 Na początku każdej generacji jest tworzonych 20 samochodów (osobników). \\
 Każdy samochód posiada własną sieć neuronową oraz zestaw 5 czujników, odmierzających odległość z przodu samochodu.
 
@@ -29,7 +249,7 @@ Czujniki tworzą "pole widzenia" samochodu o łącznym kącie 90 stopni.
 
 Zadaniem każdego samochodu jest bezkolizyjny przejazd po wyznaczonym torze.
 Jedyne operacje jakie może wykonać samochód, to skręt w lewo lub prawo.
-Prędkość wszystkich samochódów jest stała i ustalana przed rozpoczęciem generacji.
+Prędkość wszystkich samochodów jest stała i ustalana przed rozpoczęciem generacji.
 W chwili kolizji z przeszkodą, samochód umiera.
 Należy dodać, iż nie występują kolizje pomiędzy samochodami.
 
@@ -38,89 +258,22 @@ Osobniki do kolejnej generacji są tworzone przy pomocy algorytmu ewolucyjnego.
 
 Do reprodukcji wybierane są 2 osobniki z najwyższym przystosowaniem.
 
-Przystosowania jest obliczane na podstawie odległości przebytej przez samochód.
+Przystosowanie jest obliczane na podstawie odległości przebytej przez samochód.
 Im większa przejechana odległość, tym wyższa wartość przystosowania samochodu.
 
-Geny 2 najlepiej przystosowanych osobników są krzyżowane i mutowane, tworząc 20 nowych osobników (potomków).
+Geny dwóch najlepiej przystosowanych osobników są krzyżowane i mutowane, tworząc 20 nowych osobników (potomków).
 
 Genami samochodu są wagi w jego sieci neuronowej.
 Zastosowane sieci neuronowe to sieci jednokierunkowe (tzw. feedforward),
-z 5 pięcioma neuronami w warstwie wejściowej, 2 neuronami w warstwie wyjściowej i dwiema warstwami ukrytymi (odpowiednio 4 i 3 neurony).
-Uczenie sieci (dostrajanie wartości wag) odbywa się za pomocą tzw. Algorytmu Genetycznego.
+z pięcioma neuronami w warstwie wejściowej, dwoma neuronami w warstwie wyjściowej i dwiema warstwami ukrytymi (odpowiednio 4 i 3 neurony).
+Uczenie sieci (dostrajanie wartości wag) odbywa się za pomocą algorytmu genetycznego \cite{geneticAlgorithm:introduction}.
 
-\subsection{Reprezentacja graficzna}
-Dwuwymiarowa symulacja środowiska (toru) została wykonana w aplikacji Unity3D.
+\subsubsection{Reprezentacja graficzna}
+Dwuwymiarowa symulacja środowiska (toru) została wykonana przy użyciu silnika Unity.
 Krzyżyki wyświetlane na ekranie są reprezentacją czujników samochodów.
 Kamera podąża za samochodem z najlepszym przystosowaniem.
 Dwa samochody z najlepszym przystosowaniem są wyróżniane kolorem.
 
-\subsection{Dostępność kodu źródłowego}
+\subsubsection{Dostępność kodu źródłowego}
 Cały kod źródłowy projektu został udostępniony przez autora. \\
-Link do repozytorium znajduje się w pozycji literaturowej:  \cite{artz:deepLearningCars:github}.
-
-\newpage
-\section{
-	kwea123 - "Autocar"
-	\cite{kwea:autocar}
-}
-
-Projekt wykonany w technologii Unity3D oraz Python.
-Autor wytrenował sieci neuronowe, stosując podejście uczenia ze wzmocnieniem.
-Autor wykorzystuje bibliotekę OpenCV do wykrywania krawędzi toru i spłaszcza obraz na wejściu, łącząc go z prędkością samochodu.
-Sieć była trenowana, wykorzystując algorytm PPO (Proximal Policy Optimization).
-
-Samochodem może sterować człowiek lub komputer (zwany agentem).
-Zadaniem agenta jest dojazd do wyznaczonego celu, lub przejechanie bezkolizyjne całego toru.
-Jazda do przodu jest wynagradzana, podczas gdy cofanie się jest karane.
-Agent jest wyposażony w kamerę umieszczoną z przodu samochodu, która dostarcza mu informacji o pokonywanym torze.
-
-Agenci są skojarzeni z obiektem Main, który odpowiada za wszystkie interakcje pomiędzy środowiskiem Unity, a skryptami napisanymi w Pythonie.
- 
-Projekt zawiera trzy środowiska treningowe:
-\begin{itemize*}
-\item autocar \\
-\begin{figure}[H]
-\begin{center}
-\includegraphics[width=16cm]{resources/figures/autocar.png}
-\caption{autocar}
-\end{center}
-\end{figure}
-\label{Autocar}
-Tor szczątkowy, przeznaczony do eksperymentów ze środowiskiem. \\
-Sieć wytrenowana po 200 iteracjach.
-
-\newpage
-\item autocar2 \\
-\begin{figure}[H]
-\begin{center}
-\includegraphics[width=16cm]{resources/figures/autocar2.png}
-\caption{autocar2}
-\end{center}
-\end{figure}
-\label{Autocar2}
-Kompletny tor. \\
-Sieć wytrenowana po kolejnych 200 iteracjach, wykorzystując wstępnie wytrenowaną sieć z poprzedniego środowiska treningowego.
-
-\item autocar\_human\_detection \\
-\begin{figure}[H]
-\begin{center}
-\includegraphics[width=15cm]{resources/figures/autocar_human.png}
-\caption{autocar\_human\_detection}
-\end{center}
-\end{figure}
-\label{Autocar_human}
-Tor identyczny jak w środowisku autocar2, jednakże uzupełniony o pojawiającą się w losowych miejscach postać przechodzącego pieszego.\\
-Zadaniem agenta jest unikanie kolizji z pieszym. \\
-Aby to osiągnąć, obliczana jest odległość od pieszego oraz kierunek jego przemieszczenia.
-
-Autor wykorzystuje tutaj uczenie nadzorowane z dużym zbiorem danych.
-Wykrywanie pieszego jest wykonywane za pomocą frameworka 
-Tensorflow Object Detection API.
-
-Wytrenowane modele, odpowiedzialne za prognozę odległości i kierunku przemieszczania się pieszego, bazują na sieciach 
-MLP (Multilayer Perceptron - Wielowarstowy Perceptron) oraz 
-CNN (Convolutional Neural Network - Konwolucyjna Sieć Neuronowa).
-\end{itemize*}
-
-\newpage
-\section{Microsoft - AirSim}
+Link do repozytorium znajduje się w pozycji literaturowej: \cite{artz:deepLearningCars:github}.
