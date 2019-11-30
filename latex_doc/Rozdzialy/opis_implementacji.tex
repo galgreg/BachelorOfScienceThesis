@@ -1,3 +1,424 @@
 \chapter{Opis implementacji}
-\section{Implementacja: punkty kluczowe}
-\section{Testy systemu}
+Zgodnie z opisem frameworka Unity ML-Agents, zawartego w sekcji \ref{UnityMlaDescription}, zrealizowany przeze mnie projekt można podzielić na dwa moduły:
+
+\begin{enumerate*}
+\item Środowisko Uczenia - zrealizowane w silniku Unity. Odpowiada za symulację środowiska, po którym porusza się inteligentny agent.
+\item Zewnętrzny proces Pythona - moduł odpowiedzialny za wykonywanie skryptów języka Python, kontrolujących zachowanie agentów w Środowisku Uczenia. \\
+Zewnętrzny proces Pythona jest niezależnym od silnika Unity procesem. Komunikacja ze Środowiskiem Uczenia odbywa się poprzez mechanizm socketów. Implementacja tego mechanizmu jest wbudowana we framework, choć istnieje również możliwość rozszerzenia tej implementacji. Szczegóły na ten temat można znaleźć w dokumentacji frameworka.
+\end{enumerate*}
+
+Więcej informacji na temat każdego z modułów znajduje się w dalszej części rozdziału.
+
+\section{Środowisko Uczenia}
+Środowisko Uczenia - pomijając detale - jest typowym projektem zrealizowanym w silniku Unity. W skład projektu wchodzi wiele katalogów i plików. \\
+W niniejszej sekcji postanowiłem skupić się na opisaniu tylko tych elementów, które są najbardziej istotne dla zrozumienia aplikacji. Reszta informacji znajduje się w dokumentacji silnika, gdyż dotyczy typowych elementów, obecnych w każdym projekcie Unity.
+
+\subsection{Wykorzystane assety}
+Assety są komponentami, których można użyć tworzenia gier lub innych projektów napędzanych silnikiem Unity. Asset może być jakimkolwiek zasobem do wykorzystania, np. modelem 3D, plikiem audio lub skryptem C\#. Twórcy silnika Unity udostępniają usługę Unity Asset Store, dzięki której można nabywać bezpłatne a także płatne assety. Usługa ta jest wbudowana w edytor Unity \cite{unity:assetStore}.
+
+W swojej aplikacji również wykorzystuję zewnętrzne assety. Dokładniej mówiąc, jeden pakiet assetów. Pakiet ten nosi nazwę ,,\textit{Low Poly Destructible 2 Cars no. 8}'', a dokładny opis znajduje się na oficjalnej stronie pakietu \cite{assets:lowPolyCar}.
+Powyższy pakiet posłużył jako baza dla modelu agenta.
+
+\vspace{0.5cm}
+\begin{figure}[H]
+\centering
+\includegraphics[width=15cm]{resources/figures/car_picture.jpg}
+\caption{Zdjęcie reklamujące pakiet ,,\textit{Low Poly Destructible 2 Cars no. 8}''}
+\label{CarPicture}
+\end{figure}
+
+\subsection{Sceny Unity}
+Są to wymodelowane w edytorze Unity tory wyścigowe, po których poruszają się agenci podczas trwania symulacji. 
+Każdy kolejny tor jest trudniejszy od poprzedniego, co przekłada się na większą liczbę epizodów symulacji, potrzebnych do wytrenowania modelu. \\
+Obecnie Środowisko Uczenia składa się z trzech torów:
+\newpage
+\begin{enumerate*}
+\item RaceTrack\_1
+\begin{figure}[H]
+\centering
+\includegraphics[width=13cm]{resources/figures/track_1.png}
+\end{figure}
+\item RaceTrack\_2
+\begin{figure}[H]
+\centering
+\includegraphics[width=13cm]{resources/figures/track_2.png}
+\end{figure}
+\item RaceTrack\_3
+\begin{figure}[H]
+\centering
+\includegraphics[width=13cm]{resources/figures/track_3.png}
+\end{figure}
+\end{enumerate*}
+
+Wszystkie tory wyścigowe mają wspólne cechy. Jedną z nich jest kolorystyka. Każdy kolor ma swoje znaczenie:
+\begin{itemize*}
+\item Żółty - miejsce startowe
+\item Turkusowy - meta
+\item Granatowy - nitka toru, po której porusza się agent
+\item Brązowy-pomarańczowy - ściany toru. Służą do wyznaczania granic, w obrębie których agent może się przemieszczać. W przypadku kolizji ze ścianą, agent umiera.
+\end{itemize*}
+
+Struktura logiczna wszystkich scen jest zasadniczo taka sama. Każda scena składa się z obiektu kamery, obiektu akademii oraz wymodelowanego toru wyścigowego. \\
+Poniżej przykład dla sceny RaceTrack\_1:
+\vspace{0.5cm}
+\begin{figure}[H]
+\centering
+\includegraphics[width=10cm]{resources/figures/scene_structure.png}
+\end{figure}
+
+\subsection{Katalog MyBrains}
+Katalog MyBrains zawiera dwa obiekty, które dziedziczą po klasie Brain. Są to:
+\begin{enumerate*}
+\item \textit{CarLearningBrain} \\
+Obiekt klasy LearningBrain. Używany do uruchamiania wytrenowanych modeli oraz trenowania nowych. Modele są definiowane i wykonywane po stronie zewnętrznego procesu Pythona. Obiekt CarLearningBrain musi zatem komunikować się (za pośrednictwem akademii) z procesem Pythona, którego odpytuje o akcje zwracane przez model oraz wysyła mu obserwacje zgromadzone przez agenta. \\
+\textit{CarLearningBrain} posiada kilka parametrów, których wartości wpływają na jego zachowanie. Parametry te są dostępne z poziomu edytora Unity.
+
+\vspace{0.5cm}
+\begin{figure}[H]
+\centering
+\includegraphics[width=13cm]{resources/figures/learningBrain.png}
+\caption{Widok obiektu \textit{CarLearningBrain} w inspektorze edytora Unity}
+\label{CarLearningBrainView}
+\end{figure}
+
+Najbardziej istotne są parametry występujące w sekcji \textit{Brain Parameters}. Są one definiowane w klasie Brain, zatem wszystkie klasy dziedziczące po klasie Brain posiadają te parametry. Opis poszczególnych parametrów znajduje się w dokumentacji frameworka Unity ML-Agents \cite{unityMla:brainDescription}.
+
+\item \textit{CarPlayerBrain} \\
+Obiekt klasy PlayerBrain. Pozwala na kontrolowanie agenta, używając komend klawiatury. Doskonale nadaje się do ręcznych testów Środowiska Uczenia. \\
+Jak widać na obrazku \ref{CarPlayerBrainView}, \textit{CarPlayerBrain} również posiada sekcję \textit{Brain Parameters}. Bardzo interesująca jest natomiast sekcja poniżej, w której zdefiowane jest mapowanie poszczególnych przycisków klawiatury na konkretne akcje generowane przez obiekt. Więcej szczegółów na ten temat można znaleźć w dokumentacji \cite{unity:playerBrainDescription}.
+
+\vspace{0.5cm}
+\begin{figure}[H]
+\centering
+\includegraphics[width=13cm]{resources/figures/carPlayerBrain.png}
+\caption{Widok obiektu \textit{CarPlayerBrain} w inspektorze edytora Unity}
+\label{CarPlayerBrainView}
+\end{figure}
+\end{enumerate*}
+
+\newpage
+\subsection{Skrypty C\#}
+Aby Środowisko Uczenia działało w sposób poprawny, musiałem zaimplementować skrypty w języku C\#. Poniżej zamieszczam krótki opis poszczególnych skryptów.
+\subsubsection{RaceTrackAcademy.cs}
+Najważniejszy skrypt w module. Jest odpowiedzialny za zarządzanie Środowiskiem Uczenia i udostępnianie go zewnętrznemu procesowi Pythona. \\
+Klasa RaceTrackAcademy dziedziczy po interfejsie Academy, który definiuje API dla obiektu akademii.
+Metody abstrakcyjne, które zostały nadpisane przez klasę implementującą to:
+\begin{enumerate*}
+\item \textit{InitializeAcademy} \\
+Jest wykonywana tylko jeden raz - podczas inicjalizacji obiektu akademii. \\
+Służy do przygotowania stanu początkowego Środowiska Uczenia. \\
+W przypadku mojej implementacji, polega to na utworzeniu populacji agentów.
+\item \textit{AcademyReset} \\
+Jest wykonywana po każdym zakończonym epizodzie symulacji. Epizod symulacji kończy się, gdy zostaje wywołana metoda \textit{Done} z klasy Academy. \\
+Metoda \textit{AcademyReset} powinna przygotować Środowisko Uczenia do kolejnego epizodu symulacji. W przypadku mojej implementacji, polega to na przemieszczeniu wszystkich agentów do pozycji początkowej i wyzerowaniu ich nagród.
+\item \textit{AcademyStep} \\
+Jest wykonywana dla każdego kroku symulacji. W przypadku mojej implementacji, metoda ta jest odpowiedzialna za sprawdzanie, czy wszyscy agenci umarli w bieżącym epizodzie. Jeśli tak, wywoływana jest metoda \textit{Done}.
+\end{enumerate*}
+
+Oprócz powyżej opisanych, klasa RaceTrackAcademy zawiera również kilka metod pomocniczych. Wspomagają one tworzenie populacji agentów oraz naliczanie agentów umarłych w bieżącym epizodzie.
+
+Bardzo ważnym aspektem klasy RaceTrackAcademy, o którym również należy wspomnieć, są publiczne pola instancyjne klasy. 
+To parametry mające duży wpływ na zachowanie Środowiska Uczenia. Wartości tych parametrów mogą być ustawiane z poziomu edytora Unity.
+Oto lista pól instancyjnych klasy:
+\begin{itemize*}
+\item CarAgentBrain - obiekt klasy dziedziczącej po klasie Brain. Więcej szczegółów na ten temat znajduje się w sekcji \ref{UnityMlaDescription}.
+\item CarAgentPrefab - zmienna przechowuje referencję do obiektu reprezentującego wzorcowy model agenta. Podczas tworzenia populacji, model ten jest klonowany dla każdego z agentów.
+\item StartAgentPosition - pozycja startowa agenta. Jest to wektor określający pozycję agenta, jaką będzie on miał na początku każdego epizodu symulacji.
+\item StartAgentRotation - liczba typu float. Określa, w którą stronę jest skierowany samochód na początku każdego epizodu.
+\item CarAgentScale - liczba typu float. Określa rozmiar klonowanych modeli w stosunku do rozmiaru modelu oryginalnego (wskazywanego przez zmienną CarAgentPrefab).
+\item MaxSensorLength - liczba typu float. Określa maksymalny dystans, rejestrowany przez sensory wejściowe samochodów.
+\item FieldOfView - liczba typu float. Określa ,,kąt widzenia'' sensorów wejściowych. Wartości podawane są w stopniach. Maksymalna dozwolona wartość (będąca zarazem wartością domyślną dla zmiennej) to 180 stopni.
+\item RaysCount - liczba typu int. Określa ilość sensorów wejściowych. Musi to być liczba dodatnia większa lub równa 2.
+\item MaxSteeringAngle - liczba typu float. Określa maksymalny dozwolony kąt skrętu kół przednich w samochodzie. Wartości podawane są w stopniach. Domyślnie jest to 30 stopni.
+\item MotorForce - liczba typu float. Określa ,,moc silnika'' w samochodzie.
+\item PopulationSize - rozmiar populacji agentów, tworzonej w Środowisku Uczenia.
+\end{itemize*}
+
+\subsubsection{CarAgent.cs}
+Drugi najważniejszy skrypt w module. Klasa CarAgent dziedziczy po klasie Agent, która definiuje publiczne API do zarządzania agentem w Środowisku Uczenia. Każdemu agentowi przypada dokładnie jedna instancja klasy CarAgent.
+Klasa CarAgent nadpisuje kilka metod wirtualnych, zdefiniowanych w klasie Agent. Są to:
+\begin{enumerate*}
+\item \textit{AgentReset} \\
+Określa zachowanie agenta, gdy jest on resetowany. Resetowanie agenta odbywa się po zakończeniu epizodu symulacji, a celem resetowania jest przygotowanie agenta do rozpoczęcia kolejnego epizodu. W przypadku mojej implementacji, resetowanie agenta polega na wyzerowaniu jego nagrody.
+\item \textit{CollectObservations} \\
+Wykonywana dla każdego kroku symulacji. Odpowiada za zbieranie obserwacji agenta i wysyłania tych danych do przypisanego  agentowi mózgu.
+\item \textit{AgentAction} \\
+Wykonywana dla każdego kroku symulacji. Odpowiada za zdefiniowanie zachowania agenta na podstawie danych (akcji) otrzymywanych z mózgu.
+\item \textit{AgentOnDone} \\
+Metoda definiuje zachowanie agenta gdy ten umiera i zmienna AgentParameters.\textit{resetOnDone} jest ustawiona na wartość \textit{false}.
+\end{enumerate*}
+
+Oprócz powyższych metod, klasa CarAgent zawiera również kilka metod pomocniczych. Najważniejsze z nich to:
+\begin{enumerate*}
+\item \textit{Constructor} - odpowiedzialna za leniwą inicjalizację obiektu.
+\item \textit{SetInputProperties} - odpowiedzialna za stworzenie sensorów samochodu. Robi to na podstawie wartości przekazanych w parametrach metody (maksymalny dystans, kąt widzenia oraz liczba sensorów).
+\item \textit{SetOutputProperties} - odpowiada za przygotowanie samochodu do poprawnego reagowania na akcje przesyłane agentowi przez mózg.
+\item \textit{SaveEpisodeReward} - zapisuje nagrodę przypadającą agentowi za bieżący epizod. Wartość nagrody jest obliczana na podstawie przejechanego dystansu oraz sygnałów nagród wyemitowanych przez Środowisko Uczenia.
+\item \textit{GetEpisodeReward} - zwraca wartość nagrody przypadającej agentowi za bieżący epizod.
+\end{enumerate*}
+
+\subsubsection{CarAgentInput.cs}
+Skrypt zawiera szczegóły implementacyjne na temat zestawu sensorów wejściowych agenta. Najważniejszą metodą tej klasy jest \textit{RenderSensorsAndGetNormalizedDistanceList}. Metoda ta renderuje zestaw sensorów i zwraca listę znormalizowanych wartości zarejestrowanych dystansów. Znormalizowane wartości to takie, gdzie każda z nich jest liczbą zmiennoprzecinkową z przedziału od 0 do 1.
+
+\subsubsection{CarAgentOutput.cs}
+Skrypt zawiera szczegóły implementacyjne na temat ,,układu napędowego'' samochodu. Najważniejszą metodą w tej klasie jest \textit{Update}, która aktualizuje kąt skrętu kierownicy oraz wielkość mocy przekazywanej na koła.
+
+\subsubsection{CarSensor.cs}
+Skrypt zawiera szczegóły implementacyjne na temat pojedynczych sensorów. Definiuje klasę CarSensor, której metody są pomocne przy operowaniu na poszczególnych sensorach. \\ Najważniejsze metody tej klasy to \textit{Render} oraz \textit{GetNormalizedDistance}.
+
+\subsubsection{SensorPropertiesComputer.cs}
+Skrypt zawiera definicję klasy SensorPropertiesComputer, która dokonuje obliczeń parametrów sensora, czyli pozycji punktu początkowego oraz kierunku wiązki.
+
+\subsubsection{RaceTrackFinishTrigger.cs}
+Skrypt zawiera definicję klasy RaceTrackFinishTrigger, która odpowiada za rozpoznawanie czy dany agent dojechał do końca toru.
+Jeśli tak, to klasa przydziela agentowi nagrodę za ukończenie toru i wywołuje na nim metodę \textit{Done}. Dzięki temu agent wie, że dla niego ten epizod symulacji dobiegł końca.
+
+\subsubsection{RaceTrackTerrainCollision.cs}
+Skrypt zawiera definicję klasy RaceTrackTerrainCollision, która odpowiada za wykrywanie kolizji pomiędzy agentem i ścianami toru wyścigowego. Gdy zachodzi kolizja, klasa wywołuje na agencie metodę \textit{Done}.
+
+\subsubsection{EnvBuilder.cs}
+Skrypt odpowiada za budowanie Środowiska Uczenia do postaci samowystarczalnych aplikacji, które nie potrzebują mieć dostępu do edytora Unity aby funkcjonować poprawnie. Tych aplikacji, zwanych inaczej buildami, są trzy sztuki - po jednej na każdy tor wyścigowy. \\
+Skrypt pobiera z linii poleceń dwa parametry. Są to:
+\begin{itemize*}
+\item Ścieżka do katalogu, w którym będą utworzone wszystkie buildy.
+\item Platforma systemowa. Obecnie wspierane platformy to Linux i Windows.
+\end{itemize*}
+
+\newpage
+\section{Zewnętrzny proces Pythona}
+Jest drugim z głównych modułów mojej aplikacji. Zawiera zestaw skryptów języka Python oraz innych plików, które pozwalają na komunikację i kontrolę Środowiska Uczenia z osobnego procesu, niezwiązanego z procesami silnika Unity.
+
+Na obrazku \ref{PythonProcessStructure} została przedstawiona uproszczona struktura katalogowa tego modułu. Najważniejsze elementy z tej struktury zostały opisane poniżej. 
+\vspace{0.5cm}
+\begin{figure}[H]
+\centering
+\includegraphics[width=10cm]{resources/figures/python_process_structure.png}
+\caption{Struktura katalogowa modułu}
+\label{PythonProcessStructure}
+\end{figure}
+
+\subsubsection{requirements.txt}
+Zawiera listę pakietów zależności, które muszą być zainstalowane, aby proces Pythona mógł działać w poprawny sposób. Preferowanym sposobem instalowania zależności jest utworzenie nowego środowiska wirtualnego (najlepiej przy użyciu programu \textit{Conda}) i zainstalowanie wszystkich zależności w tym środowisku.
+
+\subsubsection{config.json}
+Plik konfiguracyjny, zawiera parametry niezbędne do poprawnego funkcjonowania modułu. Wykorzystywany przez niektóre skrypty języka Python. Formatem pliku jest JSON \cite{json:standard}. Aktualna zawartość pliku prezentuje się następująco:
+
+\vspace{1cm}
+\begin{lstlisting}[language=json]
+{
+    "MakeBuilds" : {
+        "Unity" : "/home/galgreg/Programy/Unity3D/2019.1.12f1/Editor/Unity",
+        "Target" : "Linux"
+    },
+    "BuildPaths" : {
+        "Linux" : {
+            "RaceTrack_1" : "env_builds/RaceTrack_1/RaceTrack_1.x86_64",
+            "RaceTrack_2" : "env_builds/RaceTrack_2/RaceTrack_2.x86_64",
+            "RaceTrack_3" : "env_builds/RaceTrack_3/RaceTrack_3.x86_64"
+        },
+        "Windows" : {
+            "RaceTrack_1" : "env_builds/RaceTrack_1/RaceTrack_1.exe",
+            "RaceTrack_2" : "env_builds/RaceTrack_2/RaceTrack_2.exe",
+            "RaceTrack_3" : "env_builds/RaceTrack_3/RaceTrack_3.exe"
+        }
+    },
+    "LearningAlgorithms" : {
+        "pso" : {
+            "numberOfAgents" : 100,
+            "W" : 0.729,
+            "c1" : 2.05,
+            "c2" : 2.05
+        },
+        "diff_evo" : {
+            "numberOfAgents" : 50,
+            "mutationFactor" : 0.8,
+            "crossProbability" : 0.7
+        }
+    },
+    "TrainingParameters" : {
+        "randomSeed" : null,
+        "maxNumberOfEpisodes" : 100,
+        "maxNumberOfRepeatsIfTrainingFails" : 3,
+        "minimalAcceptableFitness": {
+            "RaceTrack_1" : 14.00,
+            "RaceTrack_2" : 20.00,
+            "RaceTrack_3" : 40.00
+        },
+        "networkHiddenDimensions" : [5 ]
+    }
+}
+\end{lstlisting}
+
+\newpage
+Znaczenie poszczególnych sekcji pliku \textbf{config.json}:
+\begin{itemize*}
+\item MakeBuilds - parametry dla skryptów tworzących buildy Środowiska Uczenia.
+\item BuildPaths - ścieżki do buildów dla wszystkich wspieranych platform systemowych.
+\item LearningAlgorithms - parametry dla Ewolucji Różnicowej oraz PSO.
+\item TrainingParameters - inne parametry, niezbędne do poprawnego działania aplikacji.
+\end{itemize*}
+
+\subsubsection{Parsowanie listy argumentów wiersza poleceń}
+Niektóre skrypty modułu można wywołać z poziomu wiersza poleceń. Są to:
+\begin{itemize*}
+\item train\_de.py
+\item train\_pso.py
+\item run.py
+\item make\_builds.py
+\item experiment.py
+\end{itemize*}
+Wszystkie one do parsowania listy argumentów wiersza poleceń wykorzystują bibliotekę docopt (patrz \ref{docoptOpis}). Oto przykład definicji API wiersza poleceń dla skryptu train\_pso.py:
+
+\begin{minted}[ fontsize=\fontsize{10}{9} ] {python}
+def getProgramOptions():
+    APP_USAGE_DESCRIPTION = """
+Train neural networks to drive a car on a racetrack. Racetrack must be valid
+Unity ML-Agents environment. Algorithm used to train is Particle Swarm Optimization.
+NOTE: As a config file should be used 'config.json' file or other with appropriate fields.
+
+Usage:
+    train_pso.py <config-file-path> (--track-1 | --track-2 | --track-3) [options]
+    train_pso.py -h | --help
+
+Options:
+    --track-1                               Run training on RaceTrack_1
+    --track-2                               Run training on RaceTrack_2
+    --track-3                               Run training on RaceTrack_3
+    -v --verbose                            Run in verbose mode
+    --save-population                       Save population after training
+    --population=<pretrained-population>    Specify path to pretrained population
+    --env-path=<unity-build>                Specify path to Unity environment build
+"""
+    options = docopt(APP_USAGE_DESCRIPTION)
+    return options
+\end{minted}
+
+Parsowanie argumentów linii poleceń odbywa się w funkcji \textit{getProgramOptions}. String APP\_USAGE\_DESCRIPTION zawiera sformalizowany opis, wykonany według schematu określonego w dokumentacji \cite{docopt:documentation}. Funkcja \textit{docopt} parsuje tego stringa oraz listę argumentów dostarczoną przy wywołaniu z linii poleceń. \textit{docopt} weryfikuje, czy podane argumenty zgadzają się z definicją API. Jeśli tak, to funkcja zwraca słownik zawierający przeparsowane argumenty.
+Na przykład dla wywołania:
+\vspace{0.5cm}
+\begin{figure}[H]
+\centering
+\includegraphics[width=15cm]{resources/figures/train_de_call.png}
+\end{figure}
+słownik zwrócony przez funkcję \textit{docopt} będzie miał następującą postać:
+\begin{minted}[ fontsize=\fontsize{10}{9} ] {python}
+{
+	"<config-file-path>" : "config.json",
+	"--track-1" : False,
+	"--track-2" : False,
+	"--track-3" : True,
+	"--verbose" : True,
+	"--save-population" : False,
+	"--population" : None,
+	"--env-path" : None
+}
+\end{minted}
+
+\subsubsection{Skrypty treningowe}
+Skrypty treningowe odpowiadają za trenowanie nowych modeli. Trening odbywa się przy użyciu jednego z dwóch algorytmów:
+\begin{itemize*}
+\item Ewolucji Różnicowej - dla skryptu train\_de.py
+\item Optymalizacji Roju Cząstek - dla skryptu train\_pso.py
+\end{itemize*}
+Obydwa skrypty można wywołać na jeden z dwóch sposobów - z poziomu linii poleceń lub z poziomu kodu źródłowego innego skryptu.
+
+Skrypty mają podobny przebieg logiczny. Można go opisać za pomocą poniższej listy kroków:
+\begin{enumerate*}
+\item Parsowanie argumentów wywołania
+\item Wczytanie danych z pliku konfiguracyjnego
+\item Nawiązanie połączenia ze Środowiskiem Uczenia
+\item Inicjalizacja zmiennych
+\item Pętla treningowa
+\item Zapis danych uzyskanych w treningu.
+\end{enumerate*}
+
+Wykonanie pętli treningowej odbywa się aż do momentu wystąpienia warunku stopu. Warunkiem stopu jest jedna z następujących sytuacji:
+\begin{enumerate*}
+\item Wytrenowany model osiągnął założony pułap wartości przystosowania
+\item Wyczerpała się liczba dozwolonych prób wytrenowania modelu
+\end{enumerate*}
+Informacje zapisywane po treningu to:
+\begin{itemize*}
+\item Plik loga
+\item Najlepiej wytrenowany model
+\item Cała populacja (opcjonalnie)
+\end{itemize*}
+
+\subsubsection{run.py}
+Skrypt odpowiada za wczytanie wytrenowanego modelu i jego ewaluację w zadanym Środowisku Uczenia. Skrypt może być wywołany na jeden z dwóch sposobów - z poziomu linii poleceń lub z poziomu kodu źródłowego innego skryptu.
+
+\subsubsection{make\_builds.py}
+Skrypt odpowiada za tworzenie buildów Środowiska Uczenia. Buildy te są potrzebne dla poprawnego działania skryptu \textit{experiment.py}.
+
+\subsubsection{experiment.py}
+Jeden z najważniejszych skryptów w module. Przeprowadza serię eksperymentów obliczeniowych, których wyniki zapisuje do katalogu \textit{experiment\_results}, w podkatalogu o nazwie będącej znacznikiem czasu z momentu zapisu.
+
+Wyniki przeprowadzonych eksperymentów obliczeniowych, jak również metodyka ich przeprowadzania, zostaną omówione w kolejnym rozdziale tej pracy.
+
+\subsubsection{Katalog \textit{test}}
+Zawiera zbiór testów jednostkowych modułu. Testy zaimplementowano, wykorzystując framework unittest \cite{python:unittest} oraz bibliotekę ddt (patrz sekcja \ref{DdtOpis}).
+
+\subsubsection{AgentNeuralNetwork.py}
+Plik zawiera definicję klasy \textit{AgentNeuralNetwork}, która implementuje model sieci neuronowej agentów. Klasa jest stosunkowo prosta, składa się tylko z dwóch metod. \\
+Pierwszą z nich jest konstruktor. W konstruktorze definiowana jest topologia sieci neuronowej. Obecnie wykorzystywaną topologią sieci jest MLFFNN \cite{multilayerNN:article}. Konstruktor przyjmuje jeden obowiązkowy parametr - jest nim lista wymiarów sieci. \\
+Drugą metodą klasy jest \textit{forward}. Definiuje ona, w jaki sposób obliczane są wyniki generowane przez sieć neuronową dla danego zestawu danych wejściowych. Wykorzystywaną funkcją aktywacji jest ELU \cite{activationFunctions:overview}. \\
+Zawartość pliku \textit{AgentNeuralNetwork.py} prezentuje się następująco:
+
+\begin{minted}[ fontsize=\fontsize{10}{9} ] {python}
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+class AgentNeuralNetwork(nn.Module):
+    def __init__(self, dimensions, requires_grad = False):
+        super(AgentNeuralNetwork, self).__init__()
+        self._layers = [ ]
+        for i in range(len(dimensions) - 1):
+            self._layers.append( nn.Linear(dimensions[i], dimensions[i+1]) )
+            self._layers[i].weight = \
+                nn.Parameter(
+                    data = torch.FloatTensor(dimensions[i+1], dimensions[i]) \
+                            .uniform_(-2.0, 2.0),
+                    requires_grad = requires_grad)
+            self._layers[i].bias = \
+                nn.Parameter(
+                    data = torch.FloatTensor(dimensions[i+1]).uniform_(-2.0, 2.0),
+                    requires_grad = requires_grad)
+
+    def forward(self, dataToProcess):
+        dataToProcess = torch.tensor(dataToProcess)
+        for networkLayer in self._layers:
+            dataToProcess = F.elu(networkLayer(dataToProcess))
+        dataToProcess[0] = min((dataToProcess[0] + 1), 1)
+        dataToProcess[1] = min(dataToProcess[1], 1)
+        return dataToProcess.tolist()
+\end{minted}
+
+\subsubsection{Logger.py}
+Plik zawiera definicję klasy \textit{Logger}. Klasa ta odpowiada za zarządzanie logami generowanymi przez inne skrypty w module. Najważniejsze metody klasy:
+\begin{enumerate*}
+\item \textit{Append} - dodaje podany string do loga jako kolejny rekord. Każdy rekord jest opatrzony tzw. ,,znacznikiem czasu'', czyli datą i godziną dodania rekordu.
+\item \textit{Save} - zapisuje loga do pliku o zadanej lokalizacji.
+\end{enumerate*}
+
+\subsubsection{TrainingResultsRepository.py}
+Plik zawiera definicję klasy \textit{TrainingResultsRepository}. Odpowiada ona za zapisywanie i odczytywanie danych wygenerowanych podczas treningu. Dane te są zapisywane do katalogu \textit{training\_results}, w podkatalogu o nazwie będącej znacznikiem czasu z momentu zapisu. \\
+Dane zapisywane po treningu to: plik loga, najlepszy wytrenowany agent oraz (opcjonalnie) cała populacja.
+
+\subsubsection{training\_utilities.py}
+Plik zawiera definicje funkcji pomocniczych, które są wykorzystywane w innych skryptach modułu. Jest tutaj zdefiniowana między innymi funkcja przystosowania (wykorzystywana w skryptach treningowych), która implementuje jeden pełny przebieg symulacji w Środowisku Uczenia. Funkcja ta wykorzystuje Pythonowe API, zdefiniowane przez twórców frameworka Unity ML-Agents (patrz \ref{UnityMlaDescription}).
+
+\subsubsection{ChartsGenerator.py}
+Plik zawiera definicję klasy ChartsGenerator, która odpowiada za tworzenie wykresów na podstawie danych wygenerowanych podczas eksperymentów obliczeniowych. \\
+Do tworzenia wykresów wykorzystywana jest biblioteka matplotlib (patrz \ref{matplotlibDescription}).
+
+\vspace{0.5cm}
+\begin{figure}[H]
+\centering
+\includegraphics[width=13cm]{resources/figures/train_time_episodes.png}
+\caption{Przykład wykresu wygenerowanego przez klasę \textit{ChartsGenerator}}
+\label{GeneratedChartExample}
+\end{figure}
+
+\subsubsection{ExperimentDataCollector.py}
+Plik zawiera definicję klasy \textit{ExperimentDataCollector}, która odpowiada za składowanie informacji wygenerowanych podczas eksperymentów obliczeniowych. Dane zgromadzone przez tę klasę są następnie wykorzystywane w klasie \textit{ChartsGenerator} do tworzenia wykresów.
