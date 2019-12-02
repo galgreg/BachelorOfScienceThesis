@@ -104,8 +104,8 @@ Na podstawie własnych obserwacji, postanowiłem podzielić te projekty na kilka
 
 \begin{enumerate*}
 \item \textbf{Wielkie projekty badawczo-rozwojowe} \\
-Projekty o największym stopniu skomplikowania. Rozwijane przez międzynarodowe korporacje posiadające gigantyczny budżet i zaplecze kadrowo-techniczne, potrzebne do realizacji takiego przedsięwzięcia. 
-Są to projekty, które do postawionego problemu podchodzą w sposób najbardziej kompleksowy. Ich celem jest stworzenie samochodu poruszającego się w rzeczywistym środowisku, który naprawdę będzie w stanie poradzić sobie w każdych warunkach bez potrzeby ingerencji człowieka.
+Projekty o największym stopniu skomplikowania. Rozwijane przez zespoły składające się z setek lub tysięcy ludzi. Czasem są to zespoły pracujące w ramach międzynarodowych korporacji posiadających gigantyczne budżety i zaplecze kadrowo-techniczne. Innym razem są to projekty open source, w które zaangażowani są ludzie z różnych zakątków świata. Często zdarza się, iż dany projekt jest rozwijany dzięki współpracy kilku partnerów, działających w różnych sektorach gospodarczych lub badawczych. \\
+Projekty należące do powyższej grupy podchodzą do problemu tworzenia samochodu autonomicznego w sposób najbardziej kompleksowy. Ich celem jest najczęściej stworzenie pojazdu poruszającego się w rzeczywistym środowisku, który będzie w stanie poradzić sobie w każdych warunkach bez potrzeby ingerencji człowieka.
 Część z tych projektów jest rozwijana z myślą o wdrożeniu do produkcji seryjnej, do zastosowania w prawdziwym transporcie drogowym, do przewozu osób na masową skalę.
 Inne projekty mają charakter czysto badawczy. Ich celem jest eksploracja nowych strategii rozwiązywania danego problemu. Część z tych strategii, jeśli wykaże swoją wartość podczas serii testów, może zostać zaadoptowana do systemów produkowanych seryjnie. \\
 
@@ -133,6 +133,22 @@ W dalszej części rozdziału zostaną zaprezentowane przykłady dla każdej z o
 \section{Wielkie projekty badawcze}
 W obecnych czasach, wiele korporacji o zasięgu międzynarodowym angażuje się w prace nad rozwojem samochodów autonomicznych. 
 Niniejsze zestawienie zawiera tylko bardzo mały wycinek z listy istniejących rozwiązań.
+
+\subsection{Waymo}
+Przedsiębiorstwo technologiczne, które od grudnia 2016 roku należy do holdingu Alphabet Inc. Wcześniej istniało jako jeden z projektów firmy Google. Waymo zajmuje się rozwojem samochodów autonomicznych. Początki sięgają roku 2009, kiedy to firma Google rozpoczęła prace nad pierwszym prototypem w sekretnym laboratorium. Więcej na temat historii projektu można dowiedzieć się w artykule \cite{google:carHistory}.
+
+System na obecnym etapie rozwoju jest uznawany za jeden z najbardziej dojrzałych i przetestowanych systemów istniejących na świecie. Ma za sobą przejechanych kilka milionów mil w rzeczywistym świecie i wiele miliardów mil odbytych w środowiskach symulacji. System był testowany w wielu lokalizacjach znajdujących się na terenie USA. Poprzez jazdy odbywane w bardzo zróżnicowanych warunkach pogodowych, auta były przystosowywane do radzenia sobie w bardzo szerokim spektrum możliwych scenariuszy drogowych.
+
+Dla każdego obszaru, po którym ma się poruszać samochód Waymo, zespół musi wcześniej przygotować szczegółowe mapy 3D z uwzględnieniem takich informacji, jak profile dróg \cite{wikipedia:designOfRoads}, krawężniki i chodniki oraz wszelkiego rodzaju oznaczenia należące do infrastruktury drogowej (jak np. pasy ruchu, znaki drogowe czy sygnalizacja świetlna).
+
+Czujniki - zainstalowane w samochodzie i zarządzane przez skomplikowane oprogramowanie - stale skanują obszar wokół samochodu. Zbierają dane o wszystkich obiektach obecnych na dystansie do trzech długości boiska piłkarskiego w każdą stronę. Skanowane obiekty to m.in. uczestnicy ruchu drogowego (np. piesi, rowerzyści, inne samochody), sygnalizacja świetlna czy prowizoryczne konstrukcje drogowe stawiane na czas remontów (pachołki, słupki itd.).
+
+Oprócz poprawnej identyfikacji zarejestrowanych obiektów, oprogramowanie samochodu potrafi również przewidywać ich zachowanie w najbliższej przyszłości. Predykcja jest dokonywana na podstawie pomiaru prędkości oraz kierunku ruchu.
+Samochód wie, że różne rodzaje obiektów (np. pieszy, motocyklista, ciężarówka) poruszają się w odmienny sposób. Dla każdego z tych rodzajów samochód jest w stanie trafnie określać wiele możliwych trajektorii ruchu obiektów.
+
+Na podstawie zgromadzonych danych, oprogramowanie może określić dokładną trajektorię ruchu, prędkość, linię przejazdu oraz inne informacje niezbędne do dalszego przemieszczania się po drodze w bezpieczny sposób.
+
+Więcej informacji na temat firmy Waymo i rozwijanych przez nią projektów można znaleźć m.in. na ich oficjalnej stronie internetowej: \url{https://waymo.com}.
 
 \subsection{NVIDIA}
 Firma NVIDIA od wielu lat angażuje się w prace badawczo-rozwojowe nad szeroko rozumianą tematyką uczenia maszynowego. Jednym ze szczególnych obszarów zainteresowań firmy jest branża automotive.
@@ -169,7 +185,6 @@ Jest mniejszy od Pegasusa. Dostarcza jedynie 30 TOPS mocy obliczeniowej. Charakt
 \end{center}
 \end{figure}
 
-\newpage
 \item NVIDIA DRIVE Hyperion \\
 Najbardziej kompleksowe rozwiązanie oferowane przez firmę NVIDIA. W jego skład wchodzi platforma obliczeniowa (Xavier/Pegasus), zestaw kamer/czujników oraz oprogramowanie sterujące. \\
 Więcej informacji o oprogramowaniu znajdzie się w dalszej części rozdziału.
@@ -199,7 +214,7 @@ Jest frameworkiem dostarczającym zestaw bibliotek i narzędzi dla użytkownikó
 Udacity jest edukacyjną organizacją oferującą tzw. ,,masywne otwarte kursy online'' (MOOCs - Massive Open Online Courses) \cite{mooc:guide}. Posiadają własną platformę kursową, na której publikowane są kursy dotyczące szeroko pojętej branży IT. \\
 Jednym z kursów, oferowanych przez Udacity, jest \textit{Self-Driving Car Engineer Nanodegree program}. Został stworzony w partnerstwie z gigantami branż automotive oraz IT, m.in. Mercedes-Benz, NVIDIA, Uber, BMW.
 
-Wraz z uruchomieniem kursu, firma Udacity zdecydowała się na dosyć odważny krok. Postanowiła zrealizować, we współpracy z programistami z całego świata, własny projekt samochodu autonomicznego. Projekt ten ma być w całości \textbf{otwartoźródłowy}. \\
+Wraz z uruchomieniem kursu, firma Udacity zdecydowała się na dosyć odważny krok. Postanowiła zrealizować, we współpracy z programistami z całego świata, własny projekt samochodu autonomicznego. Projekt ten miał być w całości \textbf{otwartoźródłowy}. \\
 Jak opisuje Oliver Cameron, ówczesny lider programu Udacity Self-Driving Car \cite{udacity:selfDrivingCar}: \\
 ,,Gdy decydowaliśmy się na tworzenie programu  \textit{Self-Driving Car Engineer}, od razu wiedzieliśmy, że musimy zbudować własny samochód autonomiczny. (...) utworzyliśmy więc zespół \textit{Self-Driving Car Team}. Jedna z pierwszych decyzji jaką podjęliśmy? \textbf{Kod open source, pisany przez setki studentów z całego świata!}''
 
@@ -219,14 +234,130 @@ Aby wcielić ten projekt w życie, firma Udacity dokonała niezbędnych przygoto
 \item Stworzenie wstępnej bazy kodu
 \end{enumerate*}
 
+Po przygotowaniu platformy pod rozwój projektu, można było rozpocząć prace nad tworzeniem samochodu autonomicznego. Ponieważ naczelnym priorytetem Udacity jest kwestia bezpieczeństwa, postanowiono że problem będzie rozbity na kilka podproblemów, a dla każdego z nich zostanie zorganizowane tzw. ,,wyzwanie Udacity'' (\textit{Udacity Challenge}).
 
-\subsection{Waymo}
+Tak też się stało. Oferowane były atrakcyjne nagrody pieniężne i rzeczowe, a organizatorzy wyzwań mieli okazję na dokładne przetestowanie proponowanych rozwiązań na długo przed zainstalowaniem ich w rzeczywistym samochodzie. Do tej pory zorganizowano kilka takich wyzwań, o szczegółach jednego z nich można przeczytać w \cite{udacity:challenge2}.
+
 \section{Środowiska symulacyjne}
+\vspace{0.5cm}
+Rozwój samochodów autonomicznych jest bardzo trudnym zadaniem. Jednym z wyzwań stojących przed konstruktorami jest konieczność testowania prototypowanych rozwiązań w samochodzie. Przeprowadzanie takich testów w prawdziwym świecie, na drogach publicznych, jest dla projektów będących na wczesnym etapie rozwoju pomysłem nie tylko bardzo ryzykownym, ale również dość kosztownym. Nawet zakładając, że testy odbywają się w zamkniętym, kontrolowanym środowisku, to i tak jest to proces długi, kosztowny i obarczony wadami.
+
+Aby go ułatwić, a także uczynić tańszym, szybszym i bezpieczniejszym, bardzo popularną techniką jest przeprowadzanie testów w środowisku symulacyjnym. Obecnie istnieje na rynku wiele symulatorów, które są wykorzystywane do powyższych celów. W niniejszej sekcji przedstawię kilka przykładów.
+
+\vspace{1cm}
 \subsection{Microsoft AirSim}
+Jest symulatorem dla dronów, samochodów i innych pojazdów. Zbudowany na bazie silnika Unreal. Posiada również eksperymentalne wsparcie dla silnika Unity. Jest projektem open source, wspierającym wiele kontrolerów lotu \cite{getfpv:flightControllers}, takich jak na przykład PX4. Projekt jest rozwijany jako wtyczka dla silnika Unreal, którą można łatwo podpiąć do innych projektów zrealizowanych w tym silniku. Jak twierdzą twórcy symulatora \cite{airsim:introducing}: \\
+,,\textit{Naszym celem jest aby AirSim służył jako platforma do badań z zakresu AI, uczenia głębokiego, wizji komputerowej oraz algorytmów uczenia ze wzmocnieniem dla pojazdów autonomicznych. AirSim udostępnia multiplatformowe API do pozyskiwania danych i kontrolowania pojazdów.}''
+
+Symulator posiada rozszerzalną architekturę. Można w łatwy sposób dodawać wsparcie dla nowych typów pojazdów czy platform sprzętowych. Pozwala również konfigurować istniejące modele i uzupełniać je o dodatkowe komponenty, takie jak czujniki lub kamery. \\
+Więcej informacji na temat symulatora AirSim można znaleźć w następujących źródłach:
+\begin{itemize*}
+\item Oficjalna strona projektu \cite{airsim:website}
+\item Artykuł naukowy pracowników zespołu Microsoft Research \cite{MSR-TR-2017-9}
+\item Repozytorium projektu na platformie GitHub \cite{airsim:github}
+\end{itemize*}
+
+\newpage
+\begin{figure}[H]
+\centering
+\includegraphics[width=16cm]{resources/figures/airsim_snapshot.png}
+\caption{Stopklatka z pracy symulatora AirSim}
+\label{AirSimSnapshot}
+\end{figure}
+
 \subsection{Voyage Deepdrive}
+Darmowy, otwartoźródłowy symulator przeznaczony do rozwoju samochodów autonomicznych. Zapoczątkowany przez Craiga Quitera, programistę od lat zaangażowanego w tworzenie oprogramowania open source.
+
+Jak opisuje Drew Gray, szef działu technologicznego \cite{investopedia:CTO} w firmie Voyage \cite{voyage:introducingDeepdrive}: \\
+,,Historia Deepdrive ma swój początek kilka lat temu, gdy Craig - zainspirowany postępem w dziedzinie AI oraz korzyściami jakie społeczeństwo zyska dzięki samochodom autonomicznym - rozpoczął projekt otwartoźródłowej platformy, która daje możliwość rozwoju technologii \textit{self-driving} każdej osobie żyjącej na świecie.''
+
+Gray znał Quitera od dawna. Wiedział o rozwijanym przez niego projekcie i namówił go do współpracy z firmą Voyage. Quiter dołączył do firmy, która to objęła patronat nad dalszym rozwojem symulatora. Niemniej jednak projekt zachował swój pierwotny, otwartoźródłowy charakter.
+
+Deepdrive posiada wiele funkcjonalności, które czynią go atrakcyjnym produktem dla potencjalnych użytkowników. Są to między innymi:
+\begin{itemize*}
+\item Łatwy dostęp do danych z czujników
+\item Trzy zróżnicowane środowiska symulacyjne (mapy)
+\item Zaawansowane wbudowane AI - agenci mogą m.in. wyprzedzać inne pojazdy, wyznaczać trasy lub inteligentnie radzić sobie na skrzyżowaniach.
+\item Skrypty Python Unreal - całościowe API silnika Unreal \cite{unrealEngine:features} dla języka Python
+\end{itemize*}
+
+Symulator Deepdrive kładzie główny nacisk na uczenie kompleksowe (tzw. \textit{end-to-end learning}) oraz głębokie uczenie ze wzmocnieniem (\textit{deep reinforcement learning}). Naukowcy korzystający z symulatora Deepdrive mogą się skupić na rozwiązywanym problemie, a nie na sposobie jego implementacji w symulatorze. Twórcy symulatora mają nadzieję, że dzięki takiemu podejściu praca badawcza nad rozwojem samochodów autonomicznych znacznie przyspieszy.
+
+Rozwój projektu Deepdrive jest ukierunkowany uwagami przekazywanymi przez organizacje, które zajmują się na codzień technologią samochodów autonomicznych. Twórcom symulatora zależy na tym, aby Deepdrive odpowiadał realnym potrzebom twórców takich pojazdów.
+
+Wśród nowości zaproponowanych przez firmę Voyage znajdują się m. in.:
+\begin{itemize*}
+\item Tablica liderów (\textit{Leaderboard}) - usługa oferowana w ramach symulatora Deepdrive. Zawiera zestawienia rankingowe dla wyzwań ogłoszonych przez zespół Voyage Deepdrive. Pozwala na rywalizację zespołów badawczych, pracujących nad rozwiązaniem danego problemu. Każdy kto zapisze się do usługi, może zgłosić własne rozwiązanie, które następnie zostanie ocenione według kryteriów zdefiniowanych przez organizatorów wyzwania. Więcej informacji znajduje się na oficjalnej stronie usługi \cite{deepdrive:leaderboard}.
+\item Szczegółowe mapy świata 3D, zbudowane przy pomocy narzędzia \textit{Parallel Domain} \cite{parallelDomain}. Bogate środowiska symulacyjne zapewniają bardziej realistyczne testy tworzonych modeli.
+\item Możliwość generowania nowych scenariuszy testowych przez użytkowników symulatora
+\item Zbiór danych treningowych - dane zebrane z ponad 8 godzin jazdy. Łącznie ważą 100 GB. Są to m. in. obrazy z kamer, kąt skrętu kierownicy czy wartości pedałów gazu i hamulca. Dane zostały wstępnie przetworzone, w celu zwiększenia efektywności treningu.
+\end{itemize*}
+
+Rysunek \ref{DeepdriveArchitecture} przedstawia schemat reprezentujący architekturę systemu. Na jego podstawie można wysnuć ciekawe wnioski na temat sposobu funkcjonowania symulatora.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=16cm]{resources/figures/deepdrive-architecture.png}
+\caption{Architektura systemu Deepdrive}
+\label{DeepdriveArchitecture}
+\end{figure}
+
+Więcej informacji na temat instalacji systemu oraz jego użytkowania można odnaleźć na stronie repozytorium projektu \cite{deepdrive:github}.
+
 \section{Projekty modelarskie}
+Projekty modelarskie charakteryzują się tym, iż tworzone są z myślą o modelach pojazdów wykonanych w pewnej skali. Takie projekty cieszą się dość dużą popularnością, a wynika to z kilku faktów. \\
+Po pierwsze, modele są o wiele tańsze niż prawdziwe samochody, a oferują zalety niedostępne dla symulatorów. Symulatory, pomimo tego że posiadają potężne możliwości, nie są w stanie dokładnie odwzorować wszystkich zjawisk występujących w rzeczywistym świecie. \\
+Po drugie, modele samochodów posiadają zazwyczaj prostą i modularną konstrukcję, co pozwala na stosunkowo szybkie prototypowanie wymyślanych rozwiązań. \\
+Po trzecie, czasem łatwiej pracować z modelem niż symulatorem. Dzieje się tak w przypadku, gdy osoba nie posiada komputera o niezbędnej mocy obliczeniowej (symulatory są dość wymagające pod tym kątem), a dysponuje podstawową wiedzą z zakresu elektroniki i budżetem wystarczającym do zakupu niedrogich układów scalonych (typu \textit{Raspberry Pi} lub \textit{Arduino Uno}).
+
 \subsection{donkeycar}
+Donkey Car jest otwartoźródłową platformą typu DIY (\textit{Do It Yourself}), przeznaczoną do tworzenia systemów autonomicznych dla samochodów wykonanych w małej skali. Jest bardzo popularna, wielu ludzi korzysta z niej podczas przygotowań do zawodów \textit{DIY Robocars} \cite{diyrobocars:website}. Można zakupić gotowy zestaw (za około 200 dolarów) lub zbudować go samodzielnie.
+\begin{figure}[H]
+\centering
+\includegraphics[width=15cm]{resources/figures/donkeycar_example.png}
+\caption{XiaoR GEEK XR-F2 - przykład gotowego do zakupu zestawu \\dla platformy Donkey Car}
+\label{DonkeycarExample}
+\end{figure}
+\newpage
+W skład zestawu musi wchodzić:
+\begin{enumerate*}
+\item Autko RC (pochodzące z listy wspieranych autek \cite{donkeyCar:supportedCars} lub zbudowane według wytycznych \cite{donkeyCar:rollYourOwn})
+\item Raspberry Pi \cite{raspberrypi:overview}
+\item Kamerka
+\item Oprogramowanie wykorzystujące bibliotekę donkeycar.
+\end{enumerate*}
+Jest to minimalny zestaw, wymagany do poprawnego funkcjonowania platformy. Oczywiście można go rozszerzać o dodatkowe komponenty, takie jak sensory lub inne urządzenia pomiarowe.
+
+Standardowym samochodem, od którego wiele osób rozpoczyna przygodę z platformą Donkey Car, jest \textit{Donkey}.
+W oficjalnej dokumentacji projektu \cite{donkeycar:docs} znajdują się wszystkie informacje, niezbędne do samodzielnego zbudowania samochodu.
+
+Sercem platformy jest biblioteka donkeycar, napisana w języku Python. Przeznaczona jest do rozwoju samochodów autonomicznych, jej cechami są modularność i minimalizm. Wykorzystując tę bibliotekę, programowanie samochodu jest bajecznie proste. Oto przykład z oficjalnej dokumentacji, w którym samochód po rozpoczęciu pętli jazdy wykonuje zdjęcia i zapisuje je do wbudowanej pamięci:
+
+\begin{minted}[ fontsize=\fontsize{13}{13} ] {python}
+import donkey as dk
+
+#initialize the vehicle
+V = dk.Vehicle()
+
+#add a camera part
+cam = dk.parts.PiCamera()
+V.add(cam, outputs=['image'], threaded=True)
+
+#add tub part to record images
+tub = dk.parts.Tub(path='~/mycar/data',
+                   inputs=['image'],
+                   types=['image_array'])
+V.add(tub, inputs=inputs)
+
+#start the vehicle's drive loop
+V.start(max_loop_count=100)
+\end{minted}
+
+Kod źródłowy biblioteki dostępny jest na stronie repozytorium projektu \cite{donkeyCar:repository}. \\
+Ciekawy przykład zastosowania platformy Donkey Car został opisany w artykule \cite{donkey:projectExample}.
+
 \section{Małe prywatne projekty}
+Należą do ostatniej z czterech sklasyfikowanych przeze mnie grup. Cechami charakterystycznymi takich projektów są: niski budżet oraz małe zespoły tworzące (często są to pojedyncze osoby). Zazwyczaj tworzone w celach edukacyjnych - twórca chciał się podszkolić z danego zagadnienia.
 \subsection{Deep Learning Cars}
 Autorem projektu jest austriacki programista Samuel Arzt \cite{artz:deepLearningCars:blog} \cite{artz:deepLearningCars:github}. \\
 
@@ -247,7 +378,7 @@ Czujniki te służą do wykrywania przeszkód w otoczeniu samochodu.
 Każdy czujnik jest skierowany w inną stronę.
 Czujniki tworzą "pole widzenia" samochodu o łącznym kącie 90 stopni.
 
-Zadaniem każdego samochodu jest bezkolizyjny przejazd po wyznaczonym torze.
+Celem każdego samochodu jest bezkolizyjny przejazd po wyznaczonym torze.
 Jedyne operacje jakie może wykonać samochód, to skręt w lewo lub prawo.
 Prędkość wszystkich samochodów jest stała i ustalana przed rozpoczęciem generacji.
 W chwili kolizji z przeszkodą, samochód umiera.
