@@ -1,53 +1,51 @@
 \chapter{Zastosowane technologie}
 \section{Unity}
-Wieloplatformowy silnik gier 2D lub 3D \cite{unity:opis}. Pozwala również na tworzenie innych materiałów interaktywnych - wizualizacje, animacje itp.
-
-Silnik został napisany w językach C/C++ (platforma uruchomieniowa) oraz C\# (Unity API). 
-Skrypty dla silnika pisze się w języku C\#.
-
-Gry tworzone na silniku Unity mogą obsługiwać wiele platform sprzętowych i systemów operacyjnych. 
+Wieloplatformowy silnik gier 2D lub 3D \cite{unity:opis}. Pozwala również na tworzenie innych materiałów interaktywnych - wizualizacje, animacje itp. Silnik został napisany w językach C/C++ (platforma uruchomieniowa) oraz C\# (Unity API). Skrypty dla silnika pisze się w języku C\#. Gry tworzone na silniku Unity mogą obsługiwać wiele platform sprzętowych i systemów operacyjnych. 
 Platformy wspierane przez wersję 2019.1 \cite{unity:buildOptions}:
 \begin{enumerate*}
 \item Komputery osobiste (PC):
 \begin{enumerate*}
 \item Wspierane systemy operacyjne:
 \begin{itemize*}
-\item Windows
-\item Linux
-\item Mac OS X
+\item Windows,
+\item Linux,
+\item Mac OS X;
 \end{itemize*}
 \item Wspierane architektury sprzętowe:
 \begin{itemize*}
-\item x86 - procesor 32-bitowy
-\item x64 - procesor 64-bitowy
-\item Universal - wszystkie procesory
-\item x86 + x86\_64 (Universal) - wszystkie procesory (Linux)
+\item x86 - procesor 32-bitowy,
+\item x64 - procesor 64-bitowy,
+\item Universal - wszystkie procesory,
+\item x86 + x86\_64 (Universal) - wszystkie procesory (Linux);
 \end{itemize*}
 \end{enumerate*}
-\item iOS
-\item Android
-\item WebGL
-\item Samsung TV
-\item Xiaomi
-\item i wiele innych
+\item iOS;
+\item Android;
+\item WebGL;
+\item Samsung TV;
+\item Xiaomi;
+\item i wiele innych.
 \end{enumerate*}
 
-Z silnikiem Unity są również kompatybilne hełmy rzeczywistości wirtualnej takie jak Oculus Rift oraz Gear VR.
+Z silnikiem Unity są również kompatybilne hełmy rzeczywistości wirtualnej, takie jak Oculus Rift oraz Gear VR.
 
 Do wersji 4.6 silnik był udostępniany na licencji płatnej lub darmowej zawierającej ograniczoną funkcjonalność, ale wraz z premierą Unity 5 prawie wszystkie funkcje silnika udostępniono w wersji darmowej dla twórców nieprzekraczających 100 tysięcy dolarów dochodów rocznie.
 
-Unity oferuje również tzw. Asset Store, który umożliwia skorzystanie z płatnych lub darmowych komponentów takich jak tekstury lub skrypty.
+Unity oferuje również tzw. Asset Store, który umożliwia skorzystanie z płatnych lub darmowych komponentów takich jak tekstury lub skrypty. Silnik Unity został przeze mnie wykorzystany do stworzenia środowiska symulacji, niezbędnego w procesie treningu inteligentnych agentów.
 
-Silnik Unity został przeze mnie wykorzystany do stworzenia środowiska symulacji, niezbędnego w procesie treningu inteligentnych agentów.
 \section{Języki programowania}
+Język programowania jest jednym z najważniejszych narzędzi w rękach każdego programisty. Pozwala on na tworzenie oprogramowania w formie zrozumiałej dla człowieka i wykonywalnej dla maszyny.
+Wykonanie kodu źródłowego jest możliwe po przetłumaczeniu go do postaci kodu maszynowego, czyli sekwencji rozkazów zrozumiałych dla procesora. Tłumaczeniem kodu źródłowego na język maszyny zajmują się specjalne programy, zwane \textit{kompilatorami} lub  \textit{interpreterami}. \\
+Poniżej znajduje się krótki opis języków, które wykorzystałem podczas tworzenia aplikacji.
+
 \subsection{C\#}
 Język programowania stworzony przez firmę Microsoft \cite{csharp:wikipedia}. Najważniejsze cechy:
 \begin{itemize*}
-\item Silne, statyczne typowanie
-\item Obiektowość z hierarchią o jednym typie nadrzędnym - klasa System.Object
-\item Mechanizm automatycznego odśmiecania pamięci - tzw. garbage collector
-\item Kod źródłowy kompilowany do kodu pośredniego (Common Intermediate Language)
-\item Wiele platform uruchomieniowych - .NET Framework, .NET Core, Mono i in.
+\item silne, statyczne typowanie;
+\item obiektowość z hierarchią o jednym typie nadrzędnym - klasa System.Object;
+\item mechanizm automatycznego odśmiecania pamięci - tzw. garbage collector;
+\item kod źródłowy kompilowany do kodu pośredniego (Common Intermediate Language);
+\item wiele platform uruchomieniowych - .NET Framework, .NET Core, Mono i in.
 \end{itemize*}
 Język C\# jest przeze mnie wykorzystywany do pisania skryptów dla silnika Unity.
 
@@ -56,35 +54,36 @@ Język programowania ogólnego przeznaczenia, o rozbudowanym pakiecie bibliotek 
 \cite{python:wikipedia}.
 Najważniejsze cechy:
 \begin{itemize*}
-\item Projekt Open Source
-\item Język interpretowany
-\item Dynamiczne typowanie - weryfikacja typu następuje w czasie wykonania programu. Twórcy języka kierowali się zasadą "duck typing" (kacze typowanie) - "jeśli obiekt zachowuje się jak kaczka, to jest kaczką".
-\item Silne typowanie - dla każdego typu dozwolone są tylko te operacje, które zostały dla niego zdefiniowane.
-\item Garbage collector zarządza pamięcią
-\item Wsparcie dla wielu paradygmatów. W Pythonie można programować obiektowo, strukturalnie lub funkcyjnie.
-\item Brak wsparcia dla mechanizmu enkapsulacji
-\item Prosta, czytelna składnia - bloki tworzone przez wcięcia
-\item Łatwy do nauczenia się
-\item Istnieje wiele implementacji - CPython, Jython, IronPython i in. Standardową implementacją jest CPython (implementacja w języku C).
+\item projekt Open Source;
+\item język interpretowany;
+\item dynamiczne typowanie - weryfikacja typu następuje w czasie wykonania programu. Twórcy języka kierowali się zasadą ,,duck typing'' (kacze typowanie) - ,,jeśli obiekt zachowuje się jak kaczka, to jest kaczką'';
+\item silne typowanie - dla każdego typu dozwolone są tylko te operacje, które zostały dla niego zdefiniowane;
+\item garbage collector zarządza pamięcią;
+\item wsparcie dla wielu paradygmatów. W Pythonie można programować obiektowo, strukturalnie lub funkcyjnie;
+\item brak wsparcia dla mechanizmu enkapsulacji;
+\item prosta, czytelna składnia - bloki tworzone przez wcięcia;
+\item łatwy do nauczenia się;
+\item istnieje wiele implementacji - CPython, Jython, IronPython i in. Standardową implementacją jest CPython (implementacja w języku C).
 \end{itemize*}
-W projekcie wykorzystuję Pythona w wersji 3.6.8. Do zarządzania zależnościami pakietów, wykorzystuję narzędzie Conda.
+W projekcie stosuję język Python w wersji 3.6.8. Do zarządzania zależnościami pakietów, stosuję narzędzie Conda.
 
 \section{Frameworki}
+Framework jest spójnym zestawem modułów i bibliotek programistycznych, tworzących szkielet do budowy aplikacji danego typu. Programowanie przy użyciu frameworka polega na rozbudowywaniu tego szkieletu o dodatkowe komponenty, które są wymagane dla danego projektu. Korzystanie z frameworków ułatwia życie programistom, gdyż autorzy kodu nie muszą tracić czasu na implementację nudnych i powtarzalnych elementów aplikacji, które są identyczne dla wszystkich aplikacji tego typu. Zamiast tego mogą się skupić na implementacji funkcjonalności realizowanych przez ich oprogramowanie.
 \subsection{Unity ML-Agents}
 \label{UnityMlaDescription}
 Otwartoźródłowa wtyczka do Unity, ułatwiająca tworzenie środowisk treningowych dla inteligentnych agentów \cite{unitymla:overview}. Agenci mogą być uczeni rozmaitymi technikami, m. in.:
 \begin{itemize*}
-\item Uczenie ze wzmocnieniem (Reinforcement Learning)
-\item Uczenie przez naśladowanie (Imitation Learning)
-\item Neuroewolucja
+\item uczenie ze wzmocnieniem (Reinforcement Learning);
+\item uczenie przez naśladowanie (Imitation Learning);
+\item neuroewolucja.
 \end{itemize*}
-Framework udostępnia Pythonowe API, pozwalające na sterowanie środowiskiem ze skryptu napisanego w Pythonie. Komunikacja pomiędzy zewnętrznym procesem Pythona, a środowiskiem Unity odbywa się poprzez mechanizm socketów.
+Framework udostępnia Pythonowe API, pozwalające na sterowanie środowiskiem ze skryptu napisanego w Pythonie. Komunikacja pomiędzy zewnętrznym procesem Pythona, a środowiskiem Unity odbywa się poprzez mechanizm gniazd (z ang. \textit{sockets}).
 
 Unity ML-Agents składa się z trzech zasadniczych komponentów:
 \begin{enumerate*}
-\item Środowisko Uczenia (Learning Environment) - symulacja środowiska treningowego.
-\item Python API - zawiera zbiór klas i metod języka Python, pozwalających na tworzenie skryptów kontrolujących Środowisko Uczenia. Wśród kodu wchodzącego w skład API są przykładowe algorytmy uczenia maszynowego, dostarczone przez twórców frameworka. Skrypty wykorzystujące Python API nie są częścią Unity. Istnieją jako samodzielne, zewnętrzne procesy.
-\item External Communicator - zapewnia komunikację pomiędzy Środowiskiem Uczenia i zewnętrznym procesem Pythona.
+\item Środowisko Uczenia (Learning Environment) -- symulacja środowiska treningowego.
+\item Python API -- zawiera zbiór klas i metod języka Python, pozwalających na tworzenie skryptów kontrolujących Środowisko Uczenia. Wśród kodu wchodzącego w skład API są przykładowe algorytmy uczenia maszynowego, dostarczone przez twórców frameworka. Skrypty wykorzystujące Python API nie są częścią Unity. Istnieją jako samodzielne, zewnętrzne procesy.
+\item External Communicator -- zapewnia komunikację pomiędzy Środowiskiem Uczenia i zewnętrznym procesem Pythona.
 \end{enumerate*}
 Na rysunku \ref{UnityMlaBasicModel} został zobrazowany diagram opisanych komponentów.
 Z diagramu wynika, że External Communicator wchodzi w skład Środowiska Uczenia.
@@ -100,39 +99,39 @@ Z diagramu wynika, że External Communicator wchodzi w skład Środowiska Uczeni
 \vspace{1cm}
 Trening zachowań agentów w symulowanych środowiskach jest możliwy dzięki zdefiniowaniu trzech podstawowych pojęć:
 \begin{enumerate*}
-\item Obserwacje (Observations) - zbiór informacji rejestrowanych przez agenta w każdym kroku symulacji. 
+\item Obserwacje (Observations) -- zbiór informacji rejestrowanych przez agenta w każdym kroku symulacji. 
 Istnieją dwa typy obserwacji:
 \begin{itemize*}
-\item Obserwacja Wektorowa (Vector Observation) - wektor liczb zmiennoprzecinkowych.
-\item Obserwacje Wizualne (Visual Observations) - obrazy z kamer i/lub dane z renderowanych tekstur
+\item Obserwacja Wektorowa (Vector Observation) -- wektor liczb zmiennoprzecinkowych.
+\item Obserwacje Wizualne (Visual Observations) -- obrazy z kamer i/lub dane z renderowanych tekstur
 \end{itemize*}
-\item Akcje (Actions) - instrukcje wydawane przez kod sterujący agentem. Akcje są podejmowane na podstawie obserwacji otrzymanych od agenta. Akcje mają najczęściej postać wektora liczb zmiennoprzecinkowych.
-\item Sygnały nagród (Reward Signals) - wartości liczbowe, uzyskiwane co pewien czas ze Środowiska Uczenia. Sygnały nagród są miarą wyznaczającą stopień poprawności wykonania zadań przez agenta.
+\item Akcje (Actions) -- instrukcje wydawane przez kod sterujący agentem. Akcje są podejmowane na podstawie obserwacji otrzymanych od agenta. Akcje mają najczęściej postać wektora liczb zmiennoprzecinkowych.
+\item Sygnały nagród (Reward Signals) -- wartości liczbowe, uzyskiwane co pewien czas ze Środowiska Uczenia. Sygnały nagród są miarą wyznaczającą stopień poprawności wykonania zadań przez agenta.
 \end{enumerate*}
 
 Uproszczony opis pętli symulacji:
 \begin{enumerate*}
-\item Następuje krok symulacji
-\item Agent zbiera obserwacje i wysyła "na zewnątrz"
-\item Kod sterujący agentem wyznacza akcję na podstawie bieżących obserwacji
-\item Agent wykonuje akcję
+\item Następuje krok symulacji.
+\item Agent zbiera obserwacje i wysyła ,,na zewnątrz''.
+\item Kod sterujący agentem wyznacza akcję na podstawie bieżących obserwacji.
+\item Agent wykonuje akcję.
 \item Opcjonalnie: Środowisko emituje sygnał nagrody.
-\item Wróć do pktu 1.
+\item Powrót do punktu 1.
 \end{enumerate*}
 Celem treningu jest zazwyczaj zmaksymalizowanie sumy zdobytych nagród.
 
 Środowisko uczenia zawiera trzy dodatkowe komponenty, ułatwiające organizację procesu uczenia:
 \begin{enumerate*}
-\item Klasa Agent (agenci) - instancje klas dziedziczących po klasie Agent są przypinane do instancji klasy GameObject. Dlatego każdy obiekt sceny Unity może być agentem. Agenci są odpowiedzialni za generowanie obserwacji, wykonywanie akcji oraz emitowanie sygnałów nagród. Każdy agent jest połączony z dokładnie jednym mózgiem, czyli obiektem klasy dziedziczącej po klasie Brain
-\item Klasa Brain (mózg) - klasa interfejsowa, odpowiedzialna za logikę podejmowania decyzji przez agentów. Każdy agent musi być przypisany do dokładnie jednego mózgu, natomiast jeden mózg może zarządzać wieloma agentami. 
-Mózg podejmuje decyzje, jakie akcje dla poszczególnych obserwacji powinien wykonać agent. Ściślej mówiąc, mózg jest komponentem który otrzymuje obserwacje od agenta i wysyła mu akcje do wykonania. \\
+\item Klasa Agent (agenci) -- instancje klas dziedziczących po klasie Agent są przypinane do instancji klasy GameObject. Dlatego każdy obiekt sceny Unity może być agentem. Agenci są odpowiedzialni za generowanie obserwacji, wykonywanie akcji oraz emitowanie sygnałów nagród. Każdy agent jest połączony z dokładnie jednym mózgiem, czyli obiektem klasy dziedziczącej po klasie Brain
+\item Klasa Brain (mózg) -- klasa interfejsowa, odpowiedzialna za logikę podejmowania decyzji przez agentów. Każdy agent musi być przypisany do dokładnie jednego mózgu, natomiast jeden mózg może zarządzać wieloma agentami. 
+Mózg podejmuje decyzje, jakie akcje dla poszczególnych obserwacji powinien wykonać agent. Ściślej mówiąc, mózg jest komponentem, który otrzymuje obserwacje od agenta i wysyła mu akcje do wykonania. \\
 Framework Unity ML-Agents udostępnia 3 klasy dziedziczące po klasie Brain:
 \begin{itemize*}
-\item LearningBrain - przeznaczony do uruchamiania wytrenowanych modeli oraz trenowania nowych.
-\item HeuristicBrain - przeznaczony do bezpośredniego zapisu w kodzie strategii zachowania agentów.
-\item PlayerBrain - mapuje przyciski klawiatury na konkretne akcje. Może być wykorzystywany do ręcznego testowania stworzonego Środowiska Uczenia.
+\item LearningBrain -- przeznaczony do uruchamiania wytrenowanych modeli oraz trenowania nowych.
+\item HeuristicBrain -- przeznaczony do bezpośredniego zapisu w kodzie strategii zachowania agentów.
+\item PlayerBrain -- mapuje przyciski klawiatury na konkretne akcje. Może być wykorzystywany do ręcznego testowania stworzonego Środowiska Uczenia.
 \end{itemize*}
-\item Klasa Academy (akademia) - klasa interfejsowa, odpowiedzialna za organizację procesu zbierania obserwacji i podejmowania decyzji. Dla każdej sceny Unity może istnieć jeden i tylko jeden obiekt klasy dziedziczącej po klasie Academy. Akademia posiada kilka istotnych parametrów, które mogą być ustawiane w oknie inspektora. \\
+\item Klasa Academy (akademia) -- klasa interfejsowa, odpowiedzialna za organizację procesu zbierania obserwacji i podejmowania decyzji. Dla każdej sceny Unity może istnieć jeden i tylko jeden obiekt klasy dziedziczącej po klasie Academy. Akademia ma kilka istotnych parametrów, które mogą być ustawiane w oknie inspektora. \\
 Komponent zewnętrznego komunikatora (External Communicator), który jest odpowiedzialny za komunikację pomiędzy Środowiskiem Uczenia a zewnętrznym procesem Pythona, znajduje się wewnątrz obiektu akademii.
 Jest więc częścią klasy Academy.
 \end{enumerate*}
@@ -156,14 +155,14 @@ Omówione do tej pory komponenty (Learning Environment, External Communicator, A
 \end{figure}
 
 \end{itemize*}
-
+\newpage
 Dodatkowe funkcjonalności oferowane przez framework Unity ML-Agents:
 \begin{enumerate*}
-\item Wsparcie dla budowania w Dockerze
-\item Wsparcie dla treningu w chmurze:
+\item Wsparcie dla Dockera \cite{unitymla:docker}
+\item Wsparcie dla treningu w chmurze obliczeniowej:
 \begin{itemize*}
-\item AWS
-\item Microsoft Azure
+\item AWS,
+\item Microsoft Azure.
 \end{itemize*}
 \end{enumerate*}
 
@@ -199,21 +198,19 @@ Najważniejsze cechy i funkcjonalności frameworka \cite{pytorch:features}\cite{
 Framework PyTorch składa się z wielu modułów. Najistotniejszym dla mnie modułem był moduł torch.nn, który wykorzystałem do implementacji sieci neuronowej. Więcej na ten temat można znaleźć w rozdziale poświęconym implementacji systemu.
 
 \section{Biblioteki}
+Biblioteka programistyczna to zbiór powiązanych tematycznie jednostek kodu (takich jak klasy czy funkcje). Użycie biblioteki to sposób na ponowne wykorzystanie tego samego kodu. Dobór odpowiednich bibliotek pozwala na znaczne przyspieszenie procesu tworzenia oprogramowania. Poniżej znajduje się krótkie zestawienie bibliotek wykorzystywanych w mojej aplikacji.
+
 \subsection{ddt}
 \label{DdtOpis}
-Pakiet dla języka Python \cite{ddt:documentation}. Pozwala na łatwe tworzenie parametryzowanych testów. Stosowany jako rozszerzenie funkcjonalności frameworków testowych, takich jak unittest (który wchodzi w skład biblioteki standardowej Pythona).
-
-Nazwa pakietu pochodzi od metodyki DDT - Data Driven Testing, która zakłada oddzielenie logiki testu od danych na których test operuje. Takie podejście pozwala w znacznym stopniu ograniczyć duplikację kodu w klasach testowych.
+Pakiet dla języka Python \cite{ddt:documentation}. Pozwala na łatwe tworzenie parametryzowanych testów. Stosowany jako rozszerzenie funkcjonalności frameworków testowych, takich jak unittest (który wchodzi w skład biblioteki standardowej Pythona). Nazwa pakietu pochodzi od metodyki DDT - Data Driven Testing, która zakłada oddzielenie logiki testu od danych na których test operuje. Takie podejście pozwala w znacznym stopniu ograniczyć duplikację kodu w klasach testowych.
 \subsection{docopt}
 \label{docoptOpis}
-Pakiet pomagający utworzyć interfejs wiersza poleceń \cite{docopt:documentation}. \\
-Pakiet docopt jest oparty na konwencji, wykorzystywanej przez lata dla komunikatów pomocy i stron podręcznika man. Opis interfejsu jest sformalizowanym komunikatem pomocy.
+Pakiet pomagający utworzyć interfejs wiersza poleceń \cite{docopt:documentation}. Pakiet docopt jest oparty na konwencji, wykorzystywanej przez lata dla komunikatów pomocy i stron podręcznika man. Opis interfejsu jest sformalizowanym komunikatem pomocy.
 \subsection{matplotlib}
 \label{matplotlibDescription}
-Biblioteka do tworzenia wykresów dla języka Python. Uchodzi za potężne, lecz trudne do nauczenia się narzędzie.
-\section{Inne narzędzia}
-\subsection{Conda}
-System open source do zarządzania pakietami i środowiskami uruchomieniowymi dla systemów Windows, macOS oraz Linux. Posiada wsparcie dla wielu języków - m. in. Python, R, Ruby, Lua, Scala.\cite{conda:documentation}
+Biblioteka do tworzenia wykresów dla języka Python. Uchodzi za wszechstronne, lecz trudne w opanowaniu narzędzie.
+\section{Conda}
+System open source do zarządzania pakietami i środowiskami uruchomieniowymi dla systemów Windows, macOS oraz Linux. Posiada wsparcie dla wielu języków, m. in. Python, R, Ruby, Lua, Scala \cite{conda:documentation}.
 Conda potrafi szybko instalować, uruchamiać i aktualizować pakiety wraz z ich zależnościami.
 Bardzo łatwo można tworzyć nowe wirtualne środowiska dla Pythona.
 
@@ -232,7 +229,6 @@ Bardzo łatwo można tworzyć nowe wirtualne środowiska dla Pythona.
 
 \section{Stacja robocza - specyfikacja techniczna}
 Poniżej zamieszczam specyfikację techniczną stacji roboczej (komputera), którą wykorzystałem do implementacji systemu oraz wszystkich eksperymentów obliczeniowych:
-
 \begin{enumerate*}
 \item Typ urządzenia - Laptop
 \item Marka i model urządzenia - Dell Inspiron 7559
