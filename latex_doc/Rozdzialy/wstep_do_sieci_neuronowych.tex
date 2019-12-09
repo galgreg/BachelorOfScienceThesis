@@ -1,148 +1,198 @@
-\chapter{Wstęp do sztucznych sieci neuronowych}
-%%%% +++++++++++++++ Commented part of chapter +++++++++++++++ %%%%
-\begin{comment}
-\section{Pojęcia podstawowe}
-\subsection{Czym są sztuczne sieci neuronowe?}
-Sztuczna sieć neuronowa jest modelem obliczeniowym, którego filozofia pracy oparta jest na funkcjonowaniu biologicznego układu nerwowego.
-Sztuczna sieć neuronowa składa się z dużej liczby wzajemnie ze sobą powiązanych elementów, zwanych neuronami.
+\chapter{Wstęp do uczenia maszynowego}
+Uczenie maszynowe jest prężnie rozwijającą się dziedziną informatyki \cite{machineLearning:market}. Organizacje z całego świata angażują się w pracę nad projektami z tego obszaru.
 
-Sieci neuronowe są wykorzystywane w informatyce do rozwiązywania problemów, z którymi nie radzą sobie tradycyjne modele obliczeniowe.
+Temat uczenia maszynowego jest zbyt szeroki, żeby móc go streścić w krótkim rozdziale. Zatem w poniższych sekcjach skupię się na opisaniu tylko tych zagadnień, które są niezbędne do zrozumienia dalszych rozdziałów.
 
-Najważniejszą cechą sieci neuronowych jest ich zdolność uczenia się, w oparciu o dostarczany im zbiór danych treningowych.
+\section{Sieci neuronowe}
+Sieci neuronowe to jeden z najważniejszych tematów dotyczących uczenia maszynowego. Poznanie podstawowych zagadnień teoretycznych stojących za tym pojęciem jest koniecznym warunkiem zrozumienia uczenia maszynowego w ogóle. Poniżej postaram się pokrótce przedstawić najważniejsze aspekty tego tematu.
 
-\subsection{Czym jest sztuczny neuron?}
-Sztuczny neuron jest matematyczną funkcją, posiadającą wiele wejść i tylko jedno wyjście. Danymi na wejściu i wyjściu neuronu są najczęściej liczby rzeczywiste, będące  w zadanym zakresie.
+Sztuczna sieć neuronowa jest matematycznym modelem przetwarzania informacji. Jest inspirowana funkcjonowaniem biologicznego układu nerwowego. Sieci neuronowe są wykorzystywane do równoległego przetwarzania nieliniowych relacji, zachodzących pomiędzy danymi wejściowymi a oczekiwanym wyjściem z sieci \cite{neuralNetworks:introduction}.
 
-Przyjęło się, aby każde wejście neuronu miało przypisaną wagę, czyli wartość liczbową określającą jak ważne jest dane wejście dla neuronu.
-Bardzo często wartości wag mieszczą się w przedziale [-1; 1].
+Sieci neuronowe są wykorzystywane do rozwiązywania problemów, z którymi nie radzą sobie tradycyjne modele obliczeniowe. Najważniejszą cechą sieci neuronowych jest ich zdolność uczenia się w oparciu o dostarczany im zbiór danych treningowych.
 
-Sztuczny neuron posiada 2 tryby pracy - tryb nauki oraz tryb odtwarzania. \newline
-W trybie nauki neuron może być uczony, aby na odpowiedni zestaw danych
-wejściowych generował na wyjściu określoną wartość liczbową. \newline
-W trybie odtwarzania, neuron klasyfikuje zestawy danych wejściowych, generując
-odpowiadające im wyjścia (zgodnie z tym, czego nauczył się w trybie uczenia).
-
-\subsection{Budowa neuronu biologicznego}
-Ponieważ budowa sztucznego neuronu opiera się na budowie naturalnej komórki nerwowej, dlatego ważne jest, żeby zrozumieć jak neuron biologiczny jest zbudowany. \\
-Najważniejsze jego elementy to:
+\subsection{Neuron biologiczny}
+Aby lepiej zrozumieć strukturę sztucznego neuronu, należy zapoznać się z modelem neuronu biologicznego. Został on przedstawiony na rysunku \ref{NaturalNeuronModel}. Najważniejsze elementy, na które należy zwrócić uwagę na rysunku, to:
 \begin{itemize*}
-\item Jądro - centrum obliczeniowe neuronu.
-\item Dendryty - wejścia neuronu. Przesyłają do jądra sygnały poddawane późniejszej obróbce.
-\item Synapsa - łączy dendryt z jądrem. W synapsie sygnał wejściowy może ulegać wstępnej modyfikacji, to znaczy być wzmacniany lub osłabiany.
-\item Wzgórek aksonu - łączy jądro z aksonem.
-\item Akson - wyjście neuronu. Zazwyczaj rozgałęzia się, przesyłając sygnał do wielu wejść kolejnych neuronów.
+\item Jądro -- centrum obliczeniowe neuronu.
+\item Dendryty -- wejścia neuronu. Przesyłają do jądra sygnały poddawane późniejszej obróbce.
+\item Synapsa -- łączy dendryt z jądrem. W synapsie sygnał wejściowy może ulegać wstępnej modyfikacji, to znaczy być wzmacniany lub osłabiany.
+\item Wzgórek aksonu -- łączy jądro z aksonem.
+\item Akson -- wyjście neuronu. Zazwyczaj rozgałęzia się, przesyłając sygnał do wielu wejść kolejnych neuronów.
 \end{itemize*}
 
-\begin{figure}[h]
-\begin{center}
-\includegraphics[width=10cm]{resources/figures/natural_neuron.png}
-\caption{Model budowy neuronu biologicznego}
-\end{center}
+\vspace{0.3cm}
+\begin{figure}[H]
+\centering
+\includegraphics[width=15cm]{resources/figures/natural_neuron_model.png}
+\caption{Model biologicznego neuronu}
+\label{NaturalNeuronModel}
 \end{figure}
-\label{NaturalNeuronRys}
 
-\newpage
-\subsection{Budowa sztucznego neuronu}
-Porównując budowę sztucznego neuronu z neuronem biologicznym, można znaleźć wiele analogii. \\
-Koncepcyjny model budowy sztucznego neuronu przedstawiono na rysunku \ref{SztucznyNeuronRys}
+\subsection{Sztuczny neuron}
+Sztuczny neuron jest matematycznym modelem biologicznego neuronu. To podstawowy budulec sieci neuronowej. Każdy neuron może posiadać wiele wejść i tylko jedno wyjście \cite{neuralNetworks:introduction}. Dane przetwarzane przez neuron to najczęściej liczby rzeczywiste, mieszczące się w zadanym zakresie. Wszystkie wejścia neuronów mają przypisane wagi, czyli wartości liczbowe określające jak ważne jest dane wejście dla neuronu.
 
-\vspace{1cm}
-\begin{figure}[h]
-\begin{center}
+Porównując budowę sztucznego neuronu z neuronem biologicznym, można odnaleźć wiele analogii. Model sztucznego neuronu został przedstawiony na rysunku \ref{ArtificialNeuronModel} \cite{klaus:neuronOverview}:
+\vspace{0.3cm}
+\begin{figure}[H]
+\centering
 \includegraphics[width=15cm]{resources/figures/artificial_neuron.png}
-\caption{Model budowy sztucznego neuronu}
-\label{SztucznyNeuronRys}
-\end{center}
+\caption{Model sztucznego neuronu}
+\label{ArtificialNeuronModel}
 \end{figure}
 
-
-\subsection{Jak działa sztuczny neuron?}
-Na wejścia neuronu podawane są sygnały wejściowe. Każdy sygnał wejściowy
-jest przemnażany przez odpowiadającą mu wagę.
-Przemnożone sygnały wejściowe są następnie ze sobą sumowane.
-Sumowanie następuje w bloku sumującym.
-Uzyskaną wartość nazywamy potencjałem membranowym.
-Potencjał membranowy jest przekazywany do funkcji aktywacji, która na jego
-podstawie oblicza wartość podawaną na wyjście neuronu.
-
-Zachowanie neuronu jest silnie uzależnione od rodzaju wykorzystywanej funkcji
-aktywacji.
+Na wejścia neuronu podawane są sygnały wejściowe. Każdy sygnał wejściowy jest przemnażany przez odpowiadającą mu wagę. Przemnożone sygnały wejściowe są następnie sumowane. Sumowanie następuje w bloku sumującym. Uzyskaną wartość nazywamy potencjałem membranowym.
+Potencjał membranowy jest przekazywany do funkcji aktywacji, która na jego podstawie oblicza wartość podawaną na wyjście neuronu. Zachowanie neuronu jest silnie uzależnione od rodzaju wykorzystywanej funkcji aktywacji.
 
 \subsection{Funkcje aktywacji}
-\begin{large}
-!!! TODO !!!
-\end{large}
+Funkcja aktywacji jest jednym z najważniejszych elementów wpływających na zachowanie sieci neuronowej, a także na efektywność jej uczenia. Istnieje bardzo wiele rodzajów funkcji aktywacji. Każda z nich posiada własną charakterystykę, która określa do jakich problemów powinna być stosowana. Jeśli znamy charakterystykę problemu rozwiązywanego przez sieć neuronową, to możemy dobrać takie funkcje aktywacji, które przyspieszą proces nauki tej sieci. Co warto podkreślić, dana sieć neuronowa może korzystać z więcej niż jednej funkcji aktywacji. Zazwyczaj w takich wypadkach funkcje aktywacji pogrupowane są warstwami sieci.
 
-\subsection{Warstwy w sieciach neuronowych}
-Sieci neuronowe posiadają zazwyczaj wiele warstw. \\
-Neurony należące do tej samej warstwy nie są zazwyczaj ze sobą połączone.
-Warstwy sieci neuronowej dzieli się na trzy rodzaje:
+Szczegółowe informacje na temat najczęściej wykorzystywanych funkcji aktywacji, wraz z opisem ich charakterystyki, zostały podane w artykułach \cite{activationFunction:article:1}\cite{activationFunction:article:2}\cite{activationFunction:article:3}.
+
+\subsection{Warstwy sieci neuronowych}
+Sieci neuronowe zazwyczaj składają się z wielu warstw. Neurony należące do jednej warstwy nie są zwykle ze sobą połączone. Warstwy sieci neuronowej dzieli się na trzy rodzaje \cite{neuralNetworks:introduction}:
 \begin{itemize*}
-\item warstwa wejściowa - składa się z neuronów pobierających zestaw danych
-wejściowych
-\item warstwa wyjściowa - składa się z neuronów generujących wynik obliczeń
-sieci neuronowej
-\item warstwy ukryte - znajdują się pomiędzy warstwą wejściową a warstwą wyjściową
+\item warstwa wejściowa -- składa się z neuronów pobierających zestaw danych
+wejściowych,
+\item warstwa wyjściowa -- składa się z neuronów generujących wynik obliczeń
+sieci neuronowej,
+\item warstwy ukryte -- znajdują się pomiędzy warstwą wejściową a warstwą wyjściową.
 \end{itemize*}
+
+Na rysunku \ref{SimpleNetworkExample} jest zaprezentowany przykład prostej sieci neuronowej, składającej się z tylko trzech warstw:
+\vspace{0.3cm}
+\begin{figure}[H]
+\centering
+\includegraphics[width=14cm]{resources/figures/network_example.png}
+\caption{Przykład prostej sieci neuronowej}
+\label{SimpleNetworkExample}
+\end{figure}
 
 \subsection{Klasyfikacja sieci neuronowych}
-Sieci neuronowe można klasyfikować na wiele sposobów, w zależności od przyjętego kryterium.
-\begin{enumerate*}
-\item Podział sieci ze względu na sprzężenia występujące pomiędzy neuronami:
-\begin{itemize*}
-\item Jednokierunkowe (feedforward) - sieci, w których nie występują żadne
-sprzężenia zwrotne. Dane zawsze przepływają tylko w jedną stronę (od
-wejścia do wyjścia).
-\item Rekurencyjne (feedback) – sieci o połączeniach dwukierunkowych.
-W takich sieciach dopuszczone jest połączenie zwrotne, czyli sygnał z
-wyjścia może być przenoszony na wejścia neuronów z poprzednich warstw.
-\item Sieci komórkowe - sprzężenia wzajemne między elementami
-przetwarzającymi dotyczą jedynie najbliższego sąsiedztwa.
-\end{itemize*}
-\item Podział sieci ze względu na typ uczenia się:
-\begin{itemize*}
-\item Sieci z uczeniem nadzorowanym - algorytm uczący adaptuje sieć stosownie do wymuszeń zewnętrznych, starając się możliwie wiernie zrealizować zadaną funkcję
-\item Sieci z uczeniem nienadzorowanym - sieć nie jest ograniczona żadnym zewnętrznym kryterium (funkcją błędu), zadaniem sieci jest wykrycie prawidłowości w
-zbiorze danych podawanym na jej wejście
-\end{itemize*}
-\end{enumerate*}
+Sieci neuronowe są wykorzystywane do rozwiązywania nietrywialnych problemów dotyczących życia codziennego. Problemy te są względem siebie bardzo zróżnicowane, więc żeby sieć neuronowa mogła radzić sobie z zadanym problemem w sposób optymalny, również musi być jak najbardziej do tego problemu przystosowana.
 
-\newpage
+W efekcie, istnieje bardzo wiele architektur sieci neuronowych. Każda architektura posiada swoją specyfikę i została zaprojektowana do rozwiązywania konkretnej klasy problemów. Więcej na ten temat można przeczytać w doskonałym artykule zatytułowanym ,,\textit{The Neural Network Zoo}'' \cite{neuralNetworkZoo}.
+
 \subsection{Cechy sieci neuronowych}
 Jak wykazano w pracy \cite{dudek:wyklad:sieciAproksymacja}, najważniejszymi cechami sieci neuronowych są:
 \begin{enumerate*}
-\item Własność uniwersalnego aproksymatora (sieci potrafią aproksymować dowolną funkcję, z dowolnie małym błędem)
-\item Pozyskiwanie wiedzy z danych
-\item Duża odporność na zakłócenia danych
-\item Równoległa architektura (równoległe przetwarzanie danych)
-\item Adaptacyjność względem otrzymywanych danych
+\item Własność uniwersalnego aproksymatora (sieci potrafią aproksymować dowolną funkcję, z dowolnie małym błędem).
+\item Pozyskiwanie wiedzy z danych.
+\item Duża odporność na zakłócenia danych.
+\item Równoległa architektura (równoległe przetwarzanie danych).
+\item Adaptacyjność względem otrzymywanych danych.
 \item Zdolność do samoorganizacji, czyli samodzielnego dostrajania swoich
-parametrów, w celu lepszego dostosowania się do wykonywanych zadań
+parametrów, w celu lepszego dostosowania się do wykonywanych zadań.
 \end{enumerate*}
 
 \subsection{Zalety i wady sieci neuronowych}
+Według artykułu \cite{neuralNetworks:wadyZalety} można wyszczególnić następujące wady i zalety sieci neuronowych:
 
-\subsection{Porównanie sieci neuronowych z tradycyjnymi modelami obliczeniowymi}
-Sieci neuronowe w sposób zasadniczy różnią się od tradycyjnych modeli obliczeniowych.
- 
-W tradycyjnym modelu obliczeniowym, wszystkie kroki wykonywanego algorytmu muszą być ściśle zdefiniowane przez programistę.
+\begin{enumerate*}
+\item \textbf{Zalety}
+\begin{enumerate*}
+\item Zdolność samodzielnego uczenia się -- sieć uczy się na podstawie dostarczanych jej przykładów.
+\item Tolerancja błędu -- sieć może poprawnie funkcjonować, nawet jeśli część połączeń zostanie uszkodzona. Sieć będzie generować prawidłowe wyniki do czasu, aż liczba uszkodzonych połączeń nie przekroczy ,,\textit{masy krytycznej}''.
+\item Zdolność pracy z niekompletną wiedzą -- po wytrenowaniu sieci, sieć jest w stanie generować wyniki nawet dla danych wejściowych które są niekompletne. Dokładność sieci jest tutaj zależna od stopnia ważności brakujących danych.
+\item Zdolność równoległego przetwarzania danych.
+\end{enumerate*}
+\item \textbf{Wady}
+\begin{enumerate*}
+\item Zależność sprzętowa -- sztuczne sieci neuronowe wymagają procesorów pozwalających na wykonywanie równoległych obliczeń. Największa wydajność jest osiągana wtedy, gdy architektura sprzętowa odpowiada architekturze sieci. Taka sytuacja tworzy zależność, w której wydajność sieci neuronowej zależy od architektury sprzętu.
+\item Brak zrozumienia wnętrza sieci -- większość sieci neuronowych musimy traktować jako czarną skrzynkę. Potrafimy je wytrenować, ale nie wiemy jakie zależności (zachodzące wewnątrz sieci) umożliwiają jej prawidłowe funkcjonowanie. Brak tego zrozumienia ma wiele negatywnych konsekwencji, m.in. utrudnia to testowanie tworzonych sieci.
+\item Trudność projektowania sieci -- nie istnieją żadne formalne zasady określające sposób projektowania sieci neuronowej pod wykonywanie danego zadania. O ile istnieją już rozwiązania takiego problemu, to można się nimi inspirować. W przeciwnym wypadku, jedynym sposobem zaprojektowania sieci o optymalnej architekturze jest metoda prób i błędów. Ponieważ poprawne funkcjonowanie sieci jest zależne od wielu jej parametrów, to debugowanie takiej sieci jest bardzo trudnym zadaniem. Dlatego etap projektowania sieci zajmuje często dużo czasu.
+\item Trudność w reprezentacji problemu -- sieci neuronowe operują na danych numerycznych. Niestety, wiele problemów rozwiązywanych przez sieci neuronowe mają zupełnie inną postać. Mogą to być obrazy, słowa lub dźwięki. W takim wypadku, należy w odpowiedni sposób zakodować informacje do postaci numerycznej. Nie jest to łatwe zadanie. Od jakości takiego kodowania może zależeć skuteczność uczenia sieci.
+Wartości zwracane przez sieć należy z powrotem zdekodować do właściwej postaci, tak aby wyniki mogły być interpretowane przez człowieka.
+\end{enumerate*}
+\end{enumerate*}
 
-Natomiast w przypadku sieci neuronowych, algorytm rozwiązywanego problemu może być dla programisty nieznany lub znany tylko na bardzo ogólnym poziomie.
-Sieć neuronowa jest w stanie samodzielnie odnaleźć optymalny algorytm rozwiązania.
+\subsection{Porównanie z tradycyjnymi metodami programowania}
+\textbf{Tradycyjne metody programowania} opierają się na ręcznej implementacji całego programu. Każdy fragment algorytmu musi zostać określony i zapisany przez programistę. Dla danego zestawu danych wejściowych, program zawsze będzie wykonywał tę samą sekwencję instrukcji. Powinien również zwracać ten sam wynik.
 
-\newpage
-\section{Metody uczenia sieci neuronowych}
-\subsection{Uczenie nadzorowane}
-\subsection{Uczenie nienadzorowane}
-\subsection{Uczenie ze wzmocnieniem}
+Przy takim podejściu, użytkownik na podstawie zapisanego programu oraz posiadanego zbioru danych wejściowych otrzymuje wyniki generowane przez program. Rolą użytkownika jest określenie, czy otrzymane dane są prawidłowe.
 
-\section{Algorytmy uczące}
-\subsection{Tradycyjnie wykorzystywane algorytmy}
-\subsection{Algorytmy ewolucyjne}
+Natomiast Uczenie Maszynowe jest zupełnie inne. Polega ono na \textit{wytwarzaniu przez maszynę algorytmu rozwiązania na podstawie dostarczanego jej zbioru danych treningowych}. Zbiór danych treningowych to najczęściej zestawy danych wejściowych wraz z odpowiadającymi im zestawami oczekiwanych danych wyjściowych.
 
-\section{Proces tworzenia sieci neuronowej}
-\subsection{Przygotowanie modelu sieci}
-\subsection{Przygotowanie środowiska treningowego}
-\subsection{Trening}
-\end{comment}
-%%%% ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ %%%%
+Sieć uczy się poprzez wykonanie pełnego przejścia sieci i porównania otrzymanych wyników z wynikami oczekiwanymi. Na podstawie tej różnicy obliczana jest wielkość błędu. Znając wielkość błędu, parametry sieci mogą być dostrojone przy użyciu odpowiednich algorytmów uczących. Uczenie sieci trwa aż do wystąpienia jednego z warunków stopu. Warunkiem stopu może być np. osiągnięcie przez sieć wystarczającej dokładności wyników. \\
+Więcej informacji na temat różnic pomiędzy tymi podejściami znajduje się w artykule \cite{mlVersusTradition}.
+
+\section{Typy uczenia maszynowego}
+Biorąc pod uwagę różne strategie obierane podczas treningu sieci neuronowych, każdy trening można przyporządkować do jednego z czterech typów uczenia maszynowego. \\
+Te typy to:
+\begin{enumerate*}
+\item Uczenie nadzorowane (\textit{Supervised Learning})
+\item Uczenie pół-nadzorowane (\textit{Semi-supervised Learning})
+\item Uczenie nienadzorowane (\textit{Unsupervised Learning})
+\item Uczenie ze wzmocnieniem (\textit{Reinforcement Learning})
+\end{enumerate*}
+Każdy typ uczenia maszynowego posiada własne cechy charakterystyczne. Więcej informacji na ten temat znajduje się w artykule \cite{mlTypes:overview}. W przypadku mojej aplikacji, wykorzystywanym typem uczenia jest uczenie ze wzmocnieniem.
+
+\section{Algorytmy ewolucyjne}
+Algorytmy ewolucyjne wywodzą się z teorii ewolucji, która zakłada że najlepiej przystosowane osobniki populacji tworzą najwięcej potomstwa. Potomstwo z kolei przejmuje najlepsze cechy swoich rodziców, co sprawia że z generacji na generację cała populacja staje się coraz lepiej przystosowana do określonych warunków. Takie zjawisko jest możliwe dzięki istnieniu w naturze różnych mechanizmów, takich jak \textbf{mutacja}, \textbf{krzyżowanie} i \textbf{selekcja} \cite{de:tutorial}.
+
+Algorytmy ewolucyjne to algorytmy optymalizacji czarnej skrzynki, czyli optymalizacji bez obliczania pochodnych. Optymalizacja czarnej skrzynki polega na znajdowaniu globalnego optimum funkcji $ f(x): \mathbb{R}^n \rightarrow \mathbb{R} $ w sytuacji, gdy nie znamy jej postaci analitycznej i pochodne nie mogą być obliczone \cite{de:tutorial}. Dzieje się tak, gdy funkcja jest bardzo skomplikowana lub wymaga użycia zewnętrznego oprogramowania, jak np. środowiska symulacyjnego (patrz sekcja \ref{SimulationEnvs}). W świecie rzeczywistym są to bardzo częste przypadki, dlatego też algorytmy ewolucyjne cieszą się dość dużą popularnością.
+
+Poniżej zamieszczam opis dwóch algorytmów ewolucyjnych, z których korzystałem podczas implementacji aplikacji. Algorytmy te posłużyły mi przy dostrajaniu parametrów sieci (wag i biasów). Więcej informacji na ten temat znajduje się w sekcji \ref{TrainingScripts}.
+
+\subsection{Ewolucja Różnicowa}
+Jego angielska nazwa to \textit{Differential Evolution} (DE). Po raz pierwszy został zaproponowany w artykule z 1997 roku, którego autorami byli Rainer Storn oraz Kenneth Price \cite{de:firstArticle}. Jest bardzo popularnym algorytmem ewolucyjnym. Na przykład Europejska Agencja Kosmiczna (ESA) wykorzystuje Ewolucję Różnicową do projektowania optymalnych trajektorii lotu potrzebnych do wejścia na orbitę planety przy użyciu możliwie najmniejszej ilości paliwa \cite{de:esaArticle}.
+
+W Ewolucji Różnicowej, rozwiązania są reprezentowane jako osobniki należące do populacji. Każdy osobnik jest wektorem liczb rzeczywistych. Te liczby rzeczywiste to parametry funkcji, dla której szukamy globalnego optimum. Funkcja zaś określa, jak dobrze przystosowany jest dany osobnik z populacji. \\
+Algorytm można opisać za pomocą poniższej listy kroków:
+\begin{enumerate*}
+\item \textbf{Inicjalizacja} \\
+Tworzenie populacji osobników. Najczęściej osobniki tworzone są w sposób losowy.
+\item \textbf{Sprawdzenie warunku stopu} \\
+Algorytm powinien mieć jasno zdefiniowane warunki, dla których jego wykonanie zostanie przerwane. Przykładem warunku stopu może być odnalezienie globalnego optimum lub osiągnięcie maksymalnej liczby dozwolonych iteracji.
+\item Dla każdego osobnika $x$ w populacji:
+\begin{enumerate*}
+\item \textbf{Ocena przystosowania} \\
+Osobnik wysyłany jest do funkcji przystosowania. Wartości przystosowań są zapisywane w odpowiedniej strukturze danych. Ta struktura jest potrzebna w dalszych krokach algorytmu.
+\item \textbf{Mutacja i krzyżowanie} \\
+Należy wybrać z populacji trzech osobników $a, b, c$ którzy są różni od siebie oraz różni od osobnika $x$. Następnie z osobników $a, b, c$ tworzy się tzw. ,,\textit{mutant vector}''. Jest to osiągane poprzez obliczanie różnicy pomiędzy wektorami $b, c$, przemnożeniu jej przez stałą zwaną ,,faktorem mutacji'' (\textit{mutation factor}) i dodaniu przemnożonej różnicy do wektora $a$.
+W efekcie tych obliczeń otrzymujemy tzw. ,,rozwiązanie kandydackie''.
+\item \textbf{Wymiana wektorów} \\
+Rozwiązanie kandydackie, otrzymane w poprzednim kroku, wysyłane jest do funkcji przystosowania. Jeśli te rozwiązanie jest lepiej przystosowane od osobnika $x$, to wektory są podmieniane.
+\end{enumerate*}
+\item Powrót do punktu 2.
+\end{enumerate*}
+
+Opisany powyżej algorytm to podstawowa wersja Ewolucji Różnicowej. Z takiej wersji korzystam w swojej implementacji. Sprawdza się ona znakomicie. Istnieje jednak wiele tego algorytmu. Część z nich została opisana w artykule \cite{de:tutorial}.
+
+\subsection{Optymalizacja Roju Cząstek}
+Jego angielska nazwa to \textit{Particle Swarm Optimization} (PSO).
+Został zaproponowany przez Jamesa Kennedy’ego i Russella Eberharta w artykule z 1995 roku \cite{pso:originalPaper}.
+
+Jak wynika z artykułu \cite{pso:implementingInPython}, jest to algorytm populacyjny, inpirowany naturalnym zachowaniem zwierząt stadnych. Należy do grupy algorytmów inteligencji rojowej (rozproszonej), do której klasyfikowany jest także m.in. algorytm kolonii mrówkowej (\textbf{Ant Colony Algorithm}) oraz
+algorytm żerowania bakterii (\textbf{Bacterial Foraging Optimization Algorithm}).
+
+Podstawowymi pojęciami algorytmu PSO są Populacja (Rój) oraz Osobnik (Cząstka).
+Cząstka reprezentuje pojedyncze rozwiązanie w n-wymiarowej przestrzeni rozwiązań. \\
+Każda cząstka posiada pozycję oraz prędkość. Są to n-wymiarowe wektory liczb rzeczywistych. Pozycja (\textit{position}) określa bieżącą pozycję cząstki w przestrzeni rozwiązań. \\
+Prędkość (\textit{velocity}) określa kierunek cząstki oraz odległość, jaką pokona w kolejnej iteracji algorytmu. Nowa pozycja cząstki jest obliczana poprzez dodanie bieżącej prędkości cząstki do starej pozycji.
+
+Populacja to zbiór cząstek. Populacja przemieszcza się po wirtualnej przestrzeni rozwiązań, wykorzystując kooperację cząstek w celu odnalezienia globalnego optimum.
+Populacja wraz z upływem kolejnych iteracji będzie zbiegać do najlepszego rozwiązania globalnego.
+
+Warto wspomnieć, że algorytm PSO nie wykorzystuje Spadku Gradientu, zatem może on być wykorzystywany do optymalizacji funkcji które nie mogą być różniczkowane. \\
+Rysunek \ref{PsoPseudocode} przedstawia pseudokod algorytmu PSO.
+\vspace{0.5cm}
+\begin{figure}[H]
+\centering
+\includegraphics[width=13.5cm]{resources/figures/pso_pseudocode.png}
+\caption{Pseudokod algorytmu PSO}
+\label{PsoPseudocode}
+\end{figure}
+
+Kluczowym elementem algorytmu jest równanie obliczające nową prędkość cząstki. \\ Poniżej zamieściłem objaśnienia symboli zastosowanych w tym równaniu: \\ \\
+$v_i$(k+1) -- nowa prędkość cząstki (prędkość cząstki w k+1-tej iteracji) \\
+W -- parametr bezwładnościowy (\textit{inertial parameter}). Wskazuje na ważność bieżącej prędkości przy obliczeniu nowej prędkości. \\
+$c_1$, $c_2$ -- współczynniki przyspieszenia. $c_1$ wskazuje na ważność najlepszej wartości cząstki ($p_i$), natomiast $c_2$ na ważność najlepszej globalnej wartości dla całej populacji ($p_g$). \\
+$rand_1$ , $rand_2$  - liczby losowe z przedziału [0 ; 1]. \\ \\
+Rysunek \ref{ParticleNewPosition} przedstawia wizualizację procesu obliczania nowej pozycji cząstki:
+\vspace{0.5cm}
+\begin{figure}[H]
+\centering
+\includegraphics[width=15cm]{resources/figures/particle_new_pos.png}
+\caption{Obliczanie nowej pozycji cząstki}
+\label{ParticleNewPosition}
+\end{figure}

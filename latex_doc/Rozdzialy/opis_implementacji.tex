@@ -315,6 +315,7 @@ słownik zwrócony przez funkcję \textit{docopt} będzie miał następującą p
 \end{minted}
 
 \subsubsection{Skrypty treningowe}
+\label{TrainingScripts}
 Skrypty treningowe odpowiadają za trenowanie nowych modeli. Trening odbywa się przy użyciu jednego z dwóch algorytmów:
 \begin{itemize*}
 \item Ewolucji Różnicowej - dla skryptu train\_de.py
@@ -361,7 +362,7 @@ Zawiera zbiór testów jednostkowych modułu. Testy zaimplementowano, wykorzystu
 \subsubsection{AgentNeuralNetwork.py}
 Plik zawiera definicję klasy \textit{AgentNeuralNetwork}, która implementuje model sieci neuronowej agentów. Klasa jest stosunkowo prosta, składa się tylko z dwóch metod. \\
 Pierwszą z nich jest konstruktor. W konstruktorze definiowana jest topologia sieci neuronowej. Obecnie wykorzystywaną topologią sieci jest MLFFNN \cite{multilayerNN:article}. Konstruktor przyjmuje jeden obowiązkowy parametr - jest nim lista wymiarów sieci. \\
-Drugą metodą klasy jest \textit{forward}. Definiuje ona, w jaki sposób obliczane są wyniki generowane przez sieć neuronową dla danego zestawu danych wejściowych. Wykorzystywaną funkcją aktywacji jest ELU \cite{activationFunctions:overview}. \\
+Drugą metodą klasy jest \textit{forward}. Definiuje ona, w jaki sposób obliczane są wyniki generowane przez sieć neuronową dla danego zestawu danych wejściowych. Wykorzystywaną funkcją aktywacji jest ELU \cite{activationFunction:article:2}. \\
 Zawartość pliku \textit{AgentNeuralNetwork.py} prezentuje się następująco:
 
 \begin{minted}[ fontsize=\fontsize{10}{9} ] {python}

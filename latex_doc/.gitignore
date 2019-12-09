@@ -9,4 +9,5 @@
 *.dvi
 *.bbl
 *.blg
+*.out
 _minted-main

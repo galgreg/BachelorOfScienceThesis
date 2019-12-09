@@ -26,6 +26,11 @@
 \usepackage{indentfirst}
 \usepackage{mathtools}
 \usepackage{url}
+%% #### Ustawianie łamania linii dla adresów URL podawanych w bibliografii #### %%
+\usepackage{breakurl}
+\usepackage[breaklinks]{hyperref}
+\def\UrlBreaks{\do\/\do-}
+%% #################################################################### %%
 \usepackage[justification=centering]{caption}
 \usepackage{multirow}
 \usepackage[figuresright]{rotating}
@@ -72,7 +77,6 @@
       {]}{{{\color{delim}{]}}}}{1},
 }
 %% #################################################################### %%
-
 \def\lstfloatautorefname{Listing} % needed for hyperref/auroref
 
 \newenvironment{bottompar}{\par\vspace*{\fill}}{\clearpage}
