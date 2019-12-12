@@ -164,7 +164,7 @@ Cechuje się wysoką efektywnością energetyczną. Potrafi utrzymywać w wykona
 \end{figure}
 
 \item NVIDIA DRIVE AGX Xavier \\
-Jest mniejszy od Pegasusa. Dostarcza jedynie 30 TOPS mocy obliczeniowej. Charakteryzuje się jednak bardzo niskim zużyciem energii, pobiera tylko 30 watów. Przeznaczony dla systemów wspomagania kierowcy. Zbyt słaby dla wsparcia w pełni autonomicznych systemów jazdy.
+Jest mniejszy od Pegasusa. Dostarcza jedynie 30 TOPS mocy obliczeniowej. Charakteryzuje się jednak bardzo niskim zużyciem energii, pobiera tylko 30 watów. Przeznaczony dla systemów wspomagania kierowcy. Zbyt mało wydajny dla wsparcia w pełni autonomicznych systemów jazdy.
 \vspace{0.3cm}
 \begin{figure}[H]
 \centering
@@ -260,7 +260,7 @@ Więcej informacji na temat symulatora AirSim można znaleźć w następujących
 Darmowy, otwartoźródłowy symulator przeznaczony do rozwoju samochodów autonomicznych. Zapoczątkowany przez Craiga Quitera, programistę od lat zaangażowanego w tworzenie oprogramowania open source.
 
 Jak opisuje Drew Gray, szef działu technologicznego \cite{investopedia:CTO} w firmie Voyage \cite{voyage:introducingDeepdrive}: \\
-,,Historia Deepdrive ma swój początek kilka lat temu, gdy Craig - zainspirowany postępem w dziedzinie AI oraz korzyściami jakie społeczeństwo zyska dzięki samochodom autonomicznym - rozpoczął projekt otwartoźródłowej platformy, która daje możliwość rozwoju technologii \textit{self-driving} każdej osobie żyjącej na świecie.''
+,,Historia Deepdrive ma swój początek kilka lat temu, gdy Craig - zainspirowany postępem w dziedzinie AI oraz korzyściami jakie społeczeństwo zyska dzięki samochodom autonomicznym - rozpoczął projekt otwartoźródłowej platformy, która daje możliwość rozwoju technologii \textit{self-driving} każdej osobie na świecie.''
 
 Gray znał Quitera od dawna. Wiedział o rozwijanym przez niego projekcie i namówił go do współpracy z firmą Voyage. Quiter dołączył do firmy, która to objęła patronat nad dalszym rozwojem symulatora. Niemniej jednak projekt zachował swój pierwotny, otwartoźródłowy charakter.
 
@@ -281,12 +281,10 @@ Wśród nowości zaproponowanych przez firmę Voyage znajdują się m. in.:
 \item Tablica liderów (\textit{Leaderboard}) - usługa oferowana w ramach symulatora Deepdrive. Zawiera zestawienia rankingowe dla wyzwań ogłoszonych przez zespół Voyage Deepdrive. Pozwala na rywalizację zespołów badawczych, pracujących nad rozwiązaniem danego problemu. Każdy kto zapisze się do usługi, może zgłosić własne rozwiązanie, które następnie zostanie ocenione według kryteriów zdefiniowanych przez organizatorów wyzwania. Więcej informacji znajduje się na oficjalnej stronie usługi \cite{deepdrive:leaderboard}.
 \item Szczegółowe mapy świata 3D, zbudowane przy pomocy narzędzia \textit{Parallel Domain} \cite{parallelDomain}. Bogate środowiska symulacyjne zapewniają bardziej realistyczne testy tworzonych modeli.
 \item Możliwość generowania nowych scenariuszy testowych przez użytkowników symulatora
-\item Zbiór danych treningowych - dane zebrane z ponad 8 godzin jazdy. Łącznie ważą 100 GB. Są to m. in. obrazy z kamer, kąt skrętu kierownicy czy wartości pedałów gazu i hamulca. Dane zostały wstępnie przetworzone, w celu zwiększenia efektywności treningu.
+\item Zbiór danych treningowych - dane zebrane z ponad 8 godzin jazdy. Mają rozmiar około 100 GB. Są to m. in. obrazy z kamer, kąt skrętu kierownicy czy wartości pedałów gazu i hamulca. Dane zostały wstępnie przetworzone, w celu zwiększenia efektywności treningu.
 \end{itemize*}
 
-Rysunek \ref{DeepdriveArchitecture} przedstawia schemat reprezentujący architekturę systemu. Na jego podstawie można wysnuć ciekawe wnioski na temat sposobu funkcjonowania symulatora.
-
-Więcej informacji na temat instalacji systemu oraz jego użytkowania można odnaleźć na stronie repozytorium projektu \cite{deepdrive:github}.
+Rysunek \ref{DeepdriveArchitecture} przedstawia schemat reprezentujący architekturę systemu. Na jego podstawie można wysnuć ciekawe wnioski na temat sposobu funkcjonowania symulatora. Więcej informacji na temat instalacji systemu oraz jego użytkowania można odnaleźć na stronie repozytorium projektu \cite{deepdrive:github}.
 
 \section{Projekty modelarskie}
 Projekty modelarskie charakteryzują się tym, iż tworzone są z myślą o modelach pojazdów wykonanych w pewnej skali. Takie projekty cieszą się dość dużą popularnością, a wynika to z kilku faktów. \\
@@ -321,7 +319,7 @@ Jest to minimalny zestaw, wymagany do poprawnego funkcjonowania platformy. Oczyw
 Standardowym samochodem, od którego wiele osób rozpoczyna przygodę z platformą Donkey Car, jest \textit{Donkey}.
 W oficjalnej dokumentacji projektu \cite{donkeycar:docs} znajdują się wszystkie informacje, niezbędne do samodzielnego zbudowania samochodu.
 
-Sercem platformy jest biblioteka donkeycar, napisana w języku Python. Przeznaczona jest do rozwoju samochodów autonomicznych, jej cechami są modularność i minimalizm. Wykorzystując tę bibliotekę, programowanie samochodu jest bajecznie proste. Oto przykład z oficjalnej dokumentacji, w którym samochód po rozpoczęciu pętli jazdy wykonuje zdjęcia i zapisuje je do wbudowanej pamięci:
+Sercem platformy jest biblioteka donkeycar, napisana w języku Python. Przeznaczona jest do rozwoju samochodów autonomicznych, jej cechami są modularność i minimalizm. Wykorzystując tę bibliotekę, programowanie samochodu jest bardzo łatwe. Oto przykład z oficjalnej dokumentacji, w którym samochód po rozpoczęciu pętli jazdy wykonuje zdjęcia i zapisuje je do wbudowanej pamięci:
 
 \begin{minted}[ fontsize=\fontsize{13}{13} ] {python}
 import donkey as dk

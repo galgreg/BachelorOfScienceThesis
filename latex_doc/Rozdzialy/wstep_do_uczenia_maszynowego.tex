@@ -134,6 +134,7 @@ Algorytmy ewolucyjne to algorytmy optymalizacji czarnej skrzynki, czyli optymali
 Poniżej zamieszczam opis dwóch algorytmów ewolucyjnych, z których korzystałem podczas implementacji aplikacji. Algorytmy te posłużyły mi przy dostrajaniu parametrów sieci (wag i biasów). Więcej informacji na ten temat znajduje się w sekcji \ref{TrainingScripts}.
 
 \subsection{Ewolucja Różnicowa}
+\label{DeOverview}
 Jego angielska nazwa to \textit{Differential Evolution} (DE). Po raz pierwszy został zaproponowany w artykule z 1997 roku, którego autorami byli Rainer Storn oraz Kenneth Price \cite{de:firstArticle}. Jest bardzo popularnym algorytmem ewolucyjnym. Na przykład Europejska Agencja Kosmiczna (ESA) wykorzystuje Ewolucję Różnicową do projektowania optymalnych trajektorii lotu potrzebnych do wejścia na orbitę planety przy użyciu możliwie najmniejszej ilości paliwa \cite{de:esaArticle}.
 
 W Ewolucji Różnicowej, rozwiązania są reprezentowane jako osobniki należące do populacji. Każdy osobnik jest wektorem liczb rzeczywistych. Te liczby rzeczywiste to parametry funkcji, dla której szukamy globalnego optimum. Funkcja zaś określa, jak dobrze przystosowany jest dany osobnik z populacji. \\
@@ -146,48 +147,74 @@ Algorytm powinien mieć jasno zdefiniowane warunki, dla których jego wykonanie 
 \item Dla każdego osobnika $x$ w populacji:
 \begin{enumerate*}
 \item \textbf{Ocena przystosowania} \\
-Osobnik wysyłany jest do funkcji przystosowania. Wartości przystosowań są zapisywane w odpowiedniej strukturze danych. Ta struktura jest potrzebna w dalszych krokach algorytmu.
+Osobnik jest oceniany za pomocą funkcji przystosowania. Wartości przystosowań są zapisywane w odpowiedniej strukturze danych. Ta struktura jest potrzebna w dalszych krokach algorytmu.
 \item \textbf{Mutacja i krzyżowanie} \\
 Należy wybrać z populacji trzech osobników $a, b, c$ którzy są różni od siebie oraz różni od osobnika $x$. Następnie z osobników $a, b, c$ tworzy się tzw. ,,\textit{mutant vector}''. Jest to osiągane poprzez obliczanie różnicy pomiędzy wektorami $b, c$, przemnożeniu jej przez stałą zwaną ,,faktorem mutacji'' (\textit{mutation factor}) i dodaniu przemnożonej różnicy do wektora $a$.
 W efekcie tych obliczeń otrzymujemy tzw. ,,rozwiązanie kandydackie''.
 \item \textbf{Wymiana wektorów} \\
-Rozwiązanie kandydackie, otrzymane w poprzednim kroku, wysyłane jest do funkcji przystosowania. Jeśli te rozwiązanie jest lepiej przystosowane od osobnika $x$, to wektory są podmieniane.
+Rozwiązanie kandydackie, otrzymane w poprzednim kroku, jest oceniane za pomocą funkcji przystosowania. Jeśli te rozwiązanie jest lepiej przystosowane od osobnika $x$, to wektory są podmieniane.
 \end{enumerate*}
 \item Powrót do punktu 2.
 \end{enumerate*}
 
-Opisany powyżej algorytm to podstawowa wersja Ewolucji Różnicowej. Z takiej wersji korzystam w swojej implementacji. Sprawdza się ona znakomicie. Istnieje jednak wiele tego algorytmu. Część z nich została opisana w artykule \cite{de:tutorial}.
+Opisany powyżej algorytm to podstawowa wersja Ewolucji Różnicowej. Z takiej wersji korzystam w swojej implementacji. Sprawdza się ona znakomicie. Istnieje jednak wiele innych wersji tego algorytmu. Część z nich została opisana w artykule \cite{de:tutorial}.
 
+\vspace{1cm}
 \subsection{Optymalizacja Roju Cząstek}
+\label{PsoOverview}
 Jego angielska nazwa to \textit{Particle Swarm Optimization} (PSO).
 Został zaproponowany przez Jamesa Kennedy’ego i Russella Eberharta w artykule z 1995 roku \cite{pso:originalPaper}.
 
-Jak wynika z artykułu \cite{pso:implementingInPython}, jest to algorytm populacyjny, inpirowany naturalnym zachowaniem zwierząt stadnych. Należy do grupy algorytmów inteligencji rojowej (rozproszonej), do której klasyfikowany jest także m.in. algorytm kolonii mrówkowej (\textbf{Ant Colony Algorithm}) oraz
+Jak wynika z artykułu \cite{pso:implementingInPython}, jest to algorytm populacyjny, inpirowany naturalnym zachowaniem zwierząt stadnych. Należy do grupy algorytmów inteligencji rojowej (rozproszonej), do której klasyfikowany jest także m.in. algorytm mrowiskowy (\textbf{Ant Colony Algorithm}) oraz
 algorytm żerowania bakterii (\textbf{Bacterial Foraging Optimization Algorithm}).
 
 Podstawowymi pojęciami algorytmu PSO są Populacja (Rój) oraz Osobnik (Cząstka).
-Cząstka reprezentuje pojedyncze rozwiązanie w n-wymiarowej przestrzeni rozwiązań. \\
-Każda cząstka posiada pozycję oraz prędkość. Są to n-wymiarowe wektory liczb rzeczywistych. Pozycja (\textit{position}) określa bieżącą pozycję cząstki w przestrzeni rozwiązań. \\
+Cząstka \hfill reprezentuje \hfill pojedyncze \hfill rozwiązanie w \hfill n-wymiarowej \hfill przestrzeni \hfill rozwiązań. \\
+Każda cząstka posiada pozycję oraz prędkość. Są to n-wymiarowe wektory liczb rzeczywistych. Pozycja \hfill (\textit{position}) \hfill określa \hfill bieżącą \hfill pozycję \hfill cząstki \hfill w \hfill przestrzeni \hfill rozwiązań. \\
 Prędkość (\textit{velocity}) określa kierunek cząstki oraz odległość, jaką pokona w kolejnej iteracji algorytmu. Nowa pozycja cząstki jest obliczana poprzez dodanie bieżącej prędkości cząstki do starej pozycji.
 
 Populacja to zbiór cząstek. Populacja przemieszcza się po wirtualnej przestrzeni rozwiązań, wykorzystując kooperację cząstek w celu odnalezienia globalnego optimum.
 Populacja wraz z upływem kolejnych iteracji będzie zbiegać do najlepszego rozwiązania globalnego.
 
-Warto wspomnieć, że algorytm PSO nie wykorzystuje Spadku Gradientu, zatem może on być wykorzystywany do optymalizacji funkcji które nie mogą być różniczkowane. \\
-Rysunek \ref{PsoPseudocode} przedstawia pseudokod algorytmu PSO.
+Warto wspomnieć, że algorytm PSO nie wykorzystuje Spadku Gradientu, zatem może on być wykorzystywany do optymalizacji funkcji, które nie mogą być różniczkowane. \\
+\newpage
+Pseudokod algorytmu PSO przedstawia się w sposób następujący:
+\begin{enumerate*}
+\item \textbf{Inicjalizacja populacji} \\
+Utwórz $n$ cząstek. Dla każdej cząstki wyznacz wektory pozycji i prędkości, które są inicjalizowane liczbami losowymi z zadanego przedziału.
+\item \textbf{Dla każdej cząstki $i$:}
+\begin{enumerate*}
+\item Ocena wartości przystosowania cząstki
+\item Jeśli przystosowanie jest lepsze od najlepszego przystosowania $i$-tej cząstki, to przypisz bieżącą pozycję cząstki do zmiennej $p_i$. Jest to zmienna przechowująca najlepszą historycznie pozycję $i$-tej cząstki.
+\item Jeśli przystosowanie jest lepsze od najlepszego globalnie przystosowania, to przypisz bieżącą pozycję cząstki do zmiennej $p_g$. Jest to zmienna przechowująca najlepszą pozycję uzyskaną historycznie przez jakąkolwiek cząstkę z populacji.
+\end{enumerate*}
+\item \textbf{Sprawdzenie warunku stopu} \\
+Przerwij algorytm, jeśli wystąpi warunek stopu. Warunkiem stopu może być np. znalezienie globalnego optimum lub osiągnięcie maksymalnej liczby dozwolonych iteracji.
+\item \textbf{Dla każdej cząstki $i$:}
+\begin{enumerate*}
+\item Oblicz nową prędkość $i$-tej cząstki ze wzoru: \\
+\begin{center}
+\begin{Large}
+$v_i(k+1) = w\ v_i(k) + c_1rand_1(p_i - x_i) + c_2rand_2(p_g - x_i)$
+\end{Large}
+\end{center}
 \vspace{0.5cm}
-\begin{figure}[H]
-\centering
-\includegraphics[width=13.5cm]{resources/figures/pso_pseudocode.png}
-\caption{Pseudokod algorytmu PSO}
-\label{PsoPseudocode}
-\end{figure}
-
-Kluczowym elementem algorytmu jest równanie obliczające nową prędkość cząstki. \\ Poniżej zamieściłem objaśnienia symboli zastosowanych w tym równaniu: \\ \\
-$v_i$(k+1) -- nowa prędkość cząstki (prędkość cząstki w k+1-tej iteracji) \\
-W -- parametr bezwładnościowy (\textit{inertial parameter}). Wskazuje na ważność bieżącej prędkości przy obliczeniu nowej prędkości. \\
+Objaśnienia symboli: \\
+$x_i$ -- bieżąca pozycja $i$-tej cząstki
+$v_i(k+1)$ -- nowa prędkość cząstki (prędkość cząstki w k+1-tej iteracji) \\
+$w$ -- parametr bezwładnościowy (\textit{inertial parameter}). Wskazuje na ważność bieżącej prędkości przy obliczeniu nowej prędkości. \\
 $c_1$, $c_2$ -- współczynniki przyspieszenia. $c_1$ wskazuje na ważność najlepszej wartości cząstki ($p_i$), natomiast $c_2$ na ważność najlepszej globalnej wartości dla całej populacji ($p_g$). \\
-$rand_1$ , $rand_2$  - liczby losowe z przedziału [0 ; 1]. \\ \\
+$rand_1$ , $rand_2$  -- liczby losowe z przedziału [0 ; 1].
+\item Wyznacz nową pozycję $i$-tej cząstki:
+\begin{center}
+\begin{Large}
+$x_i(k+1) = x_i(k) + v_i(k+1)$
+\end{Large}
+\end{center}
+\end{enumerate*}
+\item \textbf{Powrót do punktu 2}.
+\end{enumerate*}
+
 Rysunek \ref{ParticleNewPosition} przedstawia wizualizację procesu obliczania nowej pozycji cząstki:
 \vspace{0.5cm}
 \begin{figure}[H]

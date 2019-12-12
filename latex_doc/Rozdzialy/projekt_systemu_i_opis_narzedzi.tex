@@ -1,5 +1,45 @@
-\chapter{Zastosowane technologie}
-\section{Unity}
+\chapter{Projekt systemu i opis narzędzi}
+W niniejszym rozdziale zostaną przedstawione najważniejsze założenia i decyzje projektowe, jakie zostały przyjęte przed rozpoczęciem prac nad aplikacją. Ponadto zamieszczam opis narzędzi, wykorzystanych podczas procesu implementacji systemu.
+
+\section{Projekt systemu}
+Wytwarzanie oprogramowania nie należy do zadań trywialnych. Dotyczy to zwłaszcza prac nad skomplikowanymi systemami informatycznymi. Podstawą sukcesu jest jasne zdefiniowanie założeń projektowych oraz odpowiednie zaplanowanie architektury systemu. Ten etap pracy najlepiej wykonać w początkowych fazach projektu, gdy podejmowanie kluczowych decyzji projektowych nie jest jeszcze obarczone wysokim kosztem.
+
+Podczas fazy projektowania aplikacji postanowiłem rozpatrzeć trzy zagadnienia, które moim zdaniem są najistotniejsze dla dalszego zrozumienia tworzonego systemu. Są to:
+\begin{enumerate*}
+\item Definicja \textbf{rozwiązywanego problemu},
+\item Lista \textbf{celów i założeń aplikacji},
+\item \textbf{Architektura systemu}, rozważana na najwyższym poziomie abstrakcji.
+\end{enumerate*}
+
+Każde z tych zagadnień zostało omówione poniżej.
+
+\subsection{Definicja rozwiązywanego problemu}
+Problemem rozwiązywanym przez aplikację jest trening agentów sterujących samochodami wymodelowanymi w środowisku symulacji. Samochody mają pokonywać wyznaczone tory wyścigowe bez powodowania kolizji ze ścianami. Agenci odbierają informacje o swoim bieżącym położeniu dzięki sensorom odległości, umocowanym na każdym samochodzie. W odpowiedzi na te informacje agenci wysyłają do środowiska symulacji żądania wykonania określonych akcji np. zmiany kąta kierownicy w samochodzie kontrolowanym przez agenta. Oprócz zjawisk opisanych powyżej, środowisko symulacji zlicza wartości przystosowania agentów i zwraca listę tych wartości (po jednej dla każdego agenta) po każdym zakończonym epizodzie symulacji. Wartości przystosowania są bardzo ważne, gdyż bez nich byłoby niemożliwe przeprowadzenie procesu uczenia agentów.
+
+Agentami są jednokierunkowe sieci neuronowe \cite{multilayerNN:article} o prostej topologii (domyślnie składają się z trzech warstw o wymiarach 3-5-2). Parametry sieci neuronowych (wagi i biasy) są dostrajane przy użyciu dwóch algorytmów ewolucyjnych: \textbf{Ewolucji Różnicowej} (patrz sekcja \ref{DeOverview}) oraz \textbf{PSO} (patrz sekcja \ref{PsoOverview}).
+
+\subsection{Cele i założenia}
+Każda aplikacja powinna realizować jakieś cele i założenia. Oto lista celów i założeń, jakie przyjąłem dla swojej aplikacji:
+\begin{enumerate*}
+\item Aplikacja powinna być prosta w obsłudze;
+\item Aplikacja powinna działać na systemach Linux oraz Windows;
+\item Aplikacja powinna zapisywać wytrenowane modele do pliku o ustalonym formacie. Plik ten powinien być później możliwy do odczytu przez aplikację;
+\item Dane konfiguracyjne nie powinny być na sztywno zaszyte w kodzie, lecz dostarczane z zewnętrznego pliku o ustalonym formacie;
+\item Aplikacja powinna dokumentować swój przebieg w plikach dziennika. Pliki dziennika powinny zawierać wszelkie istotne informacje, które mogą być pomocne przy późniejszym debugowaniu;
+\item Eksperymenty obliczeniowe powinny się wykonywać przy minimalnym wysiłku użytkownika. Efektem działania tych eksperymentów powinny być wykresy oraz inne dane, które będzie można zaprezentować przy omawianiu wyników eksperymentów obliczeniowych.
+\end{enumerate*}
+
+\subsection{Architektura systemu}
+\begin{figure}[H]
+\centering
+\includegraphics[width=15cm]{resources/figures/software_architecture.png}
+\caption{Wizualizacja architektury systemu}
+\label{SoftwareArchitecture}
+\end{figure}
+Architektura systemu jest stosunkowo prosta. Składa się z dwóch zasadniczych komponentów: \textbf{środowiska symulacji} oraz \textbf{zestawu skryptów języka Python}. Komponenty komunikują się ze sobą poprzez odpowiedni mechanizm komunikacji. Rysunek \ref{SoftwareArchitecture} przedstawia wizualizację omawianej architektury. Więcej informacji na temat poszczególnych komponentów aplikacji można odnaleźć w rozdziale \ref{ImplementationOverview}-tym. Rozdział ten jest poświęcony opisowi implementacji systemu.
+\section{Zastosowane technologie}
+W niniejszej sekcji opisuję technologie z których korzystałem podczas implementacji mojej aplikacji.
+\subsection{Unity}
 Wieloplatformowy silnik gier 2D lub 3D \cite{unity:opis}. Pozwala również na tworzenie innych materiałów interaktywnych - wizualizacje, animacje itp. Silnik został napisany w językach C/C++ (platforma uruchomieniowa) oraz C\# (Unity API). Skrypty dla silnika pisze się w języku C\#. Gry tworzone na silniku Unity mogą obsługiwać wiele platform sprzętowych i systemów operacyjnych. 
 Platformy wspierane przez wersję 2019.1 \cite{unity:buildOptions}:
 \begin{enumerate*}
@@ -33,12 +73,12 @@ Do wersji 4.6 silnik był udostępniany na licencji płatnej lub darmowej zawier
 
 Unity oferuje również tzw. Asset Store, który umożliwia skorzystanie z płatnych lub darmowych komponentów takich jak tekstury lub skrypty. Silnik Unity został przeze mnie wykorzystany do stworzenia środowiska symulacji, niezbędnego w procesie treningu inteligentnych agentów.
 
-\section{Języki programowania}
+\subsection{Języki programowania}
 Język programowania jest jednym z najważniejszych narzędzi w rękach każdego programisty. Pozwala on na tworzenie oprogramowania w formie zrozumiałej dla człowieka i wykonywalnej dla maszyny.
 Wykonanie kodu źródłowego jest możliwe po przetłumaczeniu go do postaci kodu maszynowego, czyli sekwencji rozkazów zrozumiałych dla procesora. Tłumaczeniem kodu źródłowego na język maszyny zajmują się specjalne programy, zwane \textit{kompilatorami} lub  \textit{interpreterami}. \\
 Poniżej znajduje się krótki opis języków, które wykorzystałem podczas tworzenia aplikacji.
 
-\subsection{C\#}
+\subsubsection{C\#}
 Język programowania stworzony przez firmę Microsoft \cite{csharp:wikipedia}. Najważniejsze cechy:
 \begin{itemize*}
 \item silne, statyczne typowanie;
@@ -49,7 +89,7 @@ Język programowania stworzony przez firmę Microsoft \cite{csharp:wikipedia}. N
 \end{itemize*}
 Język C\# jest przeze mnie wykorzystywany do pisania skryptów dla silnika Unity.
 
-\subsection{Python}
+\subsubsection{Python}
 Język programowania ogólnego przeznaczenia, o rozbudowanym pakiecie bibliotek standardowych 
 \cite{python:wikipedia}.
 Najważniejsze cechy:
@@ -67,9 +107,9 @@ Najważniejsze cechy:
 \end{itemize*}
 W projekcie stosuję język Python w wersji 3.6.8. Do zarządzania zależnościami pakietów, stosuję narzędzie Conda.
 
-\section{Frameworki}
+\subsection{Frameworki}
 Framework jest spójnym zestawem modułów i bibliotek programistycznych, tworzących szkielet do budowy aplikacji danego typu. Programowanie przy użyciu frameworka polega na rozbudowywaniu tego szkieletu o dodatkowe komponenty, które są wymagane dla danego projektu. Korzystanie z frameworków ułatwia życie programistom, gdyż autorzy kodu nie muszą tracić czasu na implementację nudnych i powtarzalnych elementów aplikacji, które są identyczne dla wszystkich aplikacji tego typu. Zamiast tego mogą się skupić na implementacji funkcjonalności realizowanych przez ich oprogramowanie.
-\subsection{Unity ML-Agents}
+\subsubsection{Unity ML-Agents}
 \label{UnityMlaDescription}
 Otwartoźródłowa wtyczka do Unity, ułatwiająca tworzenie środowisk treningowych dla inteligentnych agentów \cite{unitymla:overview}. Agenci mogą być uczeni rozmaitymi technikami, m. in.:
 \begin{itemize*}
@@ -171,7 +211,7 @@ Więcej informacji na temat omawianej wersji frameworka można znaleźć w oficj
 \url{https://github.com/Unity-Technologies/ml-agents/tree/0.9.1/docs}
 \end{center}
 
-\subsection{PyTorch}
+\subsubsection{PyTorch}
 Otwartoźródłowy framework uczenia maszynowego przeznaczony dla języków Python i C++.
 Najważniejsze cechy i funkcjonalności frameworka \cite{pytorch:features}\cite{pytorch:vs:tensorflow}:
 \begin{enumerate*}
@@ -197,24 +237,24 @@ Najważniejsze cechy i funkcjonalności frameworka \cite{pytorch:features}\cite{
 \end{enumerate*}
 Framework PyTorch składa się z wielu modułów. Najistotniejszym dla mnie modułem był moduł torch.nn, który wykorzystałem do implementacji sieci neuronowej. Więcej na ten temat można znaleźć w rozdziale poświęconym implementacji systemu.
 
-\section{Biblioteki}
+\subsection{Biblioteki}
 Biblioteka programistyczna to zbiór powiązanych tematycznie jednostek kodu (takich jak klasy czy funkcje). Użycie biblioteki to sposób na ponowne wykorzystanie tego samego kodu. Dobór odpowiednich bibliotek pozwala na znaczne przyspieszenie procesu tworzenia oprogramowania. Poniżej znajduje się krótkie zestawienie bibliotek wykorzystywanych w mojej aplikacji.
 
-\subsection{ddt}
+\subsubsection{ddt}
 \label{DdtOpis}
 Pakiet dla języka Python \cite{ddt:documentation}. Pozwala na łatwe tworzenie parametryzowanych testów. Stosowany jako rozszerzenie funkcjonalności frameworków testowych, takich jak unittest (który wchodzi w skład biblioteki standardowej Pythona). Nazwa pakietu pochodzi od metodyki DDT - Data Driven Testing, która zakłada oddzielenie logiki testu od danych na których test operuje. Takie podejście pozwala w znacznym stopniu ograniczyć duplikację kodu w klasach testowych.
-\subsection{docopt}
+\subsubsection{docopt}
 \label{docoptOpis}
 Pakiet pomagający utworzyć interfejs wiersza poleceń \cite{docopt:documentation}. Pakiet docopt jest oparty na konwencji, wykorzystywanej przez lata dla komunikatów pomocy i stron podręcznika man. Opis interfejsu jest sformalizowanym komunikatem pomocy.
-\subsection{matplotlib}
+\subsubsection{matplotlib}
 \label{matplotlibDescription}
 Biblioteka do tworzenia wykresów dla języka Python. Uchodzi za wszechstronne, lecz trudne w opanowaniu narzędzie.
-\section{Conda}
+\subsection{Conda}
 System open source do zarządzania pakietami i środowiskami uruchomieniowymi dla systemów Windows, macOS oraz Linux. Posiada wsparcie dla wielu języków, m. in. Python, R, Ruby, Lua, Scala \cite{conda:documentation}.
 Conda potrafi szybko instalować, uruchamiać i aktualizować pakiety wraz z ich zależnościami.
 Bardzo łatwo można tworzyć nowe wirtualne środowiska dla Pythona.
 
-\section{Wykorzystywane wersje oprogramowania}
+\subsection{Wykorzystywane wersje oprogramowania}
 \begin{enumerate*}
 \item Silnik Unity - 2019.1.12f
 \item C\# - Mono 6.4.0.198
@@ -227,7 +267,7 @@ Bardzo łatwo można tworzyć nowe wirtualne środowiska dla Pythona.
 \item Conda - 4.7.5
 \end{enumerate*}
 
-\section{Stacja robocza - specyfikacja techniczna}
+\subsection{Stacja robocza - specyfikacja techniczna}
 Poniżej zamieszczam specyfikację techniczną stacji roboczej (komputera), którą wykorzystałem do implementacji systemu oraz wszystkich eksperymentów obliczeniowych:
 \begin{enumerate*}
 \item Typ urządzenia - Laptop

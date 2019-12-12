@@ -1,4 +1,5 @@
 \chapter{Opis implementacji}
+\label{ImplementationOverview}
 Zgodnie z opisem frameworka Unity ML-Agents, zawartego w sekcji \ref{UnityMlaDescription}, zrealizowany przeze mnie projekt można podzielić na dwa moduły:
 
 \begin{enumerate*}
@@ -112,10 +113,10 @@ W przypadku mojej implementacji, polega to na utworzeniu populacji agentów.
 Jest wykonywana po każdym zakończonym epizodzie symulacji. Epizod symulacji kończy się, gdy zostaje wywołana metoda \textit{Done} z klasy Academy. \\
 Metoda \textit{AcademyReset} powinna przygotować Środowisko Uczenia do kolejnego epizodu symulacji. W przypadku mojej implementacji, polega to na przemieszczeniu wszystkich agentów do pozycji początkowej i wyzerowaniu ich nagród.
 \item \textit{AcademyStep} \\
-Jest wykonywana dla każdego kroku symulacji. W przypadku mojej implementacji, metoda ta jest odpowiedzialna za sprawdzanie, czy wszyscy agenci umarli w bieżącym epizodzie. Jeśli tak, wywoływana jest metoda \textit{Done}.
+Jest wykonywana dla każdego kroku symulacji. W przypadku mojej implementacji, metoda ta jest odpowiedzialna za sprawdzanie, czy wszyscy agenci zakończyli jazdę w bieżącym epizodzie. Jeśli tak, wywoływana jest metoda \textit{Done}.
 \end{enumerate*}
 
-Oprócz powyżej opisanych, klasa RaceTrackAcademy zawiera również kilka metod pomocniczych. Wspomagają one tworzenie populacji agentów oraz naliczanie agentów umarłych w bieżącym epizodzie.
+Oprócz powyżej opisanych, klasa RaceTrackAcademy zawiera również kilka metod pomocniczych. Wspomagają one tworzenie populacji agentów oraz naliczanie agentów którzy zakończyli jazdę w bieżącym epizodzie.
 
 Bardzo ważnym aspektem klasy RaceTrackAcademy, o którym również należy wspomnieć, są publiczne pola instancyjne klasy. 
 To parametry mające duży wpływ na zachowanie Środowiska Uczenia. Wartości tych parametrów mogą być ustawiane z poziomu edytora Unity.
@@ -123,12 +124,12 @@ Oto lista pól instancyjnych klasy:
 \begin{itemize*}
 \item CarAgentBrain - obiekt klasy dziedziczącej po klasie Brain. Więcej szczegółów na ten temat znajduje się w sekcji \ref{UnityMlaDescription}.
 \item CarAgentPrefab - zmienna przechowuje referencję do obiektu reprezentującego wzorcowy model agenta. Podczas tworzenia populacji, model ten jest klonowany dla każdego z agentów.
-\item StartAgentPosition - pozycja startowa agenta. Jest to wektor określający pozycję agenta, jaką będzie on miał na początku każdego epizodu symulacji.
+\item StartAgentPosition - pozycja startowa agenta. Jest to wektor określający pozycję agenta jaką będzie on miał na początku każdego epizodu symulacji.
 \item StartAgentRotation - liczba typu float. Określa, w którą stronę jest skierowany samochód na początku każdego epizodu.
 \item CarAgentScale - liczba typu float. Określa rozmiar klonowanych modeli w stosunku do rozmiaru modelu oryginalnego (wskazywanego przez zmienną CarAgentPrefab).
 \item MaxSensorLength - liczba typu float. Określa maksymalny dystans, rejestrowany przez sensory wejściowe samochodów.
 \item FieldOfView - liczba typu float. Określa ,,kąt widzenia'' sensorów wejściowych. Wartości podawane są w stopniach. Maksymalna dozwolona wartość (będąca zarazem wartością domyślną dla zmiennej) to 180 stopni.
-\item RaysCount - liczba typu int. Określa ilość sensorów wejściowych. Musi to być liczba dodatnia większa lub równa 2.
+\item RaysCount - liczba typu int. Określa liczbę sensorów wejściowych. Musi to być liczba dodatnia większa lub równa 2.
 \item MaxSteeringAngle - liczba typu float. Określa maksymalny dozwolony kąt skrętu kół przednich w samochodzie. Wartości podawane są w stopniach. Domyślnie jest to 30 stopni.
 \item MotorForce - liczba typu float. Określa ,,moc silnika'' w samochodzie.
 \item PopulationSize - rozmiar populacji agentów, tworzonej w Środowisku Uczenia.
@@ -145,7 +146,7 @@ Wykonywana dla każdego kroku symulacji. Odpowiada za zbieranie obserwacji agent
 \item \textit{AgentAction} \\
 Wykonywana dla każdego kroku symulacji. Odpowiada za zdefiniowanie zachowania agenta na podstawie danych (akcji) otrzymywanych z mózgu.
 \item \textit{AgentOnDone} \\
-Metoda definiuje zachowanie agenta gdy ten umiera i zmienna AgentParameters.\textit{resetOnDone} jest ustawiona na wartość \textit{false}.
+Metoda definiuje zachowanie agenta gdy ten kończy symulację i zmienna AgentParameters.\textit{resetOnDone} jest ustawiona na wartość \textit{false}.
 \end{enumerate*}
 
 Oprócz powyższych metod, klasa CarAgent zawiera również kilka metod pomocniczych. Najważniejsze z nich to:
@@ -293,7 +294,7 @@ Options:
     return options
 \end{minted}
 
-Parsowanie argumentów linii poleceń odbywa się w funkcji \textit{getProgramOptions}. String APP\_USAGE\_DESCRIPTION zawiera sformalizowany opis, wykonany według schematu określonego w dokumentacji \cite{docopt:documentation}. Funkcja \textit{docopt} parsuje tego stringa oraz listę argumentów dostarczoną przy wywołaniu z linii poleceń. \textit{docopt} weryfikuje, czy podane argumenty zgadzają się z definicją API. Jeśli tak, to funkcja zwraca słownik zawierający przeparsowane argumenty.
+Parsowanie argumentów linii poleceń odbywa się w funkcji \textit{getProgramOptions}. Łańcuch APP\_USAGE\_DESCRIPTION zawiera sformalizowany opis, wykonany według schematu określonego w dokumentacji \cite{docopt:documentation}. Funkcja \textit{docopt} parsuje ten łańcuch oraz listę argumentów dostarczoną przy wywołaniu z linii poleceń. \textit{docopt} weryfikuje, czy podane argumenty zgadzają się z definicją API. Jeśli tak, to funkcja zwraca słownik zawierający odczytane argumenty.
 Na przykład dla wywołania:
 \vspace{0.5cm}
 \begin{figure}[H]
@@ -323,7 +324,7 @@ Skrypty treningowe odpowiadają za trenowanie nowych modeli. Trening odbywa się
 \end{itemize*}
 Obydwa skrypty można wywołać na jeden z dwóch sposobów - z poziomu linii poleceń lub z poziomu kodu źródłowego innego skryptu.
 
-Skrypty mają podobny przebieg logiczny. Można go opisać za pomocą poniższej listy kroków:
+Wykonanie skryptów ma podobny przebieg. Można go opisać za pomocą poniższej listy kroków:
 \begin{enumerate*}
 \item Parsowanie argumentów wywołania
 \item Wczytanie danych z pliku konfiguracyjnego
@@ -410,7 +411,7 @@ Dane zapisywane po treningu to: plik loga, najlepszy wytrenowany agent oraz (opc
 Plik zawiera definicje funkcji pomocniczych, które są wykorzystywane w innych skryptach modułu. Jest tutaj zdefiniowana między innymi funkcja przystosowania (wykorzystywana w skryptach treningowych), która implementuje jeden pełny przebieg symulacji w Środowisku Uczenia. Funkcja ta wykorzystuje Pythonowe API, zdefiniowane przez twórców frameworka Unity ML-Agents (patrz \ref{UnityMlaDescription}).
 
 \subsubsection{ChartsGenerator.py}
-Plik zawiera definicję klasy ChartsGenerator, która odpowiada za tworzenie wykresów na podstawie danych wygenerowanych podczas eksperymentów obliczeniowych. \\
+Plik zawiera definicję klasy ChartsGenerator, która odpowiada za tworzenie wykresów na \hfill podstawie \hfill danych \hfill wygenerowanych \hfill podczas \hfill eksperymentów \hfill obliczeniowych. \\
 Do tworzenia wykresów wykorzystywana jest biblioteka matplotlib (patrz \ref{matplotlibDescription}).
 
 \vspace{0.5cm}
