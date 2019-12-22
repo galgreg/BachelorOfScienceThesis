@@ -1,10 +1,11 @@
 \chapter{Projekt systemu i opis narzędzi}
+\label{DesignSystemChapter}
 W niniejszym rozdziale zostaną przedstawione najważniejsze założenia i decyzje projektowe, jakie zostały przyjęte przed rozpoczęciem prac nad aplikacją. Ponadto zamieszczam opis narzędzi, wykorzystanych podczas procesu implementacji systemu.
 
 \section{Projekt systemu}
 Wytwarzanie oprogramowania nie należy do zadań trywialnych. Dotyczy to zwłaszcza prac nad skomplikowanymi systemami informatycznymi. Podstawą sukcesu jest jasne zdefiniowanie założeń projektowych oraz odpowiednie zaplanowanie architektury systemu. Ten etap pracy najlepiej wykonać w początkowych fazach projektu, gdy podejmowanie kluczowych decyzji projektowych nie jest jeszcze obarczone wysokim kosztem.
 
-Podczas fazy projektowania aplikacji postanowiłem rozpatrzeć trzy zagadnienia, które moim zdaniem są najistotniejsze dla dalszego zrozumienia tworzonego systemu. Są to:
+Podczas fazy projektowania aplikacji postanowiłem rozpatrzeć trzy zagadnienia, które moim zdaniem były najważniejsze dla odpowiedniego zaplanowania tworzonego systemu. Są to:
 \begin{enumerate*}
 \item Definicja \textbf{rozwiązywanego problemu},
 \item Lista \textbf{celów i założeń aplikacji},
@@ -14,7 +15,7 @@ Podczas fazy projektowania aplikacji postanowiłem rozpatrzeć trzy zagadnienia,
 Każde z tych zagadnień zostało omówione poniżej.
 
 \subsection{Definicja rozwiązywanego problemu}
-Problemem rozwiązywanym przez aplikację jest trening agentów sterujących samochodami wymodelowanymi w środowisku symulacji. Samochody mają pokonywać wyznaczone tory wyścigowe bez powodowania kolizji ze ścianami. Agenci odbierają informacje o swoim bieżącym położeniu dzięki sensorom odległości, umocowanym na każdym samochodzie. W odpowiedzi na te informacje agenci wysyłają do środowiska symulacji żądania wykonania określonych akcji np. zmiany kąta kierownicy w samochodzie kontrolowanym przez agenta. Oprócz zjawisk opisanych powyżej, środowisko symulacji zlicza wartości przystosowania agentów i zwraca listę tych wartości (po jednej dla każdego agenta) po każdym zakończonym epizodzie symulacji. Wartości przystosowania są bardzo ważne, gdyż bez nich byłoby niemożliwe przeprowadzenie procesu uczenia agentów.
+Problemem rozwiązywanym przez aplikację jest trening agentów sterujących samochodami wymodelowanymi w środowisku symulacji. Samochody mają pokonywać wyznaczone tory wyścigowe bez powodowania kolizji ze ścianami. Agenci odbierają informacje o swoim bieżącym położeniu dzięki czujnikom odległości, umocowanym na każdym samochodzie. W odpowiedzi na te informacje agenci wysyłają do środowiska symulacji żądania wykonania określonych akcji np. zmiany kąta kierownicy w samochodzie kontrolowanym przez agenta. Oprócz zjawisk opisanych powyżej, środowisko symulacji zlicza wartości przystosowania agentów i zwraca listę tych wartości (po jednej dla każdego agenta) po każdym zakończonym epizodzie symulacji. Wartości przystosowania są bardzo ważne, gdyż bez nich byłoby niemożliwe przeprowadzenie procesu uczenia agentów.
 
 Agentami są jednokierunkowe sieci neuronowe \cite{multilayerNN:article} o prostej topologii (domyślnie składają się z trzech warstw o wymiarach 3-5-2). Parametry sieci neuronowych (wagi i biasy) są dostrajane przy użyciu dwóch algorytmów ewolucyjnych: \textbf{Ewolucji Różnicowej} (patrz sekcja \ref{DeOverview}) oraz \textbf{PSO} (patrz sekcja \ref{PsoOverview}).
 
@@ -268,6 +269,7 @@ Bardzo łatwo można tworzyć nowe wirtualne środowiska dla Pythona.
 \end{enumerate*}
 
 \subsection{Stacja robocza - specyfikacja techniczna}
+\label{HardwareSpecs}
 Poniżej zamieszczam specyfikację techniczną stacji roboczej (komputera), którą wykorzystałem do implementacji systemu oraz wszystkich eksperymentów obliczeniowych:
 \begin{enumerate*}
 \item Typ urządzenia - Laptop

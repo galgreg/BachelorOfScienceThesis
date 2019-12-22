@@ -29,6 +29,7 @@ Powyższy pakiet posłużył jako baza dla modelu agenta.
 \end{figure}
 
 \subsection{Sceny Unity}
+\label{UnityScenes}
 Są to wymodelowane w edytorze Unity tory wyścigowe, po których poruszają się agenci podczas trwania symulacji. 
 Każdy kolejny tor jest trudniejszy od poprzedniego, co przekłada się na większą liczbę epizodów symulacji, potrzebnych do wytrenowania modelu. \\
 Obecnie Środowisko Uczenia składa się z trzech torów:
@@ -198,13 +199,14 @@ Na obrazku \ref{PythonProcessStructure} została przedstawiona uproszczona struk
 \label{PythonProcessStructure}
 \end{figure}
 
-\subsubsection{requirements.txt}
-Zawiera listę pakietów zależności, które muszą być zainstalowane, aby proces Pythona mógł działać w poprawny sposób. Preferowanym sposobem instalowania zależności jest utworzenie nowego środowiska wirtualnego (najlepiej przy użyciu programu \textit{Conda}) i zainstalowanie wszystkich zależności w tym środowisku.
+\subsection{Lista pakietów zależności}
+Zdefiniowana w pliku \textbf{requirements.txt}. Zawiera nazwy i numery wersji pakietów, które muszą być zainstalowane aby proces Pythona działał w poprawny sposób. Preferowanym sposobem instalowania zależności jest utworzenie nowego środowiska wirtualnego (najlepiej przy użyciu programu \textit{Conda}) i zainstalowanie wszystkich zależności w tym środowisku.
 
-\subsubsection{config.json}
-Plik konfiguracyjny, zawiera parametry niezbędne do poprawnego funkcjonowania modułu. Wykorzystywany przez niektóre skrypty języka Python. Formatem pliku jest JSON \cite{json:standard}. Aktualna zawartość pliku prezentuje się następująco:
+\subsection{Konfiguracja modułu}
+\label{ConfigOverview}
+Wykorzystywana przez niektóre skrypty języka Python. Dane konfiguracyjne zawarte są w pliku \textbf{config.json}, który definiuje parametry niezbędne do poprawnego funkcjonowania modułu. Formatem pliku jest JSON \cite{json:standard}, a jego aktualna zawartość prezentuje się następująco:
 
-\vspace{1cm}
+\vspace{0.5cm}
 \begin{lstlisting}[language=json]
 {
     "MakeBuilds" : {
@@ -259,7 +261,7 @@ Znaczenie poszczególnych sekcji pliku \textbf{config.json}:
 \item TrainingParameters - inne parametry, niezbędne do poprawnego działania aplikacji.
 \end{itemize*}
 
-\subsubsection{Parsowanie listy argumentów wiersza poleceń}
+\subsection{Argumenty wiersza poleceń}
 Niektóre skrypty modułu można wywołać z poziomu wiersza poleceń. Są to:
 \begin{itemize*}
 \item train\_de.py
@@ -315,7 +317,7 @@ słownik zwrócony przez funkcję \textit{docopt} będzie miał następującą p
 }
 \end{minted}
 
-\subsubsection{Skrypty treningowe}
+\subsection{Skrypty treningowe}
 \label{TrainingScripts}
 Skrypty treningowe odpowiadają za trenowanie nowych modeli. Trening odbywa się przy użyciu jednego z dwóch algorytmów:
 \begin{itemize*}
@@ -346,6 +348,8 @@ Informacje zapisywane po treningu to:
 \item Cała populacja (opcjonalnie)
 \end{itemize*}
 
+\subsection{Pozostałe skrypty}
+Oprócz skryptów treningowych w module znajdują się inne skrypty, które również są ważne dla poprawnego funkcjonowania aplikacji. Skrypty te opisane są w niniejszej sekcji.
 \subsubsection{run.py}
 Skrypt odpowiada za wczytanie wytrenowanego modelu i jego ewaluację w zadanym Środowisku Uczenia. Skrypt może być wywołany na jeden z dwóch sposobów - z poziomu linii poleceń lub z poziomu kodu źródłowego innego skryptu.
 
@@ -355,7 +359,7 @@ Skrypt odpowiada za tworzenie buildów Środowiska Uczenia. Buildy te są potrze
 \subsubsection{experiment.py}
 Jeden z najważniejszych skryptów w module. Przeprowadza serię eksperymentów obliczeniowych, których wyniki zapisuje do katalogu \textit{experiment\_results}, w podkatalogu o nazwie będącej znacznikiem czasu z momentu zapisu.
 
-Wyniki przeprowadzonych eksperymentów obliczeniowych, jak również metodyka ich przeprowadzania, zostaną omówione w kolejnym rozdziale tej pracy.
+Wyniki przeprowadzonych eksperymentów obliczeniowych, jak również metodyka ich przeprowadzania, zostaną omówione w rozdziale \ref{ExperimentsChapter}.
 
 \subsubsection{Katalog \textit{test}}
 Zawiera zbiór testów jednostkowych modułu. Testy zaimplementowano, wykorzystując framework unittest \cite{python:unittest} oraz bibliotekę ddt (patrz sekcja \ref{DdtOpis}).

@@ -80,7 +80,7 @@ def generateDataFromTraining(
             minFitnessDict, buildPaths, baseDirOfLastTrainedModel, dataCollector)
     
     # --- Remove model --- #
-    rmtree(pathToLastSavedModel) # Zakomentuj jesli trzeba bedzie debugowac
+    rmtree(pathToLastSavedModel)
     dataCollector.PathToLastSavedModel = None
 
 def validateTrainedModel(
@@ -141,7 +141,7 @@ def experiment(options):
     
     if not os.path.isdir(pathToBuildsDir):
         print("Error: 'env_builds' directory doesn't exist! " \
-                "Run 'make_builds.py' to fixed it!")
+                "Run 'make_builds.py' to fix it!")
         exit()
     
     # --- Validation of command line args --- #
@@ -185,7 +185,7 @@ def experiment(options):
     # --- Prepare minimal fitness dict for validation purposes --- #
     minFitnessDict = CONFIG_DATA["TrainingParameters"]["minimalAcceptableFitness"]
     
-    # --- Experiment sequence loop (TODO) --- #
+    # --- Experiment sequence loop --- #
     for trialCounter in range(numberOfTrials):
         for trackNumber in range(1, 4):
             experimentLog.Append("Generating data from 'train_de.py', track: " \
