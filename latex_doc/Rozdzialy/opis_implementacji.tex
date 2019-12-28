@@ -1,6 +1,6 @@
 \chapter{Opis implementacji}
 \label{ImplementationOverview}
-Zgodnie z opisem frameworka Unity ML-Agents, zawartego w sekcji \ref{UnityMlaDescription}, zrealizowany przeze mnie projekt można podzielić na dwa moduły:
+Zgodnie z opisem architektury systemu, zawartym w sekcji \ref{SoftwareArchSection}, zrealizowany przeze mnie projekt można podzielić na dwa moduły:
 
 \begin{enumerate*}
 \item Środowisko Uczenia - zrealizowane w silniku Unity. Odpowiada za symulację środowiska, po którym porusza się inteligentny agent.
@@ -15,12 +15,12 @@ Więcej informacji na temat każdego z modułów znajduje się w dalszej częśc
 W niniejszej sekcji postanowiłem skupić się na opisaniu tylko tych elementów, które są najbardziej istotne dla zrozumienia aplikacji. Reszta informacji znajduje się w dokumentacji silnika, gdyż dotyczy typowych elementów, obecnych w każdym projekcie Unity.
 
 \subsection{Wykorzystane assety}
-Assety są komponentami, których można użyć tworzenia gier lub innych projektów napędzanych silnikiem Unity. Asset może być jakimkolwiek zasobem do wykorzystania, np. modelem 3D, plikiem audio lub skryptem C\#. Twórcy silnika Unity udostępniają usługę Unity Asset Store, dzięki której można nabywać bezpłatne a także płatne assety. Usługa ta jest wbudowana w edytor Unity \cite{unity:assetStore}.
+Assety są komponentami, których można użyć do tworzenia gier lub innych projektów napędzanych silnikiem Unity. Asset może być jakimkolwiek zasobem do wykorzystania, np. modelem 3D, plikiem audio lub skryptem C\#. Twórcy silnika Unity udostępniają usługę Unity Asset Store, dzięki której można nabywać bezpłatne a także płatne assety. Usługa ta jest wbudowana w edytor Unity \cite{unity:assetStore}.
 
 W swojej aplikacji również wykorzystuję zewnętrzne assety. Dokładniej mówiąc, jeden pakiet assetów. Pakiet ten nosi nazwę ,,\textit{Low Poly Destructible 2 Cars no. 8}'', a dokładny opis znajduje się na oficjalnej stronie pakietu \cite{assets:lowPolyCar}.
 Powyższy pakiet posłużył jako baza dla modelu agenta.
 
-\vspace{0.5cm}
+\vspace{1.5cm}
 \begin{figure}[H]
 \centering
 \includegraphics[width=15cm]{resources/figures/car_picture.jpg}
@@ -28,36 +28,39 @@ Powyższy pakiet posłużył jako baza dla modelu agenta.
 \label{CarPicture}
 \end{figure}
 
+\vspace{1.5cm}
 \subsection{Sceny Unity}
 \label{UnityScenes}
 Są to wymodelowane w edytorze Unity tory wyścigowe, po których poruszają się agenci podczas trwania symulacji. 
 Każdy kolejny tor jest trudniejszy od poprzedniego, co przekłada się na większą liczbę epizodów symulacji, potrzebnych do wytrenowania modelu. \\
 Obecnie Środowisko Uczenia składa się z trzech torów:
 \newpage
-\begin{enumerate*}
-\item RaceTrack\_1
+\begin{center}
+\textbf{\Large{RaceTrack\_1}}
 \begin{figure}[H]
 \centering
 \includegraphics[width=13cm]{resources/figures/track_1.png}
 \end{figure}
-\item RaceTrack\_2
+
+\textbf{\Large{RaceTrack\_2}}
 \begin{figure}[H]
 \centering
 \includegraphics[width=13cm]{resources/figures/track_2.png}
 \end{figure}
-\item RaceTrack\_3
+
+\textbf{\Large{RaceTrack\_3}}
 \begin{figure}[H]
 \centering
 \includegraphics[width=13cm]{resources/figures/track_3.png}
 \end{figure}
-\end{enumerate*}
+\end{center}
 
 Wszystkie tory wyścigowe mają wspólne cechy. Jedną z nich jest kolorystyka. Każdy kolor ma swoje znaczenie:
 \begin{itemize*}
-\item Żółty - miejsce startowe
-\item Turkusowy - meta
-\item Granatowy - nitka toru, po której porusza się agent
-\item Brązowy-pomarańczowy - ściany toru. Służą do wyznaczania granic, w obrębie których agent może się przemieszczać. W przypadku kolizji ze ścianą, agent umiera.
+\item Żółty -- miejsce startowe;
+\item Turkusowy -- meta;
+\item Granatowy -- nitka toru, po której porusza się agent;
+\item Brązowo-pomarańczowy -- ściany toru. Służą do wyznaczania granic, w obrębie których agent może się przemieszczać. W przypadku kolizji ze ścianą, agent kończy swoją symulację dla bieżącego epizodu.
 \end{itemize*}
 
 Struktura logiczna wszystkich scen jest zasadniczo taka sama. Każda scena składa się z obiektu kamery, obiektu akademii oraz wymodelowanego toru wyścigowego. \\
@@ -87,7 +90,7 @@ Najbardziej istotne są parametry występujące w sekcji \textit{Brain Parameter
 
 \item \textit{CarPlayerBrain} \\
 Obiekt klasy PlayerBrain. Pozwala na kontrolowanie agenta, używając komend klawiatury. Doskonale nadaje się do ręcznych testów Środowiska Uczenia. \\
-Jak widać na obrazku \ref{CarPlayerBrainView}, \textit{CarPlayerBrain} również posiada sekcję \textit{Brain Parameters}. Bardzo interesująca jest natomiast sekcja poniżej, w której zdefiowane jest mapowanie poszczególnych przycisków klawiatury na konkretne akcje generowane przez obiekt. Więcej szczegółów na ten temat można znaleźć w dokumentacji \cite{unity:playerBrainDescription}.
+Jak widać na obrazku \ref{CarPlayerBrainView}, \textit{CarPlayerBrain} również posiada sekcję \textit{Brain Parameters}. Bardzo interesująca jest natomiast sekcja poniżej, w której zdefiniowane jest mapowanie poszczególnych przycisków klawiatury na konkretne akcje generowane przez obiekt. Więcej szczegółów na ten temat można znaleźć w dokumentacji \cite{unity:playerBrainDescription}.
 
 \vspace{0.5cm}
 \begin{figure}[H]
@@ -121,19 +124,19 @@ Oprócz powyżej opisanych, klasa RaceTrackAcademy zawiera również kilka metod
 
 Bardzo ważnym aspektem klasy RaceTrackAcademy, o którym również należy wspomnieć, są publiczne pola instancyjne klasy. 
 To parametry mające duży wpływ na zachowanie Środowiska Uczenia. Wartości tych parametrów mogą być ustawiane z poziomu edytora Unity.
-Oto lista pól instancyjnych klasy:
+Oto ich lista:
 \begin{itemize*}
 \item CarAgentBrain - obiekt klasy dziedziczącej po klasie Brain. Więcej szczegółów na ten temat znajduje się w sekcji \ref{UnityMlaDescription}.
 \item CarAgentPrefab - zmienna przechowuje referencję do obiektu reprezentującego wzorcowy model agenta. Podczas tworzenia populacji, model ten jest klonowany dla każdego z agentów.
-\item StartAgentPosition - pozycja startowa agenta. Jest to wektor określający pozycję agenta jaką będzie on miał na początku każdego epizodu symulacji.
+\item StartAgentPosition - pozycja startowa agenta. Jest to wektor określający pozycję agenta, jaką będzie on miał na początku każdego epizodu symulacji.
 \item StartAgentRotation - liczba typu float. Określa, w którą stronę jest skierowany samochód na początku każdego epizodu.
 \item CarAgentScale - liczba typu float. Określa rozmiar klonowanych modeli w stosunku do rozmiaru modelu oryginalnego (wskazywanego przez zmienną CarAgentPrefab).
-\item MaxSensorLength - liczba typu float. Określa maksymalny dystans, rejestrowany przez sensory wejściowe samochodów.
-\item FieldOfView - liczba typu float. Określa ,,kąt widzenia'' sensorów wejściowych. Wartości podawane są w stopniach. Maksymalna dozwolona wartość (będąca zarazem wartością domyślną dla zmiennej) to 180 stopni.
-\item RaysCount - liczba typu int. Określa liczbę sensorów wejściowych. Musi to być liczba dodatnia większa lub równa 2.
+\item MaxSensorLength - liczba typu float. Określa maksymalny dystans, jaki może być rejestrowany przez czujniki odległości montowane na każdym z samochodów.
+\item FieldOfView - liczba typu float. Określa ,,kąt widzenia'' samochodu. Wartości podawane są w stopniach. Maksymalna dozwolona wartość (będąca zarazem wartością domyślną) to 180 stopni.
+\item RaysCount - liczba typu int. Określa liczbę czujników dla każdego samochodu. Musi to być liczba dodatnia, większa lub równa 2.
 \item MaxSteeringAngle - liczba typu float. Określa maksymalny dozwolony kąt skrętu kół przednich w samochodzie. Wartości podawane są w stopniach. Domyślnie jest to 30 stopni.
 \item MotorForce - liczba typu float. Określa ,,moc silnika'' w samochodzie.
-\item PopulationSize - rozmiar populacji agentów, tworzonej w Środowisku Uczenia.
+\item PopulationSize - rozmiar populacji agentów.
 \end{itemize*}
 
 \subsubsection{CarAgent.cs}
@@ -147,7 +150,7 @@ Wykonywana dla każdego kroku symulacji. Odpowiada za zbieranie obserwacji agent
 \item \textit{AgentAction} \\
 Wykonywana dla każdego kroku symulacji. Odpowiada za zdefiniowanie zachowania agenta na podstawie danych (akcji) otrzymywanych z mózgu.
 \item \textit{AgentOnDone} \\
-Metoda definiuje zachowanie agenta gdy ten kończy symulację i zmienna AgentParameters.\textit{resetOnDone} jest ustawiona na wartość \textit{false}.
+Metoda definiuje zachowanie agenta, gdy ten kończy symulację i zmienna AgentParameters.\textit{resetOnDone} jest ustawiona na wartość \textit{false}.
 \end{enumerate*}
 
 Oprócz powyższych metod, klasa CarAgent zawiera również kilka metod pomocniczych. Najważniejsze z nich to:
@@ -156,7 +159,7 @@ Oprócz powyższych metod, klasa CarAgent zawiera również kilka metod pomocnic
 \item \textit{SetInputProperties} - odpowiedzialna za stworzenie sensorów samochodu. Robi to na podstawie wartości przekazanych w parametrach metody (maksymalny dystans, kąt widzenia oraz liczba sensorów).
 \item \textit{SetOutputProperties} - odpowiada za przygotowanie samochodu do poprawnego reagowania na akcje przesyłane agentowi przez mózg.
 \item \textit{SaveEpisodeReward} - zapisuje nagrodę przypadającą agentowi za bieżący epizod. Wartość nagrody jest obliczana na podstawie przejechanego dystansu oraz sygnałów nagród wyemitowanych przez Środowisko Uczenia.
-\item \textit{GetEpisodeReward} - zwraca wartość nagrody przypadającej agentowi za bieżący epizod.
+\item \textit{GetEpisodeReward} - zwraca wartość nagrody, przypadającej agentowi za bieżący epizod.
 \end{enumerate*}
 
 \subsubsection{CarAgentInput.cs}
@@ -172,7 +175,7 @@ Skrypt zawiera szczegóły implementacyjne na temat pojedynczych sensorów. Defi
 Skrypt zawiera definicję klasy SensorPropertiesComputer, która dokonuje obliczeń parametrów sensora, czyli pozycji punktu początkowego oraz kierunku wiązki.
 
 \subsubsection{RaceTrackFinishTrigger.cs}
-Skrypt zawiera definicję klasy RaceTrackFinishTrigger, która odpowiada za rozpoznawanie czy dany agent dojechał do końca toru.
+Skrypt zawiera definicję klasy RaceTrackFinishTrigger, która odpowiada za rozpoznawanie, czy dany agent dojechał do końca toru.
 Jeśli tak, to klasa przydziela agentowi nagrodę za ukończenie toru i wywołuje na nim metodę \textit{Done}. Dzięki temu agent wie, że dla niego ten epizod symulacji dobiegł końca.
 
 \subsubsection{RaceTrackTerrainCollision.cs}
@@ -188,7 +191,7 @@ Skrypt pobiera z linii poleceń dwa parametry. Są to:
 
 \newpage
 \section{Zewnętrzny proces Pythona}
-Jest drugim z głównych modułów mojej aplikacji. Zawiera zestaw skryptów języka Python oraz innych plików, które pozwalają na komunikację i kontrolę Środowiska Uczenia z osobnego procesu, niezwiązanego z procesami silnika Unity.
+Jest drugim z głównych modułów mojej aplikacji. Zawiera zestaw skryptów języka Python oraz inne pliki, które pozwalają na komunikację i kontrolę Środowiska Uczenia z osobnego procesu, niezwiązanego z procesami silnika Unity.
 
 Na obrazku \ref{PythonProcessStructure} została przedstawiona uproszczona struktura katalogowa tego modułu. Najważniejsze elementy z tej struktury zostały opisane poniżej. 
 \vspace{0.5cm}
@@ -270,7 +273,7 @@ Niektóre skrypty modułu można wywołać z poziomu wiersza poleceń. Są to:
 \item make\_builds.py
 \item experiment.py
 \end{itemize*}
-Wszystkie one do parsowania listy argumentów wiersza poleceń wykorzystują bibliotekę docopt (patrz \ref{docoptOpis}). Oto przykład definicji API wiersza poleceń dla skryptu train\_pso.py:
+Do przetwarzania argumentów wiersza poleceń jest wykorzystywana biblioteka docopt (patrz sekcja \ref{docoptOpis}). Oto przykład definicji API wiersza poleceń dla skryptu train\_pso.py:
 
 \begin{minted}[ fontsize=\fontsize{10}{9} ] {python}
 def getProgramOptions():
@@ -296,7 +299,7 @@ Options:
     return options
 \end{minted}
 
-Parsowanie argumentów linii poleceń odbywa się w funkcji \textit{getProgramOptions}. Łańcuch APP\_USAGE\_DESCRIPTION zawiera sformalizowany opis, wykonany według schematu określonego w dokumentacji \cite{docopt:documentation}. Funkcja \textit{docopt} parsuje ten łańcuch oraz listę argumentów dostarczoną przy wywołaniu z linii poleceń. \textit{docopt} weryfikuje, czy podane argumenty zgadzają się z definicją API. Jeśli tak, to funkcja zwraca słownik zawierający odczytane argumenty.
+Parsowanie argumentów linii poleceń odbywa się w funkcji \textit{getProgramOptions}. Łańcuch APP\_USAGE\_DESCRIPTION zawiera sformalizowany opis, wykonany według schematu określonego w dokumentacji \cite{docopt:documentation}. Funkcja \textit{docopt} przetwarza ten łańcuch znaków oraz listę argumentów dostarczoną przy wywołaniu z linii poleceń. \textit{docopt} weryfikuje, czy podane argumenty zgadzają się z definicją API. Jeśli tak, to funkcja zwraca słownik zawierający odczytane argumenty.
 Na przykład dla wywołania:
 \vspace{0.5cm}
 \begin{figure}[H]
@@ -328,28 +331,29 @@ Obydwa skrypty można wywołać na jeden z dwóch sposobów - z poziomu linii po
 
 Wykonanie skryptów ma podobny przebieg. Można go opisać za pomocą poniższej listy kroków:
 \begin{enumerate*}
-\item Parsowanie argumentów wywołania
-\item Wczytanie danych z pliku konfiguracyjnego
-\item Nawiązanie połączenia ze Środowiskiem Uczenia
-\item Inicjalizacja zmiennych
-\item Pętla treningowa
-\item Zapis danych uzyskanych w treningu.
+\item Parsowanie argumentów wywołania;
+\item Wczytanie danych z pliku konfiguracyjnego;
+\item Nawiązanie połączenia ze Środowiskiem Uczenia;
+\item Inicjalizacja zmiennych;
+\item Pętla treningowa;
+\item Zapis danych uzyskanych poprzez trening.
 \end{enumerate*}
 
 Wykonanie pętli treningowej odbywa się aż do momentu wystąpienia warunku stopu. Warunkiem stopu jest jedna z następujących sytuacji:
 \begin{enumerate*}
-\item Wytrenowany model osiągnął założony pułap wartości przystosowania
-\item Wyczerpała się liczba dozwolonych prób wytrenowania modelu
+\item Wytrenowany model osiągnął założony pułap wartości przystosowania;
+\item Wyczerpała się liczba dozwolonych prób wytrenowania modelu.
 \end{enumerate*}
 Informacje zapisywane po treningu to:
 \begin{itemize*}
-\item Plik loga
-\item Najlepiej wytrenowany model
-\item Cała populacja (opcjonalnie)
+\item Plik dziennika, zawierającego opis przebiegu treningu;
+\item Najlepiej wytrenowany model;
+\item Cała populacja, której stan wytrenowania odpowiada stanowi po ostatnim przeprowadzonym epizodzie treningowym. Zapis populacji jest opcjonalny i występuje po wywołaniu skryptu z odpowiednim argumentem.
 \end{itemize*}
 
 \subsection{Pozostałe skrypty}
-Oprócz skryptów treningowych w module znajdują się inne skrypty, które również są ważne dla poprawnego funkcjonowania aplikacji. Skrypty te opisane są w niniejszej sekcji.
+Oprócz skryptów treningowych, w module znajdują się także inne skrypty. Są one równie ważne dla poprawnego funkcjonowania aplikacji.
+
 \subsubsection{run.py}
 Skrypt odpowiada za wczytanie wytrenowanego modelu i jego ewaluację w zadanym Środowisku Uczenia. Skrypt może być wywołany na jeden z dwóch sposobów - z poziomu linii poleceń lub z poziomu kodu źródłowego innego skryptu.
 
@@ -359,18 +363,19 @@ Skrypt odpowiada za tworzenie buildów Środowiska Uczenia. Buildy te są potrze
 \subsubsection{experiment.py}
 Jeden z najważniejszych skryptów w module. Przeprowadza serię eksperymentów obliczeniowych, których wyniki zapisuje do katalogu \textit{experiment\_results}, w podkatalogu o nazwie będącej znacznikiem czasu z momentu zapisu.
 
-Wyniki przeprowadzonych eksperymentów obliczeniowych, jak również metodyka ich przeprowadzania, zostaną omówione w rozdziale \ref{ExperimentsChapter}.
+Wyniki przeprowadzonych eksperymentów obliczeniowych (jak również metodyka ich przeprowadzania) zostaną omówione w rozdziale \ref{ExperimentsChapter}.
 
 \subsubsection{Katalog \textit{test}}
 Zawiera zbiór testów jednostkowych modułu. Testy zaimplementowano, wykorzystując framework unittest \cite{python:unittest} oraz bibliotekę ddt (patrz sekcja \ref{DdtOpis}).
 
 \subsubsection{AgentNeuralNetwork.py}
-Plik zawiera definicję klasy \textit{AgentNeuralNetwork}, która implementuje model sieci neuronowej agentów. Klasa jest stosunkowo prosta, składa się tylko z dwóch metod. \\
-Pierwszą z nich jest konstruktor. W konstruktorze definiowana jest topologia sieci neuronowej. Obecnie wykorzystywaną topologią sieci jest MLFFNN \cite{multilayerNN:article}. Konstruktor przyjmuje jeden obowiązkowy parametr - jest nim lista wymiarów sieci. \\
-Drugą metodą klasy jest \textit{forward}. Definiuje ona, w jaki sposób obliczane są wyniki generowane przez sieć neuronową dla danego zestawu danych wejściowych. Wykorzystywaną funkcją aktywacji jest ELU \cite{activationFunction:article:2}. \\
-Zawartość pliku \textit{AgentNeuralNetwork.py} prezentuje się następująco:
+Plik zawiera definicję klasy \textit{AgentNeuralNetwork}, która implementuje model sieci neuronowej agentów. Klasa jest stosunkowo prosta, składa się tylko z dwóch metod.
 
-\begin{minted}[ fontsize=\fontsize{10}{9} ] {python}
+Pierwszą z nich jest konstruktor. W konstruktorze definiowana jest topologia sieci neuronowej. Obecnie wykorzystywaną topologią sieci jest MLFFNN \cite{multilayerNN:article}, czyli prosta sieć jednokierunkowa. Konstruktor przyjmuje jeden obowiązkowy parametr - jest nim lista wymiarów sieci.
+
+Drugą metodą klasy jest \textit{forward}. Definiuje ona sposób obliczania wyników generowanych przez sieć neuronową. Wykorzystywaną funkcją aktywacji jest ELU \cite{activationFunction:article:2}. \\
+Zawartość pliku \textit{AgentNeuralNetwork.py} prezentuje się następująco:
+\begin{minted}[ fontsize=\fontsize{11}{10} ] {python}
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -388,7 +393,8 @@ class AgentNeuralNetwork(nn.Module):
                     requires_grad = requires_grad)
             self._layers[i].bias = \
                 nn.Parameter(
-                    data = torch.FloatTensor(dimensions[i+1]).uniform_(-2.0, 2.0),
+                    data = torch.FloatTensor(dimensions[i+1]) \
+                            .uniform_(-2.0, 2.0),
                     requires_grad = requires_grad)
 
     def forward(self, dataToProcess):
@@ -417,14 +423,6 @@ Plik zawiera definicje funkcji pomocniczych, które są wykorzystywane w innych 
 \subsubsection{ChartsGenerator.py}
 Plik zawiera definicję klasy ChartsGenerator, która odpowiada za tworzenie wykresów na \hfill podstawie \hfill danych \hfill wygenerowanych \hfill podczas \hfill eksperymentów \hfill obliczeniowych. \\
 Do tworzenia wykresów wykorzystywana jest biblioteka matplotlib (patrz \ref{matplotlibDescription}).
-
-\vspace{0.5cm}
-\begin{figure}[H]
-\centering
-\includegraphics[width=13cm]{resources/figures/train_time_episodes.png}
-\caption{Przykład wykresu wygenerowanego przez klasę \textit{ChartsGenerator}}
-\label{GeneratedChartExample}
-\end{figure}
 
 \subsubsection{ExperimentDataCollector.py}
 Plik zawiera definicję klasy \textit{ExperimentDataCollector}, która odpowiada za składowanie informacji wygenerowanych podczas eksperymentów obliczeniowych. Dane zgromadzone przez tę klasę są następnie wykorzystywane w klasie \textit{ChartsGenerator} do tworzenia wykresów.

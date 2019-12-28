@@ -3,9 +3,9 @@
 W niniejszym rozdziale zostaną przedstawione najważniejsze założenia i decyzje projektowe, jakie zostały przyjęte przed rozpoczęciem prac nad aplikacją. Ponadto zamieszczam opis narzędzi, wykorzystanych podczas procesu implementacji systemu.
 
 \section{Projekt systemu}
-Wytwarzanie oprogramowania nie należy do zadań trywialnych. Dotyczy to zwłaszcza prac nad skomplikowanymi systemami informatycznymi. Podstawą sukcesu jest jasne zdefiniowanie założeń projektowych oraz odpowiednie zaplanowanie architektury systemu. Ten etap pracy najlepiej wykonać w początkowych fazach projektu, gdy podejmowanie kluczowych decyzji projektowych nie jest jeszcze obarczone wysokim kosztem.
+Wytwarzanie oprogramowania nie należy do zadań trywialnych. Dotyczy to zwłaszcza prac nad skomplikowanymi systemami informatycznymi. Podstawą sukcesu jest jasne zdefiniowanie założeń projektowych oraz odpowiednie zaplanowanie architektury systemu. Ten etap pracy najlepiej wykonać w początkowych fazach projektu, gdy podejmowanie kluczowych decyzji projektowych nie jest jeszcze obarczone wysokimi kosztami.
 
-Podczas fazy projektowania aplikacji postanowiłem rozpatrzeć trzy zagadnienia, które moim zdaniem były najważniejsze dla odpowiedniego zaplanowania tworzonego systemu. Są to:
+Podczas fazy projektowania aplikacji postanowiłem rozpatrzeć trzy zagadnienia, które moim zdaniem są najważniejsze na tym etapie prac. Te zagadnienia to:
 \begin{enumerate*}
 \item Definicja \textbf{rozwiązywanego problemu},
 \item Lista \textbf{celów i założeń aplikacji},
@@ -15,7 +15,7 @@ Podczas fazy projektowania aplikacji postanowiłem rozpatrzeć trzy zagadnienia,
 Każde z tych zagadnień zostało omówione poniżej.
 
 \subsection{Definicja rozwiązywanego problemu}
-Problemem rozwiązywanym przez aplikację jest trening agentów sterujących samochodami wymodelowanymi w środowisku symulacji. Samochody mają pokonywać wyznaczone tory wyścigowe bez powodowania kolizji ze ścianami. Agenci odbierają informacje o swoim bieżącym położeniu dzięki czujnikom odległości, umocowanym na każdym samochodzie. W odpowiedzi na te informacje agenci wysyłają do środowiska symulacji żądania wykonania określonych akcji np. zmiany kąta kierownicy w samochodzie kontrolowanym przez agenta. Oprócz zjawisk opisanych powyżej, środowisko symulacji zlicza wartości przystosowania agentów i zwraca listę tych wartości (po jednej dla każdego agenta) po każdym zakończonym epizodzie symulacji. Wartości przystosowania są bardzo ważne, gdyż bez nich byłoby niemożliwe przeprowadzenie procesu uczenia agentów.
+Problemem rozwiązywanym przez aplikację jest trening agentów. Agenci sterują samochodami wymodelowanymi w środowisku symulacji. Samochody mają pokonywać wyznaczone tory wyścigowe bez powodowania kolizji ze ścianami. Agenci odbierają informacje o swoim bieżącym położeniu dzięki czujnikom odległości, umocowanym na każdym samochodzie. W odpowiedzi na te informacje, agenci wysyłają do środowiska symulacji żądania wykonania określonych akcji, np. zmiany kąta kierownicy w samochodzie kontrolowanym przez agenta. Oprócz zjawisk opisanych powyżej, środowisko symulacji zlicza wartości przystosowania agentów i zwraca listę tych wartości (po jednej dla każdego agenta) po każdym zakończonym epizodzie symulacji. Wartości przystosowania są bardzo ważne, gdyż bez nich nie dałoby się przeprowadzić procesu uczenia agentów.
 
 Agentami są jednokierunkowe sieci neuronowe \cite{multilayerNN:article} o prostej topologii (domyślnie składają się z trzech warstw o wymiarach 3-5-2). Parametry sieci neuronowych (wagi i biasy) są dostrajane przy użyciu dwóch algorytmów ewolucyjnych: \textbf{Ewolucji Różnicowej} (patrz sekcja \ref{DeOverview}) oraz \textbf{PSO} (patrz sekcja \ref{PsoOverview}).
 
@@ -31,6 +31,7 @@ Każda aplikacja powinna realizować jakieś cele i założenia. Oto lista celó
 \end{enumerate*}
 
 \subsection{Architektura systemu}
+\label{SoftwareArchSection}
 \begin{figure}[H]
 \centering
 \includegraphics[width=15cm]{resources/figures/software_architecture.png}
@@ -39,7 +40,7 @@ Każda aplikacja powinna realizować jakieś cele i założenia. Oto lista celó
 \end{figure}
 Architektura systemu jest stosunkowo prosta. Składa się z dwóch zasadniczych komponentów: \textbf{środowiska symulacji} oraz \textbf{zestawu skryptów języka Python}. Komponenty komunikują się ze sobą poprzez odpowiedni mechanizm komunikacji. Rysunek \ref{SoftwareArchitecture} przedstawia wizualizację omawianej architektury. Więcej informacji na temat poszczególnych komponentów aplikacji można odnaleźć w rozdziale \ref{ImplementationOverview}-tym. Rozdział ten jest poświęcony opisowi implementacji systemu.
 \section{Zastosowane technologie}
-W niniejszej sekcji opisuję technologie z których korzystałem podczas implementacji mojej aplikacji.
+W niniejszej sekcji opisuję technologie, z których korzystałem podczas implementacji mojej aplikacji.
 \subsection{Unity}
 Wieloplatformowy silnik gier 2D lub 3D \cite{unity:opis}. Pozwala również na tworzenie innych materiałów interaktywnych - wizualizacje, animacje itp. Silnik został napisany w językach C/C++ (platforma uruchomieniowa) oraz C\# (Unity API). Skrypty dla silnika pisze się w języku C\#. Gry tworzone na silniku Unity mogą obsługiwać wiele platform sprzętowych i systemów operacyjnych. 
 Platformy wspierane przez wersję 2019.1 \cite{unity:buildOptions}:
@@ -102,11 +103,11 @@ Najważniejsze cechy:
 \item garbage collector zarządza pamięcią;
 \item wsparcie dla wielu paradygmatów. W Pythonie można programować obiektowo, strukturalnie lub funkcyjnie;
 \item brak wsparcia dla mechanizmu enkapsulacji;
-\item prosta, czytelna składnia - bloki tworzone przez wcięcia;
+\item prosta, czytelna składnia - bloki tworzone poprzez wcięcia;
 \item łatwy do nauczenia się;
 \item istnieje wiele implementacji - CPython, Jython, IronPython i in. Standardową implementacją jest CPython (implementacja w języku C).
 \end{itemize*}
-W projekcie stosuję język Python w wersji 3.6.8. Do zarządzania zależnościami pakietów, stosuję narzędzie Conda.
+W projekcie stosuję język Python w wersji 3.6.8. Do zarządzania zależnościami pakietów stosuję narzędzie Conda.
 
 \subsection{Frameworki}
 Framework jest spójnym zestawem modułów i bibliotek programistycznych, tworzących szkielet do budowy aplikacji danego typu. Programowanie przy użyciu frameworka polega na rozbudowywaniu tego szkieletu o dodatkowe komponenty, które są wymagane dla danego projektu. Korzystanie z frameworków ułatwia życie programistom, gdyż autorzy kodu nie muszą tracić czasu na implementację nudnych i powtarzalnych elementów aplikacji, które są identyczne dla wszystkich aplikacji tego typu. Zamiast tego mogą się skupić na implementacji funkcjonalności realizowanych przez ich oprogramowanie.
@@ -147,7 +148,7 @@ Istnieją dwa typy obserwacji:
 \item Obserwacje Wizualne (Visual Observations) -- obrazy z kamer i/lub dane z renderowanych tekstur
 \end{itemize*}
 \item Akcje (Actions) -- instrukcje wydawane przez kod sterujący agentem. Akcje są podejmowane na podstawie obserwacji otrzymanych od agenta. Akcje mają najczęściej postać wektora liczb zmiennoprzecinkowych.
-\item Sygnały nagród (Reward Signals) -- wartości liczbowe, uzyskiwane co pewien czas ze Środowiska Uczenia. Sygnały nagród są miarą wyznaczającą stopień poprawności wykonania zadań przez agenta.
+\item Sygnały nagród (Reward Signals) -- wartości liczbowe, uzyskiwane co pewien czas ze Środowiska Uczenia. Sygnały nagród są miarą, wyznaczającą stopień poprawności wykonania zadań przez agenta.
 \end{enumerate*}
 
 Uproszczony opis pętli symulacji:
@@ -213,10 +214,10 @@ Więcej informacji na temat omawianej wersji frameworka można znaleźć w oficj
 \end{center}
 
 \subsubsection{PyTorch}
-Otwartoźródłowy framework uczenia maszynowego przeznaczony dla języków Python i C++.
+Otwartoźródłowy framework uczenia maszynowego. Jest przeznaczony dla języków Python i C++.
 Najważniejsze cechy i funkcjonalności frameworka \cite{pytorch:features}\cite{pytorch:vs:tensorflow}:
 \begin{enumerate*}
-\item Prostata oraz zgodność z filozofią Zen Python \cite{python:zen}
+\item Prostota oraz zgodność z filozofią Zen Python \cite{python:zen}
 \item Łatwy dostęp do zawartości zmiennych
 \item Integracja z biblioteką NumPy - dwie proste funkcje tensor.numpy oraz tensor.from\_numpy pozwalają na proste i co ważne szybkie przekształcanie pomiędzy tablicą numpy a tensorem (tensor jest podstawowym typem tablicowym, używanym we frameworku PyTorch). Oprócz prostego przekształcania, PyTorch przejmuje po bibliotece NumPy całą filozofię pracy - większość operacji możliwych do wykonania na tablicach numpy, można również wykonać na tensorach.
 \item Dynamiczne budowanie grafu obliczeniowego \cite{pytorch:understandingGraphs}
@@ -243,7 +244,7 @@ Biblioteka programistyczna to zbiór powiązanych tematycznie jednostek kodu (ta
 
 \subsubsection{ddt}
 \label{DdtOpis}
-Pakiet dla języka Python \cite{ddt:documentation}. Pozwala na łatwe tworzenie parametryzowanych testów. Stosowany jako rozszerzenie funkcjonalności frameworków testowych, takich jak unittest (który wchodzi w skład biblioteki standardowej Pythona). Nazwa pakietu pochodzi od metodyki DDT - Data Driven Testing, która zakłada oddzielenie logiki testu od danych na których test operuje. Takie podejście pozwala w znacznym stopniu ograniczyć duplikację kodu w klasach testowych.
+Pakiet dla języka Python \cite{ddt:documentation}. Pozwala na łatwe tworzenie parametryzowanych testów. Jest stosowany jako rozszerzenie funkcjonalności frameworków testowych, takich jak unittest (który wchodzi w skład biblioteki standardowej Pythona). Nazwa pakietu pochodzi od metodyki DDT - Data Driven Testing, która zakłada oddzielenie logiki testu od danych na których test operuje. Takie podejście pozwala w znacznym stopniu ograniczyć duplikację kodu w klasach testowych.
 \subsubsection{docopt}
 \label{docoptOpis}
 Pakiet pomagający utworzyć interfejs wiersza poleceń \cite{docopt:documentation}. Pakiet docopt jest oparty na konwencji, wykorzystywanej przez lata dla komunikatów pomocy i stron podręcznika man. Opis interfejsu jest sformalizowanym komunikatem pomocy.

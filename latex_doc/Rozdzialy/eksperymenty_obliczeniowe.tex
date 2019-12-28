@@ -43,6 +43,7 @@ Wywołanie skryptu \textit{experiment.py} wymaga podania co najmniej jednego arg
 Po przetworzeniu argumentów linii poleceń, skrypt \textit{experiment.py} wykonuje kilka czynności mających przygotować grunt pod rozpoczęcie pętli eksperymentów. Wśród tych czynności jest między innymi wczytanie pliku konfiguracyjnego oraz inicjalizacja wymaganych zmiennych.
 
 Po tym etapie następuje wykonanie pętli eksperymentów. Implementacja pętli wygląda następująco:
+\vspace{0.3cm}
 \begin{minted}[ fontsize=\fontsize{10}{9} ] {python}
 # --- Experiment sequence loop --- #
     for trialCounter in range(numberOfTrials):
@@ -74,8 +75,10 @@ Po tym etapie następuje wykonanie pętli eksperymentów. Implementacja pętli w
                     isVerbose = options["--verbose"])
 \end{minted}
 
+\vspace{0.5cm}
 Zewnętrzna pętla wykonuje się tyle razy, ile wynosi liczba prób. Dla każdej próby trening odbywa się na wszystkich trzech torach oferowanych przez obecne Środowisko Uczenia. Treningi odbywają się przy użyciu dwóch algorytmów - \textbf{Ewolucji Różnicowej} oraz \textbf{PSO}. Najważniejszym elementem powyższego kodu jest funkcja \textit{generateDataFromTraining}, która przeprowadza treningi oraz dokonuje walidacji wytrenowanych modeli.
 
+\vspace{1cm}
 \section{Analiza uzyskanych wyników}
 Eksperymenty zostały wykonane na stacji roboczej o specyfikacji opisanej w sekcji \ref{HardwareSpecs}. Liczba prób wyniosła 30. Łączny czas obliczeń wyniósł 16 godzin, 23 minuty i 36 sekund, co daje średni czas obliczeń dla jednej próby na poziomie 32 minut i 47 sekund. \\
 Parametry algorytmów uczących miały następujące wartości:
@@ -96,10 +99,10 @@ Parametry algorytmów uczących miały następujące wartości:
 \subsection{Liczba wygenerowanych rozwiązań}
 Rysunek \ref{SearchCount} przedstawia średnie liczby wygenerowanych rozwiązań kandydackich przed odnalezieniem rozwiązania właściwego. Są to średnie liczone ze wszystkich przeprowadzonych prób. Każda średnia dotyczy danego toru i danego algorytmu uczącego. Im średnia jest mniejsza, tym szybciej model został wytrenowany. Wykres na rysunku \ref{SearchCount} dokonuje porównania algorytmów uczących (czyli Ewolucji Różnicowej oraz PSO) dla poszczególnych torów.
 
-\vspace{1cm}
+\vspace{0.5cm}
 \begin{figure}[H]
 \centering
-\includegraphics[width=15cm]{resources/figures/search_count.png}
+\includegraphics[width=14cm]{resources/figures/search_count.png}
 \caption{Średnia liczba wygenerowanych rozwiązań kandydackich}
 \label{SearchCount}
 \end{figure}
@@ -112,6 +115,7 @@ Z wykresu można wysnuć następujące obserwacje:
 \item Wyniki uzyskane dla toru \textit{RaceTrack}\_3 mogą trochę zaskakiwać, zwłaszcza biorąc pod uwagę wyniki z pozostałych torów. W tym przypadku, \textbf{Ewolucja Różnicowa jest znacznie gorsza od PSO}, a przewaga algorytmu PSO wynosi 29\%.
 \end{enumerate*}
 
+\vspace{1cm}
 Z powyższych obserwacji wynika, że pewne cechy torów wyścigowych ,,faworyzują'' dany algorytm. Natomiast bardzo trudno jest w tej chwili wskazać, jakie to są cechy. Uzyskanie odpowiedzi na to pytanie wymagałoby znacznie głębszej analizy tematu, co wykracza poza zakres pracy.
 
 \vspace{2cm}
@@ -121,36 +125,25 @@ Rysunek \ref{MeanTimeSeconds} przedstawia średnie czasy treningu liczone w seku
 \item Czas treningu wzrasta wraz ze wzrostem poziomu trudności każdego toru. Tor \textit{RaceTrack}\_3 jest znacznie trudniejszy od pozostałych, dlatego wymaga znacznie więcej czasu na trening.
 \item Ewolucja Różnicowa ma lepszy czas treningu na wszystkich torach wyścigowych, choć dla pierwszego i trzeciego toru różnice te nie są wielkie. Natomiast w przypadku toru \textit{RaceTrack}\_2 różnica w czasie treningu jest znacznie większa i wynosi aż 45\%.
 \end{enumerate*}
-\vspace{1cm}
 \begin{figure}[H]
 \centering
-\includegraphics[width=15cm]{resources/figures/train_time_seconds.png}
+\includegraphics[width=13cm]{resources/figures/train_time_seconds.png}
 \caption{Średni czas treningu w sekundach}
 \label{MeanTimeSeconds}
+\end{figure}
+\vspace{0.4cm}
+\begin{figure}[H]
+\centering
+\includegraphics[width=13cm]{resources/figures/train_time_episodes.png}
+\caption{Średni czas treningu w epizodach}
+\label{MeanTimeEpisodes}
 \end{figure}
 
 Z kolei na rysunku \ref{MeanTimeEpisodes} zamieszczono średnie czasy treningu liczone w epizodach. Czasy te dla torów \textit{RaceTrack}\_1 oraz \textit{RaceTrack}\_2 są takie same, natomiast przy torze \textit{RaceTrack}\_3 można zauważyć spory rozstrzał pomiędzy wynikami dla poszczególnych algorytmów. Liczba epizodów potrzebna do wytrenowania modelu przy użyciu algorytmu PSO jest o \textbf{ponad połowę mniejsza} od liczby epizodów wymaganych przy Ewolucji Różnicowej. Biorąc jednak pod uwagę rysunek \ref{MeanTimeSeconds}, każdy epizod treningu przy użyciu Ewolucji Różnicowej liczył się średnio o wiele szybciej od analogicznego epizodu dla algorytmu PSO.
 
 \subsection{Walidacja wyuczonych modeli}
-Rysunki \ref{ValidationDE} oraz \ref{ValidationPSO} przedstawiają wyniki walidacji modelów wytrenowanych obydwoma algorytmami uczącymi. Walidacja polega na sprawdzeniu wytrenowanego modelu na wszystkich trzech torach. Walidacja występuje po zakończeniu każdego treningu. Liczby ponad słupkami oznaczają liczbę walidacji zakończonych sukcesem. Maksymalna liczba pozytywnych walidacji dla danego przypadku jest równa liczbie prób. W omawianym przypadku będzie to więc 30.
-%\vspace{0.4cm}
-\begin{figure}[H]
-\centering
-\includegraphics[width=15cm]{resources/figures/train_time_episodes.png}
-\caption{Średni czas treningu w epizodach}
-\label{MeanTimeEpisodes}
-\end{figure}
+Rysunki \ref{ValidationDE} oraz \ref{ValidationPSO} przedstawiają wyniki walidacji wytrenowanych modeli. Walidacja polega na sprawdzeniu wytrenowanego modelu na wszystkich torach wyścigowych. Walidacja występuje po zakończeniu każdego treningu. Liczby ponad słupkami oznaczają liczbę walidacji zakończonych sukcesem. Maksymalna liczba pozytywnych walidacji dla danego przypadku jest równa liczbie prób, zatem w tej sytuacji jest to 30.
 
-Etykiety na dole wykresów (\textit{RaceTrack}\_1, \textit{RaceTrack}\_2, \textit{RaceTrack}\_3) wyznaczają, na jakim torze modele były trenowane. Kolory słupków wyznaczają, na jakim torze modele były walidowane.
-
-Obserwacje jakie można wysnuć z rysunków są następujące:
-\begin{enumerate*}
-\item Modele wytrenowane na łatwiejszych torach rzadko przechodzą walidację na torach trudniejszych;
-\item Modele wytrenowane na trudniejszych torach zazwyczaj dobrze radzą sobie z torami łatwiejszymi;
-\item Ponieważ tor \textit{RaceTrack}\_3 jest o wiele trudniejszy do wyuczenia się niż pozostałe tory, dlatego też tylko modele wytrenowane na tym torze potrafiły być tam pozytywnie walidowane. Wyjątkiem jest jeden model, wytrenowany na torze \textit{RaceTrack}\_2 przy użyciu Ewolucji Różnicowej.
-\item W przypadku algorytmu PSO, dwukrotnie doszło do sytuacji w której model trenowany na torze \textit{RaceTrack}\_3 nie zdążył się wytrenować na tyle dobrze, żeby móc pokonać choćby najprostszy z torów wyścigowych. Ten fakt pokazuje, że trening na trudniejszym torze utrudnia również wytrenowanie modelu radzącego sobie na torach łatwiejszych.
-\item Ponieważ tor \textit{RaceTrack}\_2 nie jest dużo trudniejszy od toru \textit{RaceTrack}\_1, dlatego część modeli wytrenowanych na torze \textit{RaceTrack}\_1 radziła sobie także na torze \textit{RaceTrack}\_2. W przypadku Ewolucji Różnicowej współczynnik ten wynosił 30\%, natomiast w przypadku algorytmu PSO było to 20\%.
-\end{enumerate*}
 \vspace{0.5cm}
 \begin{figure}[H]
 \centering
@@ -159,10 +152,6 @@ Obserwacje jakie można wysnuć z rysunków są następujące:
 \label{ValidationDE}
 \end{figure}
 
-\section{Wnioski z analiz}
-Analiza uzyskanych wyników pozwala na empiryczne potwierdzenie faktu zgodnego z intuicją. Im trudniejszy tor, tym więcej czasu oraz obliczeń jest potrzebnych do wyuczenia na nim modelu. Statystyki dla torów \textit{RaceTrack}\_1 oraz \textit{RaceTrack}\_2 są zbliżone, ponieważ poziom trudności tych dwóch torów jest do siebie zbliżony. Natomiast statystyki dla toru \textit{RaceTrack}\_3 znacznie odbiegają od reszty, ponieważ jest on dużo trudniejszy od pozostałych torów.
-
-\vspace{0.5cm}
 \begin{figure}[H]
 \centering
 \includegraphics[width=15cm]{resources/figures/validation_pso.png}
@@ -170,12 +159,27 @@ Analiza uzyskanych wyników pozwala na empiryczne potwierdzenie faktu zgodnego z
 \label{ValidationPSO}
 \end{figure}
 
-Uzyskane wyniki pozwalają dowiedzieć się czegoś o wpływie Środowiska Uczenia na proces treningu. Niewiele natomiast mówią o samych algorytmach uczących. Wyciągnięcie bardziej wartościowych wniosków na ten temat wymagałoby dalszych, dogłębnych badań.
+Etykiety na dole wykresów (\textit{RaceTrack}\_1, \textit{RaceTrack}\_2, \textit{RaceTrack}\_3) wyznaczają, na jakim torze modele były trenowane. Kolory słupków wyznaczają, na jakim torze modele były walidowane. \\
+Obserwacje, jakie można wysnuć z rysunków, są następujące:
+\begin{enumerate*}
+\item Modele wytrenowane na łatwiejszych torach rzadko przechodzą walidację na torach trudniejszych;
+\item Modele wytrenowane na trudniejszych torach zazwyczaj dobrze radzą sobie z torami łatwiejszymi;
+\item Ponieważ tor \textit{RaceTrack}\_3 jest o wiele trudniejszy do wyuczenia się niż pozostałe tory, dlatego też tylko modele wytrenowane na tym torze potrafiły być tam pozytywnie walidowane. Wyjątkiem jest jeden model, wytrenowany na torze \textit{RaceTrack}\_2 przy użyciu Ewolucji Różnicowej.
+\item W przypadku algorytmu PSO, dwukrotnie doszło do sytuacji, w której model szkolony na torze \textit{RaceTrack}\_3 nie zdążył się wytrenować na tyle dobrze, żeby móc pokonać choćby najprostszy z torów wyścigowych. Ten fakt pokazuje, że trening na trudniejszym torze utrudnia również wytrenowanie modelu radzącego sobie na torach łatwiejszych.
+\item Ponieważ tor \textit{RaceTrack}\_2 nie jest dużo trudniejszy od toru \textit{RaceTrack}\_1, dlatego część modeli wytrenowanych na torze \textit{RaceTrack}\_1 radziła sobie także na torze \textit{RaceTrack}\_2. W przypadku Ewolucji Różnicowej współczynnik ten wynosił 30\%, natomiast w przypadku algorytmu PSO było to 20\%.
+\end{enumerate*}
 
 \section{Analiza wytrenowanego modelu}
+\begin{figure}[H]
+\centering
+\includegraphics[width=15cm]{resources/figures/trained_model_example.png}
+\caption{Przykład wytrenowanej sieci neuronowej}
+\label{TrainedNetworkExample}
+\end{figure}
+
 Rysunek \ref{TrainedNetworkExample} przedstawia wizualizację sieci neuronowej jednego z wyuczonych modeli. Jest to model wyuczony na torze \textit{RaceTrack}\_3. Na rysunku zostały zobrazowane parametry sieci. Wartości liczbowe zawarte wewnątrz neuronów to ich biasy, natomiast liczby znajdujące się przy krawędziach to wagi poszczególnych połączeń.
 
-Na podstawie bezpośrednich obserwacji rysunku trudno wyciągnąć wartościowe wnioski, natomiast pewien wgląd na ,,strategię działania'' zakodowaną w parametrach sieci daje nam rozważenie kilku scenariuszy testowych, czyli sytuacji które mogą się zdarzyć podczas nawigowania samochodem po Środowisku Uczenia. Tabela \ref{InputOutputExamples} przedstawia wyniki obliczone przez sieć neuronową dla wybranych danych wejściowych. Wartości danych wejściowych zostały dobrane pod kątem rozpatrzenia podstawowych scenariuszy testowych.
+Na podstawie bezpośrednich obserwacji rysunku, trudno jest wyciągnąć wartościowe wnioski. Pewien wgląd na ,,strategię działania'', zakodowaną w parametrach sieci, daje nam rozważenie kilku scenariuszy testowych, czyli sytuacji które mogą się wydarzyć podczas nawigowania samochodem po Środowisku Uczenia. Tabela \ref{InputOutputExamples} przedstawia wyniki obliczone przez sieć neuronową dla wybranych danych wejściowych. Wartości danych wejściowych zostały dobrane pod kątem rozpatrzenia kilku podstawowych scenariuszy testowych.
 
 \begin{table}[]
 \centering
@@ -195,9 +199,7 @@ Na podstawie bezpośrednich obserwacji rysunku trudno wyciągnąć wartościowe 
 Na podstawie zawartości tabeli \ref{InputOutputExamples} można wysnuć wniosek, że wytrenowana sieć generuje poprawne wyniki. Potrafi skręcać we właściwą stronę podczas zakrętu. Potrafi też jechać prosto gdy tego wymaga sytuacja. Jedyną ciekawostką jest fakt, że omawiana sieć preferuje ,,trzymania się'' blisko prawej krawędzi drogi. Taka właściwość sieci została nabyta podczas procesu uczenia się.
 
 \vspace{1.5cm}
-\begin{figure}[H]
-\centering
-\includegraphics[width=15cm]{resources/figures/trained_model_example.png}
-\caption{Przykład wytrenowanej sieci neuronowej}
-\label{TrainedNetworkExample}
-\end{figure}
+\section{Wnioski z analiz}
+Analiza uzyskanych wyników pozwala na empiryczne potwierdzenie faktu zgodnego z intuicją. Im trudniejszy tor, tym więcej czasu oraz obliczeń jest potrzebnych do wyuczenia na nim modelu. Statystyki dla torów \textit{RaceTrack}\_1 oraz \textit{RaceTrack}\_2 są zbliżone, ponieważ poziom trudności tych dwóch torów jest do siebie zbliżony. Natomiast statystyki dla toru \textit{RaceTrack}\_3 znacznie odbiegają od reszty, ponieważ jest on dużo trudniejszy od pozostałych torów.
+
+Uzyskane wyniki pozwalają dowiedzieć się czegoś o wpływie Środowiska Uczenia na proces treningu. Niewiele natomiast mówią o samych algorytmach uczących. Wyciągnięcie bardziej wartościowych wniosków w tym zakresie wymagałoby dalszych, dogłębnych badań.
