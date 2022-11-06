@@ -36,7 +36,7 @@ Please follow [this guide](https://docs.conda.io/projects/conda/en/latest/user-g
 
 ### 4. Clone Git repo
 ```
-git clone https://github.com/galgreg/BachelorScienceThesis.git
+git clone https://github.com/galgreg/BachelorOfScienceThesis
 ```
 ### 5. Create virtual environment and install dependencies
 Go to *application/python_external_process* directory and call below commands:
